@@ -1,24 +1,34 @@
 enable  : true
-title   : WHAT WE LOVE TO DO
-subtitle: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Perspiciatis porro recusandae non quibusdam iure adipisci.
+title   : 2cloudlab致力于
+subtitle: 提供云架构、云端迁移、DevOps、大数据&分析、云安全、云计算知识培训来帮助企业数字化转型，使得企业能够降低研发成本、缩减研发周期、加快创新步伐以及增强应对市场的响应能力。
 image   : images/team.jpg
 serviceItem :
-  - icon  : ion-ios-paper-outline
-    title : BRANDING
+  - icon  : ion-ios-cloud
+    title : 云架构
     description: >
-      Veritatis eligendi, dignissimos. Porta fermentum mus aute pulvinar earum minus platea massa feugiat rutrum urna facilisi ipsameum
+      使用云计算技术构建可靠性高、低成本、容易运维以及快速试错的应用服务
 
-  - icon  : ion-ios-pint-outline
-    title : DESIGN
+  - icon  : ion-ios-cloud-upload
+    title : 云端迁移
     description: >
-      Veritatis eligendi, dignissimos. Porta fermentum mus aute pulvinar earum minus platea massa feugiat rutrum urna facilisi ipsameum
-
-  - icon  : ion-ios-paper-outline
-    title : DEVELOPMENT
-    description: >
-      Veritatis eligendi, dignissimos. Porta fermentum mus aute pulvinar earum minus platea massa feugiat rutrum urna facilisi ipsameum
+      把核心服务留在传统的数据中心（IDC），辅助或非核心业务迁移到云端并与IDC无缝连接
 
   - icon  : ion-ios-paper-outline
-    title : THEMEING
+    title : DevOps
     description: >
-      Veritatis eligendi, dignissimos. Porta fermentum mus aute pulvinar earum minus platea massa feugiat rutrum urna facilisi ipsameum
+      打造世界级研发生产流水线（CICD），将想法到产品的研发周期缩减到1天之内
+
+  - icon  : ion-ios-analytics
+    title : 大数据 & 分析
+    description: >
+      选择合适的大数据框架，快速搭建海量数据分析服务
+
+  - icon  : ion-ios-thunderstorm
+    title : 云安全
+    description: >
+      设计云端安全策略，提高用户权限、数据、网络以及密钥的安全性
+
+  - icon  : ion-ios-information
+    title : 云计算知识培训
+    description: >
+      结合从业经验以及客户案例经验提供云计算最佳实践和经验

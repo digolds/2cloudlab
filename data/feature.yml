@@ -3,32 +3,32 @@ title   : 我们提供的服务
 subtitle: >
   使用最佳的云计算实践经验以及开箱即用的解决方案帮助企业将其辅助或非核心的业务迁移到云端
 item    :
-  - icon  : ion-ios-flask-outline
+  - icon  : ion-ios-cloud-outline
     title : 云架构
     description : >
       使用云计算技术构建可靠性高、低成本、容易运维以及快速试错的应用服务
 
-  - icon  : ion-ios-lightbulb-outline
+  - icon  : ion-ios-cloud-upload-outline
     title : 云端迁移
     description : >
       把核心服务留在传统的数据中心（IDC），辅助或非核心业务迁移到云端并与IDC无缝连接
 
-  - icon  : ion-ios-americanfootball-outline
+  - icon  : ion-ios-paper-outline
     title : DevOps
     description : >
       打造世界级研发生产流水线（CICD），将想法到产品的研发周期缩减到1天之内
 
-  - icon  : ion-ios-keypad-outline
+  - icon  : ion-ios-analytics-outline
     title : 大数据 & 分析
     description : >
       选择合适的大数据框架，快速搭建海量数据分析服务
 
-  - icon  : ion-ios-barcode-outline
+  - icon  : ion-ios-thunderstorm-outline
     title : 云安全
     description : >
       设计云端安全策略，提高用户权限、数据、网络以及密钥的安全性
   
-  - icon  : ion-ios-lightbulb-outline
+  - icon  : ion-ios-information-outline
     title : 云计算知识培训
     description : >
       结合从业经验以及客户案例经验提供云计算最佳实践和经验
