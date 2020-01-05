@@ -1,6 +1,6 @@
 baseURL = "http://example.org/"
 languageCode = "en-us"
-title = "Timer | Responsive Multipurpose Bootstrap Hugo Template"
+title = "2cloudlab | Responsive Multipurpose Bootstrap Hugo Template"
 theme = "timer-hugo"
 
 # We Used Ionicons Icon font for Icon, for more details check this link - https://ionicons.com/
@@ -9,29 +9,25 @@ theme = "timer-hugo"
 [menu]
     # Navbar Menus
     [[menu.nav]]
-        name    = "About"
+        name    = "关于"
         url     = "about"
         weight  = 2
     [[menu.nav]]
-        name    = "Service"
+        name    = "服务"
         url     = "service"
         weight  = 3
     [[menu.nav]]
-        name    = "Gallery"
-        url     = "gallery"
+        name    = "博客"
+        url     = "blog"
         weight  = 4
     [[menu.nav]]
-        name    = "Blog"
-        url     = "blog"
-        weight  = 5
-    [[menu.nav]]
-        name    = "Contact"
+        name    = "联系我们"
         url     = "contact"
-        weight  = 6
+        weight  = 5
 
 # Site Params
 [params]
-    home = "Home"
+    home = "首页"
     logo = "images/logo.png"
     dateFormat = "6 January 2006"
     # Meta data
@@ -66,16 +62,16 @@ theme = "timer-hugo"
     # Call to Action
     [params.cta]
         enable  = true
-        title   = "SO WHAT YOU THINK ?"
-        content = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nobis,<br>possimus commodi, fugiat magnam temporibus vero magni recusandae? Dolore, maxime praesentium."
-        btnText = "Contact with me"
+        title   = "听起来还不错 ？"
+        content = "如果你所在的企业遇到了以下问题：<br> 研发流程混乱不堪或者效率低下、经历了持续上升的运维成本、无法及时向用户发布新的服务或产品以及想使用云计算技术但缺乏经验！<br>那么，请毫不犹疑地"
+        btnText = "联系我们"
         btnURL  = "/contact"
 
     # Portfolio Section On Homepage
     [params.portfolio]
         enable  = true
-        title   = "Latest Works"
-        subtitle= "Aliquam lobortis. Maecenas vestibulum mollis diam. Pellentesque auctor neque nec urna. Nulla sit amet est. Aenean posuere tortor sed cursus feugiat, nunc augue blandit nunc, eu sollicitudin urna dolor sagittis lacus."
+        title   = "开箱即用的解决方案"
+        subtitle= "企业的数字化转型是分阶段进行的。一般需要解决网络互联、数据存储、邮箱系统、源码托管、建设研发流水线以及研发产品等等。以下列举了每个企业都会面临的常见问题所对应的解决方案。"
 
     [params.footer]
         [[params.footer.socialIcon]]

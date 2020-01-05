@@ -1,6 +1,6 @@
 enable  : true
-title   : OUR HAPPY CLINETS
-subtitle: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Labore, error.
+title   : 我们的案例
+subtitle: 以下为使用云计算技术的案例
 clientsLogo:
   - image : images/clients/logo-1.jpg
   - image : images/clients/logo-2.jpg

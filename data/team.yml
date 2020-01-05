@@ -1,38 +1,18 @@
 enable  : true
-title   : MEET THE TEAM
+title   : 创始团队
 members  :
-  - name  : Jonathon Andrew
+  - name  : 郑思龙
     image : images/team/team-1.jpg
-    designation : CEO, Project Manager
-    description : Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore
+    designation : CEO, 创始人
+    description : 曾从业于医疗, 建筑行业。拥有5个AWS认证，擅长企业的云端架构以及迁移。
     facebook    : https://www.fb.com/themefisher
     twitter     : https://www.twitter.com/themefisher
-    linkedIn    : https://www.linkedin.com/themefisher
-    googleplus  : https://plus.google.com/themefisher
+    linkedIn    : https://www.linkedin.com/in/silong-zheng-33bb2a94/
   
-  - name  : Jesmin Martina
+  - name  : 轩亚楠
     image : images/team/team-2.jpg
-    designation : CEO, Project Manager
-    description : Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore
+    designation : CEO, 创始人
+    description : 曾从业于医疗，金融行业。拥有PMP和Scrum认证，擅长企业DevOps的实施。
     facebook    : https://www.fb.com/themefisher
     twitter     : https://www.twitter.com/themefisher
-    linkedIn    : https://www.linkedin.com/themefisher
-    googleplus  : https://plus.google.com/themefisher
-  
-  - name  : Deu John
-    image : images/team/team-3.jpg
-    designation : CEO, Project Manager
-    description : Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore
-    facebook    : https://www.fb.com/themefisher
-    twitter     : https://www.twitter.com/themefisher
-    linkedIn    : https://www.linkedin.com/themefisher
-    googleplus  : https://plus.google.com/themefisher
-
-  - name  : Anderson Martin
-    image : images/team/team-4.jpg
-    designation : CEO, Project Manager
-    description : Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore
-    facebook    : https://www.fb.com/themefisher
-    twitter     : https://www.twitter.com/themefisher
-    linkedIn    : https://www.linkedin.com/themefisher
-    googleplus  : https://plus.google.com/themefisher
+    linkedIn    : https://www.linkedin.com/in/yanan-xuan-36b521164/

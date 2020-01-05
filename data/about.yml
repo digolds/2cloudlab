@@ -1,17 +1,17 @@
 enable  : true
-title   : Why We are Different
+title   : 我们不一样！
 description: >
-  Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequun. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+  2cloudlab与其它云服务咨询商有着本质的区别。我们的团队深耕于医疗、建筑以及金融行业，目睹了企业在数字化转型过程中付出的代价。在这个过程中，我们积累了丰富的云计算经验以及总结了企业在数字化转型过程中必须要解决的关键性问题。依托于2cloudlab专业技能，我们屏蔽细节，致力于提供开箱即用的解决方案，如果能够一天完成的任务我们绝对不会延长到1个月。虽然我们拥有大量的云计算认证，但是我们更关心如何帮助企业降低研发成本、提高研发效率以及迅速响应市场。
   <br>
   <br>
-  Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae.
+  总之，2cloudlab的优势在于使用云计算技术为企业定制一条上云端的最优路径！
 image   : images/about/about-company.jpg
 aboutItem:
-  - title : Why Choose Us
+  - title : 为什么选择我们
     description: > 
       Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas.
 
-  - title : What You Get
+  - title : 你将获得的服务
     description: > 
       Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas.
 
