@@ -2,13 +2,5 @@ enable  : true
 title   : 我们的案例
 subtitle: 以下为使用云计算技术的案例
 clientsLogo:
-  - image : images/clients/logo-1.jpg
-  - image : images/clients/logo-2.jpg
-  - image : images/clients/logo-3.jpg
-  - image : images/clients/logo-4.jpg
-  - image : images/clients/logo-5.jpg
-  - image : images/clients/logo-1.jpg
-  - image : images/clients/logo-2.jpg
-  - image : images/clients/logo-3.jpg
-  - image : images/clients/logo-4.jpg
-  - image : images/clients/logo-5.jpg
+  - image : images/clients/logo-1.png
+  - image : images/clients/logo-2.png

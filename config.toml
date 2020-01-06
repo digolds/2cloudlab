@@ -40,23 +40,21 @@ theme = "timer-hugo"
     [params.banner]
         enable  = true
         bgImage = "images/slider.jpg"
-        heading = "HI, MY NAME IS JONATHON & I AM A"
-        description = "WITH 10 YEARS EXPERIENCE, I'VE OCCUPIED MANY ROLES INCLUDING DIGITAL DESIGN DIRECTOR, WEB DESIGNER AND DEVELOPER. THIS SITE SHOWCASES SOME OF MY WORK."
+        heading = "你好！ 2cloudlab是云计算咨询商，致力于"
+        description = "我们渴望通过云计算技术来帮助企业进行数字化转型。提高企业的研发效率、降低企业的研发成本以及加快企业的创新速度是我们成立的初衷！"
         btn     = true
-        btnText = "Download More"
+        btnText = "加入我们"
         btnURL  = "https://themefisher.com/"
         [[params.banner.flipText]]
-            title   = "DESIGNER"
+            title   = "云计算"
         [[params.banner.flipText]]
-            title   = "DEVELOPER"
-        [[params.banner.flipText]]
-            title   = "FATHER"
+            title   = "DevOps"
 
     # Homepage About Section
     [params.about]
         enable  = true
-        title   = "ABOUT ME"
-        content = "Hello, I’m a UI/UX Designer & Front End Developer from Victoria, Australia. I hold a master degree of Web Design from the World University.And scrambled it to make a type specimen book. It has survived not only five centuries. <br> <br> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error, adipisci voluptatum repudiandae, natus impedit repellat aut officia illum at assumenda iusto reiciendis placeat. Temporibus, vero."
+        title   = "关于我们"
+        content = "这里是<strong>2cloudlab</strong>，由一群活跃于长三角地区（上海）的IT从业者组成。这里的人曾埋伏于各个传统行业，深谙传统行业在数字化转型过程中所遇到的阻碍。好在这帮子人精通云计算技术（不超过一个世纪），知道采用哪些技术手段来帮助企业快速转型。<br> <br> <b>2cloudlab</b>成立的初衷是通过云计算技术帮助企业数字化转型、降低企业研发成本和提高企业生产效率。这里的人以经验和技术为优势，致力于向企业提供开箱即用的云端解决方案或最佳实践。"
         image   = "images/about/about.jpg"
 
     # Call to Action
