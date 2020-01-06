@@ -2,8 +2,8 @@ enable  : true
 title   : 创始团队
 members  :
   - name  : 郑思龙
-    image : images/team/team-1.jpg
-    designation : CEO, 创始人
+    image : images/team/team-1.png
+    designation : 创始人
     description : 曾从业于医疗, 建筑行业。拥有5个AWS认证，擅长企业的云端架构以及迁移。
     facebook    : https://www.fb.com/themefisher
     twitter     : https://www.twitter.com/themefisher
@@ -11,7 +11,7 @@ members  :
   
   - name  : 轩亚楠
     image : images/team/team-2.jpg
-    designation : CEO, 创始人
+    designation : 创始人
     description : 曾从业于医疗，金融行业。拥有PMP和Scrum认证，擅长企业DevOps的实施。
     facebook    : https://www.fb.com/themefisher
     twitter     : https://www.twitter.com/themefisher
