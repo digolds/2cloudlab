@@ -1,7 +1,7 @@
 enable  : true
 title   : 2cloudlab致力于
 subtitle: 提供云架构、云端迁移、DevOps、大数据&分析、云安全、云计算知识培训来帮助企业数字化转型，使得企业能够降低研发成本、缩减研发周期、加快创新步伐以及增强应对市场的响应能力。
-image   : images/team.jpg
+image   : images/team.png
 serviceItem :
   - icon  : ion-ios-cloud
     title : 云架构

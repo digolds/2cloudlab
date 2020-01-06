@@ -55,7 +55,7 @@ theme = "timer-hugo"
         enable  = true
         title   = "关于我们"
         content = "这里是<strong>2cloudlab</strong>，由一群活跃于长三角地区（上海）的IT从业者组成。这里的人曾埋伏于各个传统行业，深谙传统行业在数字化转型过程中所遇到的阻碍。好在这帮子人精通云计算技术（不超过一个世纪），知道采用哪些技术手段来帮助企业快速转型。<br> <br> <b>2cloudlab</b>成立的初衷是通过云计算技术帮助企业数字化转型、降低企业研发成本和提高企业生产效率。这里的人以经验和技术为优势，致力于向企业提供开箱即用的云端解决方案或最佳实践。"
-        image   = "images/about/about.jpg"
+        image   = "images/about/about.png"
 
     # Call to Action
     [params.cta]
