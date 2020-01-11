@@ -9,7 +9,7 @@ image   : images/about/about-company.png
 aboutItem:
   - title : 为什么选择我们
     description: > 
-      Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas.
+      1.精通云计算技术，拥有成熟的代码库；2.提供开箱即用的解决方案；3.寻求低成本和高效的解决方案；4.提供持续的升级和维护服务；5.拥有丰富的传统行业数字化转型的经验
 
   - title : 你将获得的服务
     description: > 
