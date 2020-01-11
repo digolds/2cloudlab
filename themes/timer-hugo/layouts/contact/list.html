@@ -50,7 +50,7 @@
                     {{ with .Site.Data.contact.mapTitle }}<h2 class="subtitle  wow fadeInDown" data-wow-duration="500ms" data-wow-delay=".3s">{{ . }}</h2>{{ end }}
                     {{ with .Site.Data.contact.mapSubtitle }}<p class="subtitle-des wow fadeInDown" data-wow-duration="500ms" data-wow-delay=".5s">{{ . }}</p>{{ end }}
                     <div class="map">
-                        <iframe src="https://j.map.baidu.com/20/OCb"
+                        <iframe src="{{ .Site.BaseURL }}map.html"
                             width="100%" height="400" frameborder="0" style="border:0" allowfullscreen></iframe>
                     </div>
                 </div>
