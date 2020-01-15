@@ -73,11 +73,7 @@ theme = "timer-hugo"
 
     [params.footer]
         [[params.footer.socialIcon]]
-            icon = "ion-social-facebook"
-            url = "#"
-
-        [[params.footer.socialIcon]]
-            icon = "ion-social-instagram"
+            icon = "ion-social-github"
             url = "#"
 
         [[params.footer.socialIcon]]
