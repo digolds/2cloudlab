@@ -17,13 +17,17 @@ theme = "timer-hugo"
         url     = "service"
         weight  = 3
     [[menu.nav]]
+        name    = "价格"
+        url     = "price"
+        weight  = 4
+    [[menu.nav]]
         name    = "博客"
         url     = "blog"
-        weight  = 4
+        weight  = 5
     [[menu.nav]]
         name    = "联系我们"
         url     = "contact"
-        weight  = 5
+        weight  = 6
 
 # Site Params
 [params]
@@ -31,8 +35,8 @@ theme = "timer-hugo"
     logo = "images/logo.png"
     dateFormat = "6 January 2006"
     # Meta data
-    description = "Airspace Hugo theme"
-    author = "Themefisher"
+    description = "2cloudlab是云计算咨询商，致力于云计算和DEVOPS。我们渴望通过云计算技术来帮助企业进行数字化转型。提高企业的研发效率、降低企业的研发成本以及加快企业的创新速度是我们成立的初衷！"
+    author = "2cloudlab"
     # Google Analitycs
     googleAnalitycsID = "Your ID"
 
