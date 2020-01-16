@@ -74,7 +74,7 @@ theme = "timer-hugo"
     [params.footer]
         [[params.footer.socialIcon]]
             icon = "ion-social-github"
-            url = "#"
+            url = "https://github.com/2cloudlab"
 
         [[params.footer.socialIcon]]
             icon = "ion-social-linkedin"
