@@ -1,14 +1,14 @@
 ---
-title: "A New Year a New Posibility"
-date: 2018-07-15T12:29:40+06:00
-description : "This is meta description"
+title: "如何在企业中高效使用terraform"
+date: 2019-07-15T12:29:40+06:00
+description : "terraform是一个用go语言编写的跨平台、开源、只有单个运行文件的命令行程序。terraform通过解析和执行terraform configuration文件集合，最终会在短时间内生成分布式软件所运行的环境，避免了手动配置环境，减少出错的可能性。在企业里，要想高效地使用terraform来正确且快速地生成分布式软件所运行的环境，不仅需要掌握terraform知识，还需要结合工程方面的实践经验以及其它工具来共同实现。"
 type: post
-image: images/blog/post-3.jpg
-author: Jamica Jock
-tags: ["motivation", "inspiration"]
+image: images/blog/terraform-hashicorp.png
+author: 郑思龙
+tags: ["terraform", "devops", "cicd", "cloudcomputing"]
 ---
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quas sit expedita, iusto repellendus cumque, officia architecto consequatur illo fuga eum sed ut autem eos voluptas. Nemo, a, rem! Atque quisquam aperiam eaque tenetur autem, soluta itaque omnis. Minus nesciunt, sint, animi illum quo ab voluptate esse delectus unde maiores iure, quasi a suscipit ipsam aliquid voluptatem. Perspiciatis eveniet, pariatur illum aut cum dolor neque consequatur error aliquid facilis in quasi temporibus assumenda tempore, doloremque autem saepe enim nihil. Voluptates asperiores ullam voluptate quas similique ratione quia hic, eum distinctio laboriosam, consectetur tempora voluptatibus optio natus cumque est necessitatibus dolore alias.
+terraform是一个用go语言编写的跨平台、开源、只有单个运行文件的命令行程序。terraform通过解析和执行terraform configuration文件集合，最终会在短时间内生成分布式软件所运行的环境，避免了手动配置环境，减少出错的可能性。在企业里，要想高效地使用terraform来正确且快速地生成分布式软件所运行的环境，不仅需要掌握terraform知识，还需要结合工程方面的实践经验（比如版本控制，模块划分，测试）以及其它工具（比如Packer、Docker、Kubernetes）来共同实现。
 
 > Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quas alias ut totam labore, rerum soluta harum vitae pariatur, optio, ad dolore, nihil eligendi nesciunt repellat esse provident sapiente. Repellendus, minus!
 
