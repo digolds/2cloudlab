@@ -16,9 +16,27 @@ terraform是一个用go语言编写的跨平台、开源、只有单个运行文
 
 在企业内部，一般是由devops工程师来使用terraform工具，编写terraform脚本，除此之外devops工程师还需要使用其它工具比如Python、Go、Bash、Packer、Git、Docker、Kubernetes来配合。除了掌握这些工具之外，还需要具备工程学方面的经验和devops方面的经验。拥有这些经验和工具是打造一条**高效CICD流水线**的基本条件。**CICD**分为2个阶段：**持续集成（CI）和持续发布（CD）**，每个阶段都有相对应的任务清单，比如：CI阶段需要解决研发、版本控制、测试等问题，而CD阶段需要解决基础资源创建、部署、配置、监控、安全、规范、优化等问题。根据企业自身情况，每个问题都能细分出更多的小问题。这篇文章将通过以下几个方面来揭示：**如何使用terraform高效、统一地解决以上问题**。
 
-1. Devops vs CICD
-2. Infrastructure as code的优势
+1. Devops vs CICD vs Infrastructure as code
+2. Terraform用于何处
 3. Terraform是如何运作的
 4. 建立企业中Devops团队的工作规范
 
-## Devops vs CICD
+## Devops vs CICD vs Infrastructure as code
+
+在软件行业中，Devops, CICD, Infrastructure as code几个词汇经常出现，它们的最终目标是帮助企业提高软件质量同时向市场推出杀手锏产品。以下是来自wiki的定义：
+
+[Devops](https://en.wikipedia.org/wiki/DevOps)的定义
+
+> DevOps is a set of practices that combines software development (Dev) and information-technology operations (Ops) which aims to shorten the systems development life cycle and provide continuous delivery with high software quality.
+
+[CICD](https://en.wikipedia.org/wiki/CI/CD)的定义
+
+> In software engineering, CI/CD or CICD generally refers to the combined practices of continuous integration and either continuous delivery or continuous deployment.
+
+[Infrastructure as code](https://en.wikipedia.org/wiki/Infrastructure_as_code)的定义
+
+> Infrastructure as code (IaC) is the process of managing and provisioning computer data centers through machine-readable definition files, rather than physical hardware configuration or interactive configuration tools.
+
+通过以上定义，**读者可以这么理解它们之间的关系**：企业在内部推广一场持久的devops运动，找出参与devops运动的各个团队。成立devops团队，使用各种工具（比如Terraform），结合各个团队的需求，以Infrastructure as code方式在全公司建立CI/CD流程。重复以上过程以便持续改进devops、CI/CD、Infrastructure as code实践经验。
+
+实现高效CI/CD的一种方式是Infrastructure as code，它的核心思想是以**自动化方式**解析和执行脚本文件，最终驱动基础资源。terraform恰好是一种使用Infrastructure as code方式来运行的工具，其它工具（比如Packer，Go，Python，Docker等等）也是基于Infrastructure as code方式来运行的。这篇文章的重点是**如何在企业中高效使用terraform**，因此接下来的内容将围绕terraform展开。
