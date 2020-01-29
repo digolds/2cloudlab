@@ -20,3 +20,5 @@ terraform是一个用go语言编写的跨平台、开源、只有单个运行文
 2. Infrastructure as code的优势
 3. Terraform是如何运作的
 4. 建立企业中Devops团队的工作规范
+
+## Devops vs CICD
