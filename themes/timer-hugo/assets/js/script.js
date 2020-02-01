@@ -48,7 +48,7 @@
         rules: {
             name: {
                 required: true,
-                minlength: 4
+                minlength: 2
             },
             email: {
                 required: true,
@@ -62,23 +62,22 @@
             },
         },
         messages: {
-            user_name: {
-                required: "Come on, you have a name don't you?",
-                minlength: "Your name must consist of at least 2 characters"
+            name: {
+                required: "请输入你的姓名",
+                minlength: "姓名至少是2个字"
             },
             email: {
-                required: "Please put your email address",
+                required: "请输入有效的邮箱",
             },
             message: {
-                required: "Put some messages here?",
-                minlength: "Your name must consist of at least 2 characters"
+                required: "请填入有效信息"
             },
         },
         submitHandler: function (form) {
             $(form).ajaxSubmit({
                 type: "POST",
                 data: $(form).serialize(),
-                url: "https://formspree.io/xvoazalo",
+                url: "https://formspree.io/mnqdjdkj",
                 success: function () {
                     $('#contact-form #success').fadeIn();
                 },
