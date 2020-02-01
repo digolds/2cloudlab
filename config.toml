@@ -47,8 +47,8 @@ theme = "timer-hugo"
         heading = "你好！ 2cloudlab是云计算咨询商，致力于"
         description = "我们渴望通过云计算技术来帮助企业进行数字化转型。提高企业的研发效率、降低企业的研发成本以及加快企业的创新速度是我们成立的初衷！"
         btn     = true
-        btnText = "加入我们"
-        btnURL  = "https://themefisher.com/"
+        btnText = "如何使用2cloudlab的服务"
+        btnURL  = "/blog/how-to-use-2cloudlab-services/"
         [[params.banner.flipText]]
             title   = "云计算"
         [[params.banner.flipText]]
