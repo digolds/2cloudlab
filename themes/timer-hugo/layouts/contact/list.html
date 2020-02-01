@@ -12,7 +12,7 @@
                     {{ with .Site.Data.contact.contactFormTitle }}<h2 class="subtitle wow fadeInDown" data-wow-duration="500ms" data-wow-delay=".3s">{{ . }}</h2>{{ end }}
                     {{ with .Site.Data.contact.contactFormSubtitle }}<p class="subtitle-des wow fadeInDown" data-wow-duration="500ms" data-wow-delay=".5s">{{ . }}</p>{{ end }}
                     <div class="contact-form">
-                        <form id="contact-form" method="#" action="#" role="form">
+                        <form id="contact-form" action="#" method="#" role="form">
 
                             <div class="form-group wow fadeInDown" data-wow-duration="500ms" data-wow-delay=".6s">
                                 <input type="text" placeholder="你的姓名" class="form-control" name="name" id="name">
@@ -24,6 +24,10 @@
 
                             <div class="form-group wow fadeInDown" data-wow-duration="500ms" data-wow-delay="1s">
                                 <input type="text" placeholder="主题内容" class="form-control" name="subject" id="subject">
+                            </div>
+
+                            <div>
+                                <input type="hidden" name="contacts" Value="send message button">
                             </div>
 
                             <div class="form-group wow fadeInDown" data-wow-duration="500ms" data-wow-delay="1.2s">

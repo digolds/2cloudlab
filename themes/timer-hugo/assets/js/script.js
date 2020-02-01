@@ -78,7 +78,7 @@
             $(form).ajaxSubmit({
                 type: "POST",
                 data: $(form).serialize(),
-                url: "sendmail.php",
+                url: "https://formspree.io/xvoazalo",
                 success: function () {
                     $('#contact-form #success').fadeIn();
                 },

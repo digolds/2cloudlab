@@ -44,7 +44,7 @@ theme = "timer-hugo"
     [params.banner]
         enable  = true
         bgImage = "images/slider.jpg"
-        heading = "你好！ 2cloudlab是云计算咨询商，致力于"
+        heading = "你好！ 2cloudlab是云计算解决方案提供商，致力于"
         description = "我们渴望通过云计算技术来帮助企业进行数字化转型。提高企业的研发效率、降低企业的研发成本以及加快企业的创新速度是我们成立的初衷！"
         btn     = true
         btnText = "如何使用2cloudlab的服务"
