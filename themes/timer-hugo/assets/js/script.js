@@ -74,17 +74,33 @@
             },
         },
         submitHandler: function (form) {
-            $(form).ajaxSubmit({
-                type: "POST",
-                data: $(form).serialize(),
-                url: "https://formspree.io/mnqdjdkj",
-                success: function () {
+            function ajax(method, url, data, success, error) {
+                var xhr = new XMLHttpRequest();
+                xhr.open(method, url);
+                xhr.setRequestHeader("Accept", "application/json");
+                xhr.onreadystatechange = function() {
+                  if (xhr.readyState !== XMLHttpRequest.DONE) return;
+                  if (xhr.status === 200) {
+                    success(xhr.response, xhr.responseType);
+                  } else {
+                    error(xhr.status, xhr.response, xhr.responseType);
+                  }
+                };
+                xhr.send(data);
+              };
+
+              var data = new FormData(form);
+            ajax(
+                "POST",
+                "https://formspree.io/mnqdjdkj",
+                data,
+                function () {
                     $('#contact-form #success').fadeIn();
                 },
-                error: function () {
+                function () {
                     $('#contact-form #error').fadeIn();
                 }
-            });
+            );
         }
     });
 
