@@ -83,3 +83,15 @@ theme = "timer-hugo"
         [[params.footer.socialIcon]]
             icon = "ion-social-linkedin"
             url = "https://www.linkedin.com/company/2cloudlab-com"
+
+[markup]
+    [markup.highlight]
+      codeFences = true
+      guessSyntax = false
+      hl_Lines = ""
+      lineNoStart = 1
+      lineNos = false
+      lineNumbersInTable = true
+      noClasses = false
+      style = "friendly"
+      tabWidth = 4

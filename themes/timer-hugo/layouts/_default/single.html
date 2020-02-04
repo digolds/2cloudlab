@@ -8,7 +8,7 @@
                     <h2>{{ .Title }}</h2>
                     <div class="portfolio-meta">
                         <span>{{ dateFormat "2006-01-02" .Date }}</span>|
-                        <span class="ion-pricetag"></span>
+                        <span class="ion-pricetags"></span>
                         <span>
                             {{ if ne .Params.tags nil }}{{ delimit .Params.tags ", " }}{{ end }}
                         </span>
