@@ -40,3 +40,8 @@ terraform是一个用go语言编写的跨平台、开源、只有单个运行文
 通过以上定义，**读者可以这么理解它们之间的关系**：企业在内部推广一场持久的devops运动，找出参与devops运动的各个团队。成立devops团队，使用各种工具（比如Terraform），结合各个团队的需求，以Infrastructure as code方式在全公司建立CI/CD流程。重复以上过程以便持续改进devops、CI/CD、Infrastructure as code实践经验。
 
 实现高效CI/CD的一种方式是Infrastructure as code，它的核心思想是以**自动化方式**解析和执行脚本文件，最终驱动基础资源。terraform恰好是一种使用Infrastructure as code方式来运行的工具，其它工具（比如Packer，Go，Python，Docker等等）也是基于Infrastructure as code方式来运行的。这篇文章的重点是**如何在企业中高效使用terraform**，因此接下来的内容将围绕terraform展开。
+
+```python
+def test_function():
+    pass
+```
