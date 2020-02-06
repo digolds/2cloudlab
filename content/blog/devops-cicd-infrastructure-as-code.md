@@ -1,12 +1,16 @@
 ---
 title: "Devops vs CICD vs Infrastructure as code"
 date: 2019-01-21T12:27:38+06:00
-description : "This is meta description"
+description : "企业对外发布产品之前其在内部需要做好各种准备：研发工程师完成产品研发，测试工程师完成产品测试，DevOps工程师部署产品。在这个过程中遇到任何问题，都会影响产品的发布，因此企业在数字化转型的过程中都需要优化这一流程。在软件行业中，优化这个流程的方法论是：DevOps。"
 type: post
-image: images/blog/post-2.jpg
+image: images/blog/digital-transform.jpg
 author: 郑思龙
 tags: ["DevOps", "CICD", "InfrastructureAsCode"]
 ---
+
+企业对外发布产品之前其在内部需要做好各种准备：研发工程师完成产品研发，测试工程师完成产品测试，DevOps工程师部署产品。在这个过程中遇到任何问题，都会影响产品的发布，因此企业在数字化转型的过程中都需要优化这一流程。在软件行业中，优化这个流程的方法论是：DevOps。
+
+这篇文章接下来将围绕以下内容来介绍DevOps：
 
 1. DevOps在企业内部推广的现实状况
 2. 对企业有价值的DevOps是什么样的？
