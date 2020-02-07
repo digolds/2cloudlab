@@ -20,6 +20,32 @@ terraform是一个用go语言编写的跨平台、开源、只有单个运行文
 
 ## 企业为何使用Terraform？
 
-**CICD**的搭建需要多方团队共同参与，除此之外还需要一些[DEVOPS](https://2cloudlab.com/blog/devops-cicd-infrastructure-as-code/)方法论、实践经验以及相关工具。市面上有很多可选的工具，如何选择合适的工具，就需要根据企业所研发的产品来决定。terraform是众多工具中的一款，其作用是通过执行terraform configuration脚本文件来创建服务资源（这些资源有EC2实例、RDS实例等等）并在这些资源上部署软件服务（这些软件服务有自主研发的软件服务、MYSQL服务、Redis服务等等）。企业之所以使用terraform工具的原因在于1）拥有强大而且活跃的社区支持、免费和开源。2）支持大部分云服务提供者（AWS、Azure、GCP以及其它云服务）。3）只需要一个terraform运行文件和云服务厂商的账号就能在自己的电脑上使用。4）terraform是基于描述型语言（declarative language）来定义资源的最终状态。5）terraform支持一致性部署（immutable infrastructure）,每次更新均是可重现且一致的。
+Terraform的主要作用在于基于云服务提供商创建资源和准备运行环境。企业内部需要借助不同工具推行[DevOps](https://2cloudlab.com/blog/devops-cicd-infrastructure-as-code/)，Terraform就是其中之一。软件产品或服务都需要运行在一个特定的环境上，因此企业需要为软件准备这些运行环境，而这些运行环境的准备就是需要工具：Terraform。除此之外还有其它工具（比如CloudFormation），企业之所以使用Terraform工具的原因在于：
+
+1. 拥有强大而且活跃的社区支持、免费和开源
+2. 支持大部分云服务提供者（AWS、Azure、GCP以及其它云服务）
+3. 只需要一个terraform运行文件和云服务厂商的账号就能在自己的电脑上使用
+4. terraform是基于描述型语言（declarative language）来定义资源的最终状态
+5. terraform支持一致性部署（immutable infrastructure）,每次更新均是可重现且一致的
+
+随着云计算的普及，企业应该使用云计算带来的好处--降低成本和应用更加先进的技术--来使自己处于行业领先位置。使用Terraform可以以Infrastructure as Code的方式使用云服务，DevOps人员只需要编写脚本、安装Terraform可执行文件、一个云服务商账号以及执行脚本的一台电脑就能远程为软件创建资源和准备环境。这些脚本文件由版本控制系统进行管理，这样一来工程方面的经验便可应用在这些脚本文件上。要想高效使用Terraform，除了要学习Terraform知识，还要解决多人使用的情况。在这之前，以一个简单的示例来了解Terraform的运行机制是一个良好的开端。
+
+## Terraform的运行机制
+## 如何解决多人同时使用Terraform的问题
+
+**CICD**的搭建需要多方团队共同参与，这就意味着Terraform工具需要多人来使用。通过以上简单的示例可知，Terraform是按照以下步骤工作的：
+
+1. DevOps工程师编写`.tf`脚本
+2. 为Terraform配置云服务账号
+3. 使用Terraform执行`.tf`脚本生成基础资源
+
+如果一切顺利，那么软件所依赖的环境会顺利生成出来，但是现实世界中，有诸多不确定的因素
+其作用是通过执行terraform configuration脚本文件来创建服务资源（这些资源有EC2实例、RDS实例等等）并在这些资源上部署软件服务（这些软件服务有自主研发的软件服务、MYSQL服务、Redis服务等等）。
+
+## 在企业中建立Devops团队以及Terraform规范
 
 在企业内部，一般是由devops工程师来使用terraform工具，编写terraform脚本，除此之外devops工程师还需要使用其它工具比如Python、Go、Bash、Packer、Git、Docker、Kubernetes来配合。除了掌握这些工具之外，还需要具备工程学方面的经验和devops方面的经验。拥有这些经验和工具是打造一条**高效CICD流水线**的基本条件。**CICD**分为2个阶段：**持续集成（CI）和持续发布（CD）**，每个阶段都有相对应的任务清单，比如：CI阶段需要解决研发、版本控制、测试等问题，而CD阶段需要解决基础资源创建、部署、配置、监控、安全、规范、优化等问题。根据企业自身情况，每个问题都能细分出更多的小问题。这篇文章将通过以下几个方面来揭示：**如何使用terraform高效、统一地解决以上问题**。
+
+## 总结
+
+___[2cloudlab.com](https://2cloudlab.com/)为企业准备产品的运行环境，只需要1天！___
