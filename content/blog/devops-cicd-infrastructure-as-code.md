@@ -15,6 +15,8 @@ tags: ["DevOps", "CICD", "InfrastructureAsCode"]
 1. DevOps在企业内部推广的现实状况
 2. 对企业有价值的DevOps是什么样的？
 3. 如何理解：Devops、CICD、Infrastructure as code
+4. Infrastructure as code的优势
+5. 总结
 
 ## DevOps在企业内部推广的现实状况
 
@@ -56,4 +58,20 @@ DevOps在中国区企业的推广令人堪忧。大多数企业只实现了DevOp
 
 通过以上定义，**读者可以这么理解它们之间的关系**：企业在内部推广一场持久的devops运动，找出参与devops运动的各个团队。成立devops团队，使用各种工具（比如Terraform），结合各个团队的需求，以Infrastructure as code方式在全公司建立CI/CD流程。重复以上过程以便持续改进devops、CI/CD、Infrastructure as code实践经验。
 
-实现高效CI/CD的一种方式是Infrastructure as code，它的核心思想是以**自动化方式**解析和执行脚本文件，最终驱动基础资源。terraform恰好是一种使用Infrastructure as code方式来运行的工具，其它工具（比如Packer，Go，Python，Docker等等）也是基于Infrastructure as code方式来运行的。这篇文章的重点是**如何在企业中高效使用terraform**，因此接下来的内容将围绕terraform展开。
+## Infrastructure as code的优势
+
+Infrastructure as code是实现CICD的一种方式，它的基础是用脚本或者代码来驱动基础设施。不同的脚本或者代码由对应的工具执行，最终实现自动化--CICD。
+
+脚本或代码是文本文件，这些文件可以通过版本管理工具(比如git)来记录版本。有了版本记录就能够快速指定对应的版本恢复，比如，新发布的版本出现问题了，可以及时切换到以前稳定的版本，这个过程可以缩减到1天之内。
+
+除此之外，市面上有很多开源、免费、优秀的工具支持Infrastructure as code。企业常用的工具有:Terraform、Packer、Go、Python、Docker等。一般情况下，高效的CICD是需要借助多种工具共同实现的。
+
+## 总结
+
+企业在数字化转型的过程中必须不断地改善其内部的CICD，原因在于企业需要快速推出高质量的产品来响应和检验市场，最终为客户带去创新性产品，让自己立于不败之地。DevOps在企业内部推广是一个持久的过程，原因在于它的要求很多:结合各种工具、跨部门或团队、拥有DevOps经验的人才、云计算。因此企业在转型之初就需要开始实施DevOps。
+
+CICD更加具体地指出实现高效DevOps应该关注的核心部分--持续集成和持续发布。因此大部分企业都应该优先实施持续集成和持续发布。在实施CICD的过程中需要借助Infrastructure as code方式，这种方式能够引入版本控制系统和实现自动化。支持Infrastructure as code方式的工具有很多，企业常用的有:Terraform、Packer、Go、Python、Docker等。其中Terraform能够基于云服务商快速创建资源和准备软件环境，在这之后，需要结合其它工具进一步部署产品或服务。
+
+Terraform是一个基础工具，适用于大多数企业，它能够解决资源创建和准备的问题，因此企业应该把它作为打造高效DevOps的工具之一。使用Terraform时，不仅要掌握Terraform知识，还需要结合工程经验，这篇文章:[如何在企业中高效使用Terraform](https://2cloudlab.com/blog/how-to-apply-terraform-across-entire-enterprises/)，能够帮助企业高效使用Terraform，从而减少企业在实施DevOps过程中遇到的问题。
+
+___[2cloudlab.com](https://2cloudlab.com/)为企业准备产品的运行环境，只需要1天！___
