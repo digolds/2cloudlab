@@ -100,7 +100,7 @@ resource "aws_instance" "example" {
 
 对内的规范则是针对DevOps内部的成员，其约定了如何组织脚本模块、编写使用说明文档、对脚本模块进行测试、如何进行Code Review以及如何使用版本控制系统。对内的规范内容有:
 
-1. 为每个成员分配一个独立的云服务账号
+1. [为每个成员分配一个独立的云服务账号](https://2cloudlab.com/portfolio/how-to-construct-enterprise-accounts/)
 2. 对于生产环境的操作只能由少数成员管理
 3. 使用版本控制系统来跟踪脚本文件
 4. 脚本文件分成2类，一类是通用模块，另外一类是应用模块，分别由不同的repository来存放
@@ -114,6 +114,8 @@ resource "aws_instance" "example" {
 接下来让我们以一个具体的例子来展开以上规范。
 
 ## 现实世界中DevOps团队一天的工作内容
+
+假设公司成立了一个DevOps团队，由三名成员组成，他们分别是：Tony（Team Leader），Jack（DevOps Engineer）和Jane（DevOps Engineer）。他们的工作任务是搭建CICD，以下是他们一天之内的工作内容。
 
 ## 总结
 
