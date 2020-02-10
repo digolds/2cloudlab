@@ -151,11 +151,19 @@ Tony
 9. 每次提交都应该进行Code Review
 10. 每名成员都拥有不同的AWS账号，不同环境也需要有不同的AWS账号。AWS账号的分配原则应该根据不同目的来划分，原因在于保持相互独立性
 
-Tony要确保以上实施细节都能够被大家理解，并且需要不断地优化。
+Tony要确保以上实施细节都能够被大家理解，并且需要不断地优化。接下来就是分工合作，Tony、Jack和Jane的分工如下：
+
+1. Tony负责live repositoy的研发
+2. Jack负责web-server-cluser的研发
+3. Jane负责mysql-database的研发
 
 Jack
 
+Jack根据实施细节输出了如下成果：
+
 Jane
+
+Jane根据实施细节输出了如下成果：
 
 ## 总结
 
