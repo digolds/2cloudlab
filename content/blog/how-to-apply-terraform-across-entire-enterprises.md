@@ -1,5 +1,5 @@
 ---
-title: "如何在企业中高效使用terraform"
+title: "一天之内，部署线上服务--高效使用terraform"
 date: 2019-07-15T12:29:40+06:00
 description : "terraform是一个用go语言编写的跨平台、开源、只有单个运行文件的命令行程序。terraform通过解析和执行terraform configuration文件集合，最终会在短时间内生成分布式软件所运行的环境，避免了手动配置环境，减少出错的可能性。在企业里，要想高效地使用terraform来正确且快速地生成分布式软件所运行的环境，不仅需要掌握terraform知识，还需要结合工程方面的实践经验以及其它工具来共同实现。"
 type: post
@@ -145,12 +145,18 @@ Tony
 2. 任何一名成员只能使用Terraform工具来操作以上3个环境的资源，其中Product环境只能由经验丰富的少数几个人操作
 3. 团队内常用的工具有:Git、VS Code、Jira、Python、Go和Terraform
 4. 依赖的服务有:AWS和Github
-5. 项目的结构和文件命名方式如下(其中package是通用模块，live是不同环境)
-6. 在编写模块的过程中，需要考虑单元测试(Unit Test)、集成测试()和端对端测试，其数量占比情况如下图所示
+5. 项目的结构和文件命名方式如下(其中package-aws-web-cluster是通用模块，live是不同环境)
+6. 在编写模块的过程中，需要考虑单元测试(Unit Test)、集成测试(Integration Test)和端对端测试（End-to-End Test），其数量占比情况如下图所示：
+
+![](https://2cloudlab.com/images/blog/number-of-different-test-types.png)
+
 7. 为每个模块编写手动示例和说明文档
 8. 遵守Terraform规范，并用代码检测工具来做静态检查
 9. 每次提交都应该进行Code Review
 10. 每名成员都拥有不同的AWS账号，不同环境也需要有不同的AWS账号。AWS账号的分配原则应该根据不同目的来划分，原因在于保持相互独立性
+11. 输出具有可实施的结果（包括文档、图片和代码等）。比如Tony为这次实施细节输出了如下结果：
+
+![](https://2cloudlab.com/images/blog/Web-App-Reference-Architecture.png)
 
 Tony要确保以上实施细节都能够被大家理解，并且需要不断地优化。接下来就是分工合作，Tony、Jack和Jane的分工如下：
 
