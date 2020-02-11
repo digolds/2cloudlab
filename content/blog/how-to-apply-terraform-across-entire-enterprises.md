@@ -137,7 +137,7 @@ Tony
 
 这个网站部署在AWS上，支持弹性伸缩、高可用、负载均衡和数据库，因此Tony将运行该网站的环境设计出来，如下图所示：
 
-![](https://2cloudlab.com/Web-App-Reference-Architecture.png)
+![](https://2cloudlab.com/images/blog/Web-App-Reference-Architecture.png)
 
 紧接着，他根据上图列出一些工作任务，这些任务由在线项目协作工具(比如Jira)记录和跟踪。随后将任务按照优先级分别指派给不同的成员并开会讨论实施细节。以下是实施细节:
 
