@@ -164,6 +164,8 @@ Tony要确保以上实施细节都能够被大家理解，并且需要不断地�
 2. Jack负责web_cluser的研发
 3. Jane负责mysql_database的研发
 
+当任务分配到每位成员之后，Tony要做的是准备2个repository，分别为:live和package_aws_web_service，它们托管在github上目录结构按照以上方式排布。除此之外，live中的文件会调用package_aws_web_service中的模块，这种可复用的方式不仅适合内部团队，也适用于其它团队，比如测试和研发团队。
+
 Jack
 
 Jack根据实施细节编写了模块`web_cluster`，结果如下：
