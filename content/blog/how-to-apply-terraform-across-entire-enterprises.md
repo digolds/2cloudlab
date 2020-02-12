@@ -145,7 +145,7 @@ Tony
 2. 任何一名成员只能使用Terraform工具来操作以上3个环境的资源，其中Product环境只能由经验丰富的少数几个人操作
 3. 团队内常用的工具有:Git、VS Code、Jira、Python、Go和Terraform
 4. 依赖的服务有:AWS和Github
-5. 项目的结构和文件命名方式如下(其中package-aws-web-cluster是通用模块，live是不同环境)
+5. 项目的结构和文件命名方式如下(其中package_aws_web_service是通用模块，live是不同环境)
 6. 在编写模块的过程中，需要考虑单元测试(Unit Test)、集成测试(Integration Test)和端对端测试（End-to-End Test），其数量占比情况如下图所示：
 
 ![](https://2cloudlab.com/images/blog/number-of-different-test-types.png)
@@ -156,21 +156,81 @@ Tony
 10. 每名成员都拥有不同的AWS账号，不同环境也需要有不同的AWS账号。AWS账号的分配原则应该根据不同目的来划分，原因在于保持相互独立性
 11. 输出具有可实施的结果（包括文档、图片和代码等）。比如Tony为这次实施细节输出了如下结果：
 
-![](https://2cloudlab.com/images/blog/Web-App-Reference-Architecture.png)
+![](https://2cloudlab.com/images/blog/file-layout-and-github-repository.png)
 
 Tony要确保以上实施细节都能够被大家理解，并且需要不断地优化。接下来就是分工合作，Tony、Jack和Jane的分工如下：
 
 1. Tony负责live repositoy的研发
-2. Jack负责web-server-cluser的研发
-3. Jane负责mysql-database的研发
+2. Jack负责web_cluser的研发
+3. Jane负责mysql_database的研发
 
 Jack
 
-Jack根据实施细节输出了如下成果：
+Jack根据实施细节编写了模块`web_cluster`，结果如下：
+
+```terraform
+# main.tf
+
+terraform {
+    required_version = ">= 0.12, < 0.13"
+}
+```
+
+```terraform
+# variables.tf
+
+# ---------------------------------------------------------------------------------------------------------------------
+# REQUIRED PARAMETERS
+# You must provide a value for each of these parameters.
+# ---------------------------------------------------------------------------------------------------------------------
+
+variable "security_group_id" {
+  description = "The ID of the Security Group to which all the rules should be attached."
+  type        = string
+}
+```
+
+```terraform
+# outputs.tf
+
+output "http_port" {
+  value = var.http_port
+}
+```
 
 Jane
 
-Jane根据实施细节输出了如下成果：
+Jane根据实施细节编写了模块`mysql_database`，结果如下：
+
+```terraform
+# main.tf
+
+terraform {
+    required_version = ">= 0.12, < 0.13"
+}
+```
+
+```terraform
+# variables.tf
+
+# ---------------------------------------------------------------------------------------------------------------------
+# REQUIRED PARAMETERS
+# You must provide a value for each of these parameters.
+# ---------------------------------------------------------------------------------------------------------------------
+
+variable "security_group_id" {
+  description = "The ID of the Security Group to which all the rules should be attached."
+  type        = string
+}
+```
+
+```terraform
+# outputs.tf
+
+output "http_port" {
+  value = var.http_port
+}
+```
 
 ## 总结
 
