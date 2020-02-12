@@ -234,6 +234,8 @@ output "http_port" {
 
 ## 总结
 
-Terraform主要解决了创建资源和管理资源的问题，随着云计算的普及，Terraform的优势更加明显！
+Terraform主要解决了创建资源和管理资源的问题，随着云计算的普及，Terraform的优势更加明显！Terraform支持大多数云服务商，包括AWS、GCP、Azure Cloud和阿里云等，DevOps工程师只需要编写脚本文件并使用Terraform执行它们，就可以创建和管理基础资源，这些资源构成了产品或服务所需的运行环境。将资源代码化(也就是Infrastructure as code)的好处是可以引入软件工程管理实践经验来更好地发布软件。这些经验包括版本控制、自动化测试、模块复用、Code Review和编写文档等。为了帮助企业打造世界级CICD，除了需要熟练掌握Terraform知识以外，还需要结合软件工程实践经验。因此，企业需要专门成立一个DevOps团队来服务于企业内部不同团队以及对外发布产品。当引入一个团队的时候，就需要考虑多人协作和规范的问题。使用Terraform工具所生成的真实环境有各种各样的依赖关系，任何一次局部修改，都有可能导致整个运行环境瘫痪，因此要严格隔离不同环境，比如test、stage和prod环境。除此之外DevOps要定义一些规范，这些规范不仅能够使团队内部达成共识，而且能够更加有效地使外部团队消化DevOps的输出成果，最终使得DevOps运动能够在企业内部顺利运转起来。
+
+在企业中实施DevOps是一个漫长的过程，这个过程涉及到了多方面的内容。为了能够更好地在企业中实施DevOps，让我们从这篇文章:[<让产品7*24小时持续服务用户--如何测试Terraform>](https://2cloudlab.com/blog/how-to-test-terraform-code/)开始。
 
 ___[2cloudlab.com](https://2cloudlab.com/)为企业准备产品的运行环境，只需要1天！___
