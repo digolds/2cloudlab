@@ -1,7 +1,7 @@
 ---
-title: "一天之内，部署线上服务--高效使用terraform"
+title: "企业如何在一天之内部署线上服务--高效使用terraform"
 date: 2019-07-15T12:29:40+06:00
-description : "terraform是一个用go语言编写的跨平台、开源、只有单个运行文件的命令行程序。terraform通过解析和执行terraform configuration文件集合，最终会在短时间内生成分布式软件所运行的环境，避免了手动配置环境，减少出错的可能性。在企业里，要想高效地使用terraform来正确且快速地生成分布式软件所运行的环境，不仅需要掌握terraform知识，还需要结合工程方面的实践经验以及其它工具来共同实现。"
+description : "terraform是一个用go语言编写的跨平台、开源、只有单个运行文件的命令行程序。terraform通过解析和执行terraform configuration文件集合，最终会在短时间内生成分布式软件所运行的环境，避免了手动配置环境，减少出错的可能性。在企业里，要想高效地使用terraform来正确且快速地生成分布式软件所运行的环境，不仅需要掌握terraform知识，还需要结合软件工程方面的实践经验和借助多种工具。"
 type: post
 image: images/blog/terraform-hashicorp.png
 author: 郑思龙
@@ -16,7 +16,7 @@ terraform是一个用go语言编写的跨平台、开源、只有单个运行文
 2. Terraform的运行机制
 3. 如何解决多人同时使用Terraform的问题
 4. 在企业中建立Devops团队以及Terraform规范
-5. 现实世界中DevOps团队一天的工作内容
+5. 现实世界中DevOps团队的工作内容
 6. 总结
 
 ## 企业为何使用Terraform？
@@ -29,7 +29,7 @@ Terraform的主要作用在于基于云服务提供商创建资源和准备运�
 4. terraform是基于描述型语言（declarative language）来定义资源的最终状态
 5. terraform支持一致性部署（immutable infrastructure）,每次更新均是可重现且一致的
 
-随着云计算的普及，企业应该使用云计算带来的好处--降低成本和应用更加先进的技术--来使自己处于行业领先位置。使用Terraform可以以Infrastructure as Code的方式使用云服务，DevOps人员只需要编写脚本、安装Terraform可执行文件、一个云服务商账号以及执行脚本的一台电脑就能远程为软件创建资源和准备环境。这些脚本文件由版本控制系统进行管理，这样一来工程方面的经验便可应用在这些脚本文件上。要想高效使用Terraform，除了要学习Terraform知识，还要解决多人使用的情况。在这之前，以一个简单的示例来了解Terraform的运行机制是一个良好的开端。
+随着云计算的普及，企业应该使用云计算带来的好处--降低成本和应用更加先进的技术--来使自己处于行业领先位置。使用Terraform可以以Infrastructure as Code的方式使用云服务，DevOps人员只需要编写脚本、安装Terraform可执行文件、一个云服务商账号以及执行脚本的一台电脑就能远程为软件创建资源和准备环境。这些脚本文件由版本控制系统进行管理，这样一来软件工程方面的经验便可应用在这些脚本文件上。要想高效使用Terraform，除了要学习Terraform知识，还要解决多人使用的情况。在这之前，以一个简单的示例来了解Terraform的运行机制是一个良好的开端。
 
 ## Terraform的运行机制
 
@@ -68,9 +68,11 @@ resource "aws_instance" "example" {
 }
 ```
 
-以上例子表明:它期望在AWS上创建一个EC2实例，因此使用terraform运行该脚本文件的最终结果是AWS EC2 Dashboard中启动了一个EC2实例。
+以上例子表明:它期望在AWS上创建一个EC2实例，因此使用terraform运行该脚本文件的最终结果是AWS EC2 Dashboard中启动了一个EC2实例,如下图所示：
 
-这个简单的例子解释了terraform运行过程中所涉及的步骤。企业里也是基于以上过程来使用terraform，但是区别在于:企业内部是由多人同时编写并执行terraform文件。这就引发另外一个问题：如何协调不同人员使用terraform所完成的工作成果以及如何避免文件冲突？解决这个问题最好办法是引入工程管理方面的经验。
+![](https://2cloudlab.com/images/blog/ec2-dashboard.png)
+
+这个简单的例子解释了terraform运行过程中所涉及的步骤。企业里也是基于以上过程来使用terraform，但是区别在于:企业内部是由多人同时编写并执行terraform文件。这就引发另外一个问题：如何协调不同人员使用terraform所完成的工作成果以及如何避免文件冲突？解决这个问题最好办法是引入软件工程管理方面的经验。
 
 ## 如何解决多人同时使用Terraform的问题
 
@@ -82,15 +84,15 @@ resource "aws_instance" "example" {
 
 如果一切顺利，那么软件所依赖的环境会顺利生成出来，但是现实世界中，有诸多不确定的因素导致无法顺利生成环境。这些因素大部分是人为的，因此需要一套工具和规则来杜绝人为因素所引发的问题。以下清单列举了多人同时使用terraform的最佳实践:
 
-1. 需要准备版本控制工具(git)和源码托管仓库(github)
+1. 需要准备版本控制工具(Git)和源码托管仓库(GitHub)
 2. 为每一名员工提供云服务商的账号，这些账号的权限随着员工角色的改变而改变
-3. 共享terraform状态
+3. 使用S3和DynamoDB服务存储与共享Terraform状态
 
-接下来解释企业为何需要具备以上经验。
+使用Git和GitHub是为了引入版本控制、Code Review等经验；为每名工程师配置独立的账号是为了工作过程不会影响到其他工程师；使用S3和DynamoDB可以为Terraform状态文件引入加密、版本和互斥等功能，Terraform状态文件可以被安全共享的同时保留以前的版本。
 
 ## 在企业中建立Devops团队以及Terraform规范
 
-**企业需要组建一支DevOps团队来打造CICD**。在企业内部，一般是由devops工程师来使用terraform工具，编写terraform脚本，除此之外devops工程师还需要使用其它工具比如Python、Go、Bash、Packer、Git、Docker、Kubernetes来配合。除了掌握这些工具之外，还需要具备工程学方面的经验和devops方面的经验。拥有这些经验和工具是打造一条**高效CICD流水线**的基本条件。**CICD**分为2个阶段：**持续集成（CI）和持续发布（CD）**，每个阶段都有相对应的任务清单，比如：CI阶段需要解决研发、版本控制、测试等问题，而CD阶段需要解决基础资源创建、部署、配置、监控、安全、规范、优化等问题。根据企业自身情况，每个任务都能细分出更多的小任务。
+**企业需要组建一支DevOps团队来打造CICD**。在企业内部，一般是由devops工程师来使用terraform工具，编写terraform脚本，除此之外devops工程师还需要使用其它工具比如Python、Go、Bash、Packer、Git、Docker、Kubernetes来配合。除了掌握这些工具之外，还需要具备软件工程方面的经验和devops方面的经验。拥有这些经验和工具是打造一条**高效CICD流水线**的基本条件。**CICD**分为2个阶段：**持续集成（CI）和持续发布（CD）**，每个阶段都有相对应的任务清单，比如：CI阶段需要解决研发、版本控制、测试等问题，而CD阶段需要解决基础资源创建、部署、配置、监控、安全、规范、优化等问题。根据企业自身情况，每个任务都能细分出更多的小任务。
 
 面对如此多的任务，企业需要组建一个DevOps团队来专门处理这些任务。团队成员由DevOps工程师组成，每位工程师处理不同的任务，有的处理CI部分，有的处理CD部分。DevOps经常需要服务于企业内部(比如根据法规部门的要求引入隐私条款，以便符合当地法律要求)、各部门以及企业外部的客户(比如对外界发布产品)。结合之前多人同时使用terraform的经验，devops工程师便可以通过git来贡献自己的成果，但是如何确保每一次输出的成果是高质量的，那就需要通过规范来约束。这些规范的建立一般是由经验丰富的系统管理员来负责，这个管理员其实就是管理devops团队的leader。接下让我们把注意力集中在如何建立规范，以便devops的输出成果能够方便地应用于各个团队。
 
@@ -113,7 +115,7 @@ resource "aws_instance" "example" {
 
 接下来让我们以一个具体的例子来展开以上规范。
 
-## 现实世界中DevOps团队一天的工作内容
+## 现实世界中DevOps团队的工作内容
 
 假设公司成立了一个DevOps团队，由三名成员组成，他们分别是：Tony（Team Leader），Jack（DevOps Engineer）和Jane（DevOps Engineer）。他们的工作任务是为公司搭建高效的CICD，以下是他们使用Terraform的规划。
 
@@ -164,11 +166,11 @@ Tony要确保以上实施细节都能够被大家理解，并且需要不断地�
 2. Jack负责web_cluser的研发
 3. Jane负责mysql_database的研发
 
-当任务分配到每位成员之后，Tony要做的是准备2个repository，分别为:live和package_aws_web_service，它们托管在github上目录结构按照以上方式排布。除此之外，live中的文件会调用package_aws_web_service中的模块，这种可复用的方式不仅适合内部团队，也适用于其它团队，比如测试和研发团队。
+当任务分配到每位成员之后，Tony要做的是准备2个repository，分别为:live和package_aws_web_service，它们托管在github上，目录结构按照以上方式排布。除此之外，[live](https://github.com/2cloudlab/live)中的文件会调用package_aws_web_service中的模块，这种可复用的方式不仅适合内部团队，也适用于其它团队，比如测试和研发团队。
 
 Jack
 
-Jack根据实施细节编写了模块`web_cluster`，结果如下：
+Jack根据实施细节编写了模块`web_cluster`([源码](https://github.com/2cloudlab/package_aws_web_service))，结果如下：
 
 ```terraform
 # main.tf
@@ -202,7 +204,7 @@ output "http_port" {
 
 Jane
 
-Jane根据实施细节编写了模块`mysql_database`，结果如下：
+Jane根据实施细节编写了模块`mysql_database`([源码](https://github.com/2cloudlab/package_aws_web_service))，结果如下：
 
 ```terraform
 # main.tf
