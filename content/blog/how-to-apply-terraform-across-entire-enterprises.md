@@ -170,13 +170,35 @@ Tony要确保以上实施细节都能够被大家理解，并且需要不断地�
 
 Jack
 
-Jack根据实施细节编写了模块`web_cluster`([源码](https://github.com/2cloudlab/package_aws_web_service))，结果如下：
+Jack根据实施细节编写了模块`web_cluster`([完整源码](https://github.com/2cloudlab/package_aws_web_service))，结果如下：
 
 ```terraform
 # main.tf
 
-terraform {
-    required_version = ">= 0.12, < 0.13"
+module "asg" {
+  source = "../../cluster/asg-rolling-deploy"
+
+  cluster_name  = "hello-world-${var.environment}"
+  ami           = var.ami
+  user_data     = data.template_file.user_data.rendered
+  instance_type = var.instance_type
+
+  min_size           = var.min_size
+  max_size           = var.max_size
+  enable_autoscaling = var.enable_autoscaling
+
+  subnet_ids        = local.subnet_ids
+  target_group_arns = [aws_lb_target_group.asg.arn]
+  health_check_type = "ELB"
+  
+  custom_tags = var.custom_tags
+}
+
+module "alb" {
+  source = "../../networking/alb"
+
+  alb_name   = "hello-world-${var.environment}"
+  subnet_ids = local.subnet_ids
 }
 ```
 
@@ -188,29 +210,62 @@ terraform {
 # You must provide a value for each of these parameters.
 # ---------------------------------------------------------------------------------------------------------------------
 
-variable "security_group_id" {
-  description = "The ID of the Security Group to which all the rules should be attached."
+variable "environment" {
+  description = "The name of the environment we're deploying to"
   type        = string
+}
+
+variable "min_size" {
+  description = "The minimum number of EC2 Instances in the ASG"
+  type        = number
+}
+
+variable "max_size" {
+  description = "The maximum number of EC2 Instances in the ASG"
+  type        = number
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# OPTIONAL PARAMETERS
+# These parameters have reasonable defaults.
+# ---------------------------------------------------------------------------------------------------------------------
+
+variable "ami" {
+  description = "The AMI to run in the cluster"
+  type        = string
+  default     = "ami-0c55b159cbfafe1f0"
 }
 ```
 
 ```terraform
 # outputs.tf
 
-output "http_port" {
-  value = var.http_port
+output "alb_dns_name" {
+  value       = module.alb.alb_dns_name
+  description = "The domain name of the load balancer"
 }
 ```
+
+jack编写了一个通用模块：`web_cluster`（为了阅读方便省去了细节部分），其他团队可以调用这一模块。这个模块的作用是生成Load Balance和一族EC2实例（如下图所示）。这个模块像一个函数一样有输入参数和输出参数。`variables.tf`文件中定义了该模块的输入参数，它们分别是：`environment`、`min_size`和`max_size`。`outputs.tf`文件中定义了该模块的输出参数：`alb_dns_name`。`main.tf`文件中定义了具体的逻辑部分：`alb`和`asg`。也就是说使用模块`web_cluster`之后，会生成一个域名地址，用户可以通过该域名地址，访问网站服务。
+
+![](https://2cloudlab.com/images/blog/only-web-cluster.png)
 
 Jane
 
-Jane根据实施细节编写了模块`mysql_database`([源码](https://github.com/2cloudlab/package_aws_web_service))，结果如下：
+Jane根据实施细节编写了模块`mysql_database`([完整源码](https://github.com/2cloudlab/package_aws_web_service))，结果如下：
 
 ```terraform
 # main.tf
 
-terraform {
-    required_version = ">= 0.12, < 0.13"
+resource "aws_db_instance" "example" {
+  identifier_prefix   = "terraform-up-and-running"
+  engine              = "mysql"
+  allocated_storage   = 10
+  instance_class      = "db.t2.micro"
+  name                = var.db_name
+  username            = var.db_username
+  password            = var.db_password
+  skip_final_snapshot = true
 }
 ```
 
@@ -222,8 +277,18 @@ terraform {
 # You must provide a value for each of these parameters.
 # ---------------------------------------------------------------------------------------------------------------------
 
-variable "security_group_id" {
-  description = "The ID of the Security Group to which all the rules should be attached."
+variable "db_name" {
+  description = "The name to use for the database"
+  type        = string
+}
+
+variable "db_username" {
+  description = "The username for the database"
+  type        = string
+}
+
+variable "db_password" {
+  description = "The password for the database"
   type        = string
 }
 ```
@@ -231,15 +296,25 @@ variable "security_group_id" {
 ```terraform
 # outputs.tf
 
-output "http_port" {
-  value = var.http_port
+output "address" {
+  value       = aws_db_instance.example.address
+  description = "Connect to the database at this endpoint"
+}
+
+output "port" {
+  value       = aws_db_instance.example.port
+  description = "The port the database is listening on"
 }
 ```
+
+像Jack一样，Jane编写了一个通用模块：`mysql_database`（为了阅读方便省去了细节部分），其他团队可以调用这一模块。Jane和Jack根据规范，编写了统一格式的模块。格式统一的模块能够减少团队之间的障碍，促进工作顺利进行下去。调用Jane编写的模块会生成一个由AWS完全托管的MySQL数据库服务（如下图所示）。DevOps中的团队成员各司其职，都输出了相对独立的模块，因此，需要Tony将Jane和Jack的成果集成在一起才能部署网站应用并对外发布。
+
+![](https://2cloudlab.com/images/blog/only-mysql-database.png)
 
 ## 总结
 
 Terraform主要解决了创建资源和管理资源的问题，随着云计算的普及，Terraform的优势更加明显！Terraform支持大多数云服务商，包括AWS、GCP、Azure Cloud和阿里云等，DevOps工程师只需要编写脚本文件并使用Terraform执行它们，就可以创建和管理基础资源，这些资源构成了产品或服务所需的运行环境。将资源代码化(也就是Infrastructure as code)的好处是可以引入软件工程管理实践经验来更好地发布软件。这些经验包括版本控制、自动化测试、模块复用、Code Review和编写文档等。为了帮助企业打造世界级CICD，除了需要熟练掌握Terraform知识以外，还需要结合软件工程实践经验。因此，企业需要专门成立一个DevOps团队来服务于企业内部不同团队以及对外发布产品。当引入一个团队的时候，就需要考虑多人协作和规范的问题。使用Terraform工具所生成的真实环境有各种各样的依赖关系，任何一次局部修改，都有可能导致整个运行环境瘫痪，因此要严格隔离不同环境，比如test、stage和prod环境。除此之外DevOps要定义一些规范，这些规范不仅能够使团队内部达成共识，而且能够更加有效地使外部团队消化DevOps的输出成果，最终使得DevOps运动能够在企业内部顺利运转起来。
 
-在企业中实施DevOps是一个漫长的过程，这个过程涉及到了多方面的内容。为了能够更好地在企业中实施DevOps，让我们从这篇文章:[<让产品7*24小时持续服务用户--如何测试Terraform>](https://2cloudlab.com/blog/how-to-test-terraform-code/)开始。
+在企业中实施DevOps是一个漫长的过程，这个过程涉及了多方面的内容。为了能够更好地在企业中实施DevOps，让我们从这篇文章:[<让产品7*24小时持续服务用户--如何测试Terraform>](https://2cloudlab.com/blog/how-to-test-terraform-code/)开始。
 
 ___[2cloudlab.com](https://2cloudlab.com/)为企业准备产品的运行环境，只需要1天！___
