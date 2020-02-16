@@ -1,7 +1,7 @@
 {{ define "main" }}
 
 <section class="global-page-header">
-    <div class="container">
+    <div class="container post-container">
         <div class="row">
             <div class="col-md-12">
                 <div class="block">
@@ -21,7 +21,7 @@
 
 <style type="text/css">
     @media (min-width: 1200px) {
-    .container{
+    .post-container{
         max-width: 800px;
     }
   }
@@ -34,7 +34,7 @@
 </style>
 
 <section class="single-post">
-    <div class="container">
+    <div class="container post-container">
         <div class="row">
             <div class="col-md-12">
                 {{ with .Params.image }}

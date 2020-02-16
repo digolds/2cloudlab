@@ -4,7 +4,7 @@ type: portfolio
 date: 2019-07-12T16:58:55+06:00
 description : "当使用AWS作为基础服务为分布式软件产品提供资源时，需要做的事情太多了。有时需要查看使用AWS服务的费用、有时需要在dev环境中测试研发的功能、有时需要在stage环境中模拟prod环境的运行情况、有时需要在prod环境中上线新功能。如果研发团队里有100人都能对AWS进行各种个样的操作，那么后果是非常混乱不堪的：比如，有些成员的操作导致prod环境奔溃了、有些成员完成测试时忘记销毁资源最终导致费用变高、甚至没有察觉外来攻击者使用了企业的AWS资源等。为了杜绝这些情况发生，企业在使用AWS服务之前，需要为研发团队构建一套有效的AWS账号体系。本文将围绕如何构建企业级AWS账号体系展开，最终提供一套可实施的方案。"
 caption: Conceptual Design
-image: images/portfolio/item-5.jpg
+image: images/portfolio/multi-aws-accounts.jpg
 category: ["AWS","云计算","Terraform","IAM"]
 liveLink: https://2cloudlab.com
 client: Julia Robertson
@@ -30,7 +30,8 @@ location: 1201 park street, Avenue, Dhaka
 构建有效的账户体系能够统一管理
 If you configure your AWS account structure correctly, you’ll be able to manage all user accounts in one place, making it easier to enforce password policies, multi-factor authentication, key rotation, and other security requirements. Using multiple AWS accounts also makes it easier to have fine-grained control over what permissions each developer gets in each environment.
 
-Auditing and reporting
+3. Auditing and reporting
+
 A properly configured AWS account structure will allow you to maintain an audit trail of all the changes happening in all your environments, check if you’re adhering to compliance requirements, and detect anomalies. Moreover, you’ll be able to have consolidated billing, with all the charges for all of your AWS accounts in one place, including cost breakdowns by account, service, tag, etc.
 
 ## 构建企业级AWS账号体系的基本思想
