@@ -3,13 +3,10 @@ title: "如何构建企业级AWS账号体系"
 type: portfolio
 date: 2019-07-12T16:58:55+06:00
 description : "当使用AWS作为基础服务为分布式软件产品提供资源时，需要做的事情太多了。有时需要查看使用AWS服务的费用、有时需要在dev环境中测试研发的功能、有时需要在stage环境中模拟prod环境的运行情况、有时需要在prod环境中上线新功能。如果研发团队里有100人都能对AWS进行各种个样的操作，那么后果是非常混乱不堪的：比如，有些成员的操作导致prod环境奔溃了、有些成员完成测试时忘记销毁资源最终导致费用变高、甚至没有察觉外来攻击者使用了企业的AWS资源等。为了杜绝这些情况发生，企业在使用AWS服务之前，需要为研发团队构建一套有效的AWS账号体系。本文将围绕如何构建企业级AWS账号体系展开，最终提供一套可实施的方案。"
-caption: Conceptual Design
+caption: 基础设施
 image: images/portfolio/multi-aws-accounts.png
 category: ["AWS","云计算","Terraform","IAM"]
 liveLink: https://2cloudlab.com
-client: Julia Robertson
-submitDate: November 20, 2017
-location: 1201 park street, Avenue, Dhaka
 ---
 
 当使用AWS作为基础服务为分布式软件产品提供资源时，需要做的事情太多了。有时需要查看使用AWS服务的费用、有时需要在dev环境中测试研发的功能、有时需要在stage环境中模拟prod环境的运行情况、有时需要在prod环境中上线新功能。如果研发团队里有100人都能对AWS进行各种个样的操作，那么后果是非常混乱不堪的：比如，有些成员的操作导致prod环境奔溃了、有些成员完成测试时忘记销毁资源最终导致费用变高、甚至没有察觉外来攻击者使用了企业的AWS资源等。为了杜绝这些情况发生，企业在使用AWS服务之前，需要为研发团队构建一套有效的AWS账号体系。本文将围绕如何构建企业级AWS账号体系展开，最终提供一套可实施的方案。
@@ -37,7 +34,9 @@ location: 1201 park street, Avenue, Dhaka
 
 ## 构建企业级AWS账号体系的基本思想
 
-构建AWS账号体系能够带来诸多好处，那么接下来为企业构建一个有效的AWS账号体系，如下图所示：
+构建AWS账号体系能够带来诸多好处，因此企业在研发初期就应该构建这种账号体系。构建一个有效的AWS账号体系的方案有很多，接下来本文将提出一个可实施并且简单的企业级AWS账号体系解决方案，其设计思路如下图所示：
+
+![](https://gruntwork.io/assets/img/guides/aws-account/aws-account-structure.png)
 
 上图的账号体系是一步一步构建的，让我们看看每一个过程中的具体内容。
 
