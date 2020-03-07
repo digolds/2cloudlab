@@ -99,7 +99,7 @@ resource "aws_instance" "example" {
 
 共享的方法有很多种，其中一种是利用AWS S3和DynamoDb服务来实现共享。这种方法的好处是容易实现而且方便加密。使用AWS服务来实现state文件共享的第一步是：在AWS上创建S3对象存储和DynamoDb Key-Value存储（它们的名称分别是：terraform-remote-state-storage-s3和terraform-state-lock-dynamo）。接下来只要在`.tf`文件中配置以下信息就能实现state文件共享。
 
-```
+```terraform
 # main.tf
 terraform {
  backend “s3” {
