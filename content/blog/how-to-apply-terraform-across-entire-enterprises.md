@@ -97,7 +97,22 @@ resource "aws_instance" "example" {
 
 运行Terraform之后，将会生成一个state文件，这个文件记录了现实世界云服务资源的最终状态。没有这个state文件，那么terraform将认为云服务资源没有创建出来。因此如果这个state文件生成在本地，那么将引发一个问题：2名DevOps工程师执行同一个`.tf`脚本。工程师A生成了云计算资源R，紧接着工程师B再次运行该脚本，Terraform提示工程师B资源R将被创建。这个问题引发的原因在于工程师B没法获取工程师A的state文件，从而导致Terraform误认为资源R没有被创建出来（实际已经被工程师A创建了）。因此需要通过将state文件共享才能解决这个问题。
 
-共享的方法有很多种，其中一种是利用AWS S3和DynamoDb服务来实现共享。这种方法的好处是容易实现而且方便加密。
+共享的方法有很多种，其中一种是利用AWS S3和DynamoDb服务来实现共享。这种方法的好处是容易实现而且方便加密。使用AWS服务来实现state文件共享的第一步是：在AWS上创建S3对象存储和DynamoDb Key-Value存储（它们的名称分别是：terraform-remote-state-storage-s3和terraform-state-lock-dynamo）。接下来只要在`.tf`文件中配置以下信息就能实现state文件共享。
+
+```
+# main.tf
+terraform {
+ backend “s3” {
+ encrypt = true
+ bucket = "terraform-remote-state-storage-s3"
+ dynamodb_table = "terraform-state-lock-dynamo"
+ region = us-west-2
+ key = path/to/state/file
+ }
+}
+```
+
+通过以上配置，每次运行`terraform apply`都会先执行加锁操作（作用到terraform-state-lock-dynamo）；接着生成state文件，并将其存储到指定的S3对象存储（由terraform-remote-state-storage-s3指定），S3自动对state文件加密；最后再执行解锁操作（作用到terraform-state-lock-dynamo）。解锁和加锁的作用在于保证存储state文件时只有一个人在操作。
 
 ## 在企业中建立Devops团队以及Terraform规范
 
