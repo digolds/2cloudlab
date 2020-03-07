@@ -13,6 +13,7 @@ liveLink: https://2cloudlab.com
 
 1. 为何构建企业级AWS账号体系
 2. 构建企业级AWS账号体系的基本思想
+3. 一天之内构建企业级AWS账号体系的操作指南
 
 ## 为何构建企业级AWS账号体系
 
@@ -38,9 +39,11 @@ liveLink: https://2cloudlab.com
 
 ![](https://gruntwork.io/assets/img/guides/aws-account/aws-account-structure.png)
 
-上图的账号体系是一步一步构建的，让我们看看每一个过程中的具体内容。
+上图的账号体系是分步构建的，每一步基本上围绕Users、Groups、Role以及Policy展开。这些组件（Users、Groups、Role以及Policy）是由AWS的IAM（Identity and Access Management）服务提供的，用户可以基于IAM服务来构建安全的用户访问机制。通过手动方式来创建企业级AWS账号体系无疑是具有挑战的，这种方式不仅容易出错，而且时间漫长，因此需要一种自动化的方式来解决这些挑战。2cloudlab所提供的**across_account_assistant**模块能够帮助企业快速且正确地构建企业级AWS账号体系。接下来让我们看看每一步所涉及的具体内容。
 
 1. 创建root账号，并用root用户登陆
+
+在开始使用AWS服务的时候，需要使用邮箱来注册一个账号，这个账号就是上图最上面的root账号。使用root账号登陆的用户就是root用户，这个用户能够做任何事情（包括删除用户、创建各种资源、创建子账号等等），因此root用户不能用于研发，并需要安全放置，只能被少部分人知道。创建root账号的作用主要有2方面：1.创建其它子账号，这些子账号里的Users能够创建和使用云资源；2.统一管理所有子账号使用云服务而产生的费用。因此这个账号只需要2组人员：一组是管理人员，他们负责创建和管理子账号；另外一组是财务人员，他们负责管理费用。在root账号下创建2组人员的方式有多种，推荐使用2cloudlab所提供的**across_account_assistant**模块来创建，原因在于企业能够正确且快速地创建这2组人员（最多需要一天）。
 
 在root账号下分2组：admin和billing，并分别为这2组创建不同的IAM User
 限制root用户的安全权限
@@ -71,3 +74,5 @@ Policy指定了Role可操作的资源
 5. 在security账号中，使用admin用户创建cloudtrail服务
 
 6. 在security账号中，a)使用admin用户，b)通过role获取子账号中的登陆凭证，c)提供MFA Token，最终拿到子账号的登陆凭证创建cloudtrail服务
+
+## 一天之内构建企业级AWS账号体系的操作指南
