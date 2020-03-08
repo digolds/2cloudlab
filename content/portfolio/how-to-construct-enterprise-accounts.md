@@ -43,10 +43,17 @@ liveLink: https://2cloudlab.com
 
 1. 创建root账号，并用root用户登陆
 
-在开始使用AWS服务的时候，需要使用邮箱来注册一个账号，这个账号就是上图最上面的root账号。使用root账号登陆的用户就是root用户，这个用户能够做任何事情（包括删除用户、创建各种资源、创建子账号等等），因此root用户不能用于研发，并需要安全放置，只能被少部分人知道。创建root账号的作用主要有2方面：1.创建其它子账号，这些子账号里的Users能够创建和使用云资源；2.统一管理所有子账号使用云服务而产生的费用。因此这个账号只需要2组人员：一组是管理人员，他们负责创建和管理子账号；另外一组是财务人员，他们负责管理费用。在root账号下创建2组人员的方式有多种，推荐使用2cloudlab所提供的**across_account_assistant**模块来创建，原因在于企业能够正确且快速地创建这2组人员（最多需要一天）。
+在开始使用AWS服务的时候，需要使用邮箱来注册一个账号，这个账号就是上图最上面的root账号。使用root账号登陆的用户就是root用户，这个用户能够做任何事情（包括删除用户、创建各种资源、创建子账号等等）。创建root账号的作用主要有以下2方面：
 
-* 在root账号下分2组：admin和billing，并分别为这2组创建不同的IAM User
-* 限制root用户的安全权限
+* 创建其它子账号，这些子账号里的Users能够创建和使用云资源；创建组以及每组成员（full_access和billing）
+* 统一管理所有子账号使用云服务而产生的费用。
+
+因此root用户需要创建2组人员：一组是管理人员（组名为full_access），他们负责创建和管理子账号；另外一组是财务人员(组名为billing)，他们负责管理费用。创建组的同时，需要指定哪些用户属于哪个组，这些操作步骤可以通过点击AWS的UI页面完成，但是这种手动方式容易出错而且十分耗时，因此推荐使用2cloudlab所提供的[across_account_assistant]()模块来创建（最多需要一天就能建立完整的企业级AWS账号体系）。为了使billing组的用户能够访问账单相关的页面，需要root用户主动启动IAM访问账单的设置，具体设置如下（点击用户名，选择"My Account"，滑动到以下内容，将“Activate IAM Access”勾选并点击“Update”）：
+
+![](https://2cloudlab.com/images/blog/iam-user-access-to-billing.png)
+
+在创建组full_access和billing以及对应的成员之后，需要降低入侵root账号的风险。具体的操作方式为：为root用户开启MFA验证，其不能用于研发并需要安全放置，只允许少部分人知道，删除所有root用户相关的命令行方式登陆凭证，定期更换密码。从此之后退出root账号，转而用full_access的成员登陆并用于后续操作。
+
 限制每个IAM User的安全权限
 使用admin组中的用户开启cloud trail服务
 使用admin组中的用户创建organization服务，并创建security、dev、stage、prod和shared-service等子账号
