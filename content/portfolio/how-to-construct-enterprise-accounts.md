@@ -62,26 +62,27 @@ liveLink: https://2cloudlab.com
 
 在security账号下，主要创建管理组(full_access)和其它组（across_account_dev_*、across_account_stage_*等）。管理组的主要作用在于管理security账号，只允许一部分人加入这个组；其它组的作用在于允许其成员访问其它子账号(比如dev、stage和prod)。企业应该根据实际情况来建立其它组，常见的划分依据有根据职能来划分。比如：across_account_dev_developers_access、across_account_dev_testers_access的组成员能够分别以研发和测试权限访问dev子账号。所有用户都会创建在security账号中，这种方式统一了用户管理。其它子账号则只需要建立对应的role就能够被security账号下有权限的用户访问。
 
-建立其它组的时候需要用到其它子账号（dev、statge和prod）的role arn，因此需要在其它子账号中创建对应的role，并将role arn提供给其它组。接下来是stage账号的构建。
+security账号下的所有用户都不会在该账号下创建资源，反而会通过其它子账号中role来在其它子账号（dev、stage、prod）创建资源。建立其它组的时候需要用到其它子账号（dev、statge和prod）的role arn，因此需要在其它子账号中创建对应的role，并将role arn提供给其它组。接下来是stage账号的构建。
 
 3. 以root用户的方式登陆stage账号
 
-只允许创建Role，不允许创建分组和用户，创建的Role需要和上述第二步所用到的Role对应起来
-为创建的Role添加Trusted Entity和Policy
-Trusted Entity是security账号，通过12位的ID来识别
-Policy指定了Role可操作的资源
+stage账号中不存在用户，只有role，这些role根据角色来确定权限（比如：可以为研发人员创建这个role：allow_dev_access_from_other_account，该role允许来自其它账号的用户在stage账号中创建一小部分资源）。其它子账号（dev和prod）也只能创建role，并通过role授权给其它账号（比如security）的用户。因此，构建dev和prod账号的过程与构建stage账号的具体过程是一致的。其中要注意的是，dev、stage、prod这些子账号是不允许创建分组和用户的。在stage子账号中创建role的过程主要分以下3步：
 
-重复为dev、prod、shared-service等账号执行步骤3
+* 为role选择一个名字，并创建role
+* 为该role指定trusted policy，该policy的作用是指定能够使用该role的其它账号（比如security账号，通过12位的ID来识别）
+* 为该role指定permission policy，该policy的作用是限制这个role能够在stage账号中使用哪类资源以及对其所执行的操作
 
-4. 限制所有子账号中root用户的安全权限
+为了在其它子账号中使用stage子账号中创建的role，则需要在其它账号中授予用户权限（比如在security子账号中为across_account_dev_developers_access赋予访问allow_dev_access_from_other_account的权限，这一步通过为across_account_dev_developers_access指定inline policy完成）。
+
+在stage账号中创建其它role的过程类似，为了一次性完成stage账号中所有role的创建，推荐使用2cloudlab所提供的[across_account_assistant]()模块来辅助。dev、prod、shared-service等账号也需要按照类似的方式创建对应的role。
+
+当完成对所有子账号的构建之后，需要将root用户的登陆方式限制，只允许其通过网站的方式登陆子账号，并且将所有命令行登陆的凭证删除。
+
+4. 在security账号中，使用admin用户创建cloudtrail服务
 
 敬请期待
 
-5. 在security账号中，使用admin用户创建cloudtrail服务
-
-敬请期待
-
-6. 在security账号中，a)使用admin用户，b)通过role获取子账号中的登陆凭证，c)提供MFA Token，最终拿到子账号的登陆凭证创建cloudtrail服务
+5. 在security账号中，a)使用admin用户，b)通过role获取子账号中的登陆凭证，c)提供MFA Token，最终拿到子账号的登陆凭证创建cloudtrail服务
 
 敬请期待
 
