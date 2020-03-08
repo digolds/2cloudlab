@@ -39,7 +39,7 @@ liveLink: https://2cloudlab.com
 
 ![](https://2cloudlab.com/images/blog/aws-account-structure.png)
 
-上图的账号体系是分步构建的，每一步基本上围绕Users、Groups、Role以及Policy展开。这些组件（Users、Groups、Role以及Policy）是由AWS的IAM（Identity and Access Management）服务提供的，用户可以基于IAM服务来构建安全的用户访问机制。通过手动方式来创建企业级AWS账号体系无疑是具有挑战的，这种方式不仅容易出错，而且时间漫长，因此需要一种自动化的方式来解决这些挑战。2cloudlab所提供的**across_account_assistant**模块能够帮助企业快速且正确地构建企业级AWS账号体系。接下来让我们看看每一步所涉及的具体内容。
+上图的账号体系是分步构建的，每一步基本上围绕Users、Groups、Role以及Policy展开。这些组件（Users、Groups、Role以及Policy）是由AWS的IAM（Identity and Access Management）服务提供的，用户可以基于IAM服务来构建安全的用户访问机制。通过手动方式来创建企业级AWS账号体系无疑是具有挑战的，这种方式不仅容易出错，而且时间漫长，因此需要一种自动化的方式来解决这些挑战。2cloudlab所提供的[across_account_assistant](https://github.com/2cloudlab/module_security/tree/master/modules/iam_across_account_assistant)模块能够帮助企业快速且正确地构建企业级AWS账号体系。接下来让我们看看每一步所涉及的具体内容。
 
 1. 创建root账号，并用root用户登陆
 
@@ -48,7 +48,7 @@ liveLink: https://2cloudlab.com
 * 创建其它子账号，这些子账号里的Users能够创建和使用云资源；创建组以及每组成员（full_access和billing）
 * 统一管理所有子账号使用云服务而产生的费用。
 
-因此root用户需要创建2组人员：一组是管理人员（组名为full_access），他们负责创建和管理子账号；另外一组是财务人员(组名为billing)，他们负责管理费用。创建组的同时，需要指定哪些用户属于哪个组，这些操作步骤可以通过点击AWS的UI页面完成，但是这种手动方式容易出错而且十分耗时，因此推荐使用2cloudlab所提供的[across_account_assistant]()模块来创建（最多需要一天就能建立完整的企业级AWS账号体系）。为了使billing组的用户能够访问账单相关的页面，需要root用户主动启动IAM访问账单的设置，具体设置如下（点击用户名，选择"My Account"，滑动到以下内容，将“Activate IAM Access”勾选并点击“Update”）：
+因此root用户需要创建2组人员：一组是管理人员（组名为full_access），他们负责创建和管理子账号；另外一组是财务人员(组名为billing)，他们负责管理费用。创建组的同时，需要指定哪些用户属于哪个组，这些操作步骤可以通过点击AWS的UI页面完成，但是这种手动方式容易出错而且十分耗时，因此推荐使用2cloudlab所提供的[across_account_assistant](https://github.com/2cloudlab/module_security/tree/master/modules/iam_across_account_assistant)模块来创建（最多需要一天就能建立完整的企业级AWS账号体系）。为了使billing组的用户能够访问账单相关的页面，需要root用户主动启动IAM访问账单的设置，具体设置如下（点击用户名，选择"My Account"，滑动到以下内容，将“Activate IAM Access”勾选并点击“Update”）：
 
 ![](https://2cloudlab.com/images/blog/iam-user-access-to-billing.png)
 
@@ -74,7 +74,7 @@ stage账号中不存在用户，只有role，这些role根据角色来确定权�
 
 为了在其它子账号中使用stage子账号中创建的role，则需要在其它账号中授予用户权限（比如在security子账号中为across_account_dev_developers_access赋予访问allow_dev_access_from_other_account的权限，这一步通过为across_account_dev_developers_access指定inline policy完成）。
 
-在stage账号中创建其它role的过程类似，为了一次性完成stage账号中所有role的创建，推荐使用2cloudlab所提供的[across_account_assistant]()模块来辅助。dev、prod、shared-service等账号也需要按照类似的方式创建对应的role。
+在stage账号中创建其它role的过程类似，为了一次性完成stage账号中所有role的创建，推荐使用2cloudlab所提供的[across_account_assistant](https://github.com/2cloudlab/module_security/tree/master/modules/iam_across_account_assistant)模块来辅助。dev、prod、shared-service等账号也需要按照类似的方式创建对应的role。
 
 当完成对所有子账号的构建之后，需要将root用户的登陆方式限制，只允许其通过网站的方式登陆子账号，并且将所有命令行登陆的凭证删除。
 
