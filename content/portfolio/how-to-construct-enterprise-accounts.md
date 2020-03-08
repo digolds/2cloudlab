@@ -56,13 +56,13 @@ liveLink: https://2cloudlab.com
 
 使用full_access的成员登陆AWS之后，首先要做的事情是：创建cloud trail服务（推荐使用2cloudlab所提供的模块来创建），该服务是为了跟踪所有用户使用资源的情况，以便出问题的时候可以根据这些跟踪的信息定位问题发生的原因。其次需要创建organization服务，并使用organization服务创建security、dev、stage、prod和shared-service子账号。每一个子账号都有对应的邮箱，这个邮箱所对应的用户就是该子账号下的root用户。为了登陆这些子账号，需要重制每个子账号下root用户的密码。重制完成之后，需要登陆到各个子账号完成后续的构建。
 
-注：root账号和root用户是不同的概念。每个账号下可以有多个用户，包括root用户，具有相同权限的用户可以分在同一组。企业只有以恶搞root账号，而且不同企业需要根据自己的实际情况创建对应的子账号，以上给出的例子适用于大多数中小型企业。对于大型企业，则需要考虑在organization服务下创建Unit，每一个Unit对应一个事业部，需要重复创建以上子账号。
+注：root账号和root用户是不同的概念。每个账号下可以有多个用户，包括root用户，具有相同权限的用户可以分在同一组。企业只有一个root账号，而且不同企业需要根据自己的实际情况创建对应的子账号，以上给出的例子适用于大多数中小型企业。对于大型企业，则需要考虑在organization服务下创建Unit，每一个Unit对应一个事业部，需要重复创建以上子账号。
 
 2. 以root用户的方式登陆security账号
 
-根据公司的研发团队的情况创建分组：管理组（full-access）和其它组（_account.dev-*、_account.stage-*等）
-管理组具有管理security账号的权限，其它组的成员通过Role访问其它账号（dev、stage、prod、shared-service等）的资源
-为每组分配对应的用户
+在security账号下，主要创建管理组(full_access)和其它组（across_account_dev_*、across_account_stage_*等）。管理组的主要作用在于管理security账号，只允许一部分人加入这个组；其它组的作用在于允许其成员访问其它子账号(比如dev、stage和prod)。企业应该根据实际情况来建立其它组，常见的划分依据有根据职能来划分。比如：across_account_dev_developers_access、across_account_dev_testers_access的组成员能够分别以研发和测试权限访问dev子账号。所有用户都会创建在security账号中，这种方式统一了用户管理。其它子账号则只需要建立对应的role就能够被security账号下有权限的用户访问。
+
+建立其它组的时候需要用到其它子账号（dev、statge和prod）的role arn，因此需要在其它子账号中创建对应的role，并将role arn提供给其它组。接下来是stage账号的构建。
 
 3. 以root用户的方式登陆stage账号
 
