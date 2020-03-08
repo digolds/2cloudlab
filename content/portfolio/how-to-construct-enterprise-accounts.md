@@ -45,8 +45,8 @@ liveLink: https://2cloudlab.com
 
 在开始使用AWS服务的时候，需要使用邮箱来注册一个账号，这个账号就是上图最上面的root账号。使用root账号登陆的用户就是root用户，这个用户能够做任何事情（包括删除用户、创建各种资源、创建子账号等等），因此root用户不能用于研发，并需要安全放置，只能被少部分人知道。创建root账号的作用主要有2方面：1.创建其它子账号，这些子账号里的Users能够创建和使用云资源；2.统一管理所有子账号使用云服务而产生的费用。因此这个账号只需要2组人员：一组是管理人员，他们负责创建和管理子账号；另外一组是财务人员，他们负责管理费用。在root账号下创建2组人员的方式有多种，推荐使用2cloudlab所提供的**across_account_assistant**模块来创建，原因在于企业能够正确且快速地创建这2组人员（最多需要一天）。
 
-在root账号下分2组：admin和billing，并分别为这2组创建不同的IAM User
-限制root用户的安全权限
+* 在root账号下分2组：admin和billing，并分别为这2组创建不同的IAM User
+* 限制root用户的安全权限
 限制每个IAM User的安全权限
 使用admin组中的用户开启cloud trail服务
 使用admin组中的用户创建organization服务，并创建security、dev、stage、prod和shared-service等子账号
