@@ -54,12 +54,9 @@ liveLink: https://2cloudlab.com
 
 在创建组full_access和billing以及对应的成员之后，需要降低入侵root账号的风险。具体的操作方式为：为root用户开启MFA验证，其不能用于研发并需要安全放置，只允许少部分人知道，删除所有root用户相关的命令行方式登陆凭证，定期更换密码。从此之后退出root账号，转而用full_access的成员登陆并用于后续操作。
 
-限制每个IAM User的安全权限
-使用admin组中的用户开启cloud trail服务
-使用admin组中的用户创建organization服务，并创建security、dev、stage、prod和shared-service等子账号
-将每个子账号中的root用户的密码重制
+使用full_access的成员登陆AWS之后，首先要做的事情是：创建cloud trail服务（推荐使用2cloudlab所提供的模块来创建），该服务是为了跟踪所有用户使用资源的情况，以便出问题的时候可以根据这些跟踪的信息定位问题发生的原因。其次需要创建organization服务，并使用organization服务创建security、dev、stage、prod和shared-service子账号。每一个子账号都有对应的邮箱，这个邮箱所对应的用户就是该子账号下的root用户。为了登陆这些子账号，需要重制每个子账号下root用户的密码。重制完成之后，需要登陆到各个子账号完成后续的构建。
 
-注：root账号和root用户是不同的概念。每个账号下可以有多个用户，包括root用户，具有相同权限的用户可以分在同一组。
+注：root账号和root用户是不同的概念。每个账号下可以有多个用户，包括root用户，具有相同权限的用户可以分在同一组。企业只有以恶搞root账号，而且不同企业需要根据自己的实际情况创建对应的子账号，以上给出的例子适用于大多数中小型企业。对于大型企业，则需要考虑在organization服务下创建Unit，每一个Unit对应一个事业部，需要重复创建以上子账号。
 
 2. 以root用户的方式登陆security账号
 
@@ -78,8 +75,14 @@ Policy指定了Role可操作的资源
 
 4. 限制所有子账号中root用户的安全权限
 
+敬请期待
+
 5. 在security账号中，使用admin用户创建cloudtrail服务
 
+敬请期待
+
 6. 在security账号中，a)使用admin用户，b)通过role获取子账号中的登陆凭证，c)提供MFA Token，最终拿到子账号的登陆凭证创建cloudtrail服务
+
+敬请期待
 
 ## 一天之内构建企业级AWS账号体系的操作指南
