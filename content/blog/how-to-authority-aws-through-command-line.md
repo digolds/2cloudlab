@@ -55,7 +55,7 @@ aws-vault exec slz -- aws iam list-users
 ```terraform
 aws-vault exec slz -- terraform apply
 ```
-## aws-vault工具的使用例子
+## aws-vault工具的使用指南
 
 完成以上配置之后，接下来看看`aws-vault`工具如何结合`terraform`工具使用的。
 
@@ -65,21 +65,26 @@ aws-vault exec slz -- terraform apply
 * slz_mfa：除了需要登录凭证，还需要输入6位安全码才能操作AWS服务
 * slz_mfa_role：获取临时登录凭证，并以role的方式访问AWS服务
 
-以下命令说明了如何使用`aws-vault`工具和`terraform plan`命令生成资源创建的详细信息
+以下命令说明了如何使用`aws-vault`工具和`terraform plan`命令生成资源创建的详细信息:
+
+
+1. 以下命令直接通过登录凭证使terraform能够访问AWS服务
 
 ```terraform
 aws-vault exec slz -- terraform plan
 ```
 
+2. 以下命令与第一种类似，但是在执行访问AWS服务之前需要输入6位安全码
+
 ```terraform
 aws-vault exec slz_mfa -- terraform plan
 ```
 
+3. 以下命令的登录凭证是临时生成的，所拥有的权限由role来确定，这个role有可能是其它账号的。
+
 ```terraform
 aws-vault exec slz_mfa_role -- terraform plan
 ```
-
-第一种命令直接通过登录凭证使terraform能够访问AWS服务；第二种命令以第一种类似，但是在执行访问AWS服务之前需要输入6位安全码；第三种的登录凭证使临时生成的，所拥有的权限由role来确定，这个role有可能是其它账号的。
 
 通过以上命令，研发人员可以快速切换登录场景，并且只需要一行命令就能操作AWS服务。因此对于拥有上百人的研发团队而言，这种便捷能够以100x的系数来提高团队的工作效率！
 
