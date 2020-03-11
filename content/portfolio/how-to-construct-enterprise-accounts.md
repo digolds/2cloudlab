@@ -78,12 +78,30 @@ stage账号中不存在用户，只有role，这些role根据角色来确定权�
 
 当完成对所有子账号的构建之后，需要将root用户的登陆方式限制，只允许其通过网站的方式登陆子账号，并且将所有命令行登陆的凭证删除。
 
-4. 在security账号中，使用admin用户创建cloudtrail服务
+4. 在root账号中创建CloudTrail服务
 
-敬请期待
+到目前为止，你已经在root、security、dev、stage、prod、shared-service和test账号中创建了对应的IAM user、IAM group、IAM role和IAM policy。研发人员便可以使用自己的账号登陆AWS服务，并根据自己拥有的权限创建对应的资源。为了能记录每一位用户使用AWS服务的情况，则需要创建CloudTrail服务。该服务可以记录每一名用户使用AWS服务的踪迹，并将这些信息归档到AWS的S3服务。开启cloudtrail的好处是：可以及时通过归档的记录来调查外来入侵者的踪迹，从而修复安全漏洞。
 
-5. 在security账号中，a)使用admin用户，b)通过role获取子账号中的登陆凭证，c)提供MFA Token，最终拿到子账号的登陆凭证创建cloudtrail服务
+5. 在security账号中创建CloudTrail服务
+
+
+
+6. 在security账号中，a)使用admin用户，b)通过role获取子账号中的登陆凭证，c)提供MFA Token，最终拿到子账号的登陆凭证创建cloudtrail服务
 
 敬请期待
 
 ## 一天之内构建企业级AWS账号体系的操作指南
+
+在介绍了构建企业级AWS账号体系思路之后，下一步是借助2cloudlab提供的模块来实现以上想法（[这篇文章](https://2cloudlab.com/blog/how-to-use-2cloudlab-services/)讲述了如何使用2cloudlab所提供的模块）。由于不同公司有不同的工作职能以及不一样的团队构成，因此在根据以下步骤构建企业级AWS账号体系的过程中需要结合企业的实际情况来进行微调。
+
+* 构建root账号
+
+1. 设置root用户的登陆凭证，使用2cloudlab提供的[across_account_assistant](https://github.com/2cloudlab/module_security/tree/master/modules/iam_across_account_assistant)来创建full_access和billing组，以及在这两组中添加成员
+2. 删除root用户的命令行登陆凭证，只允许root用户通过浏览器方式登陆。为root用户启动MFA
+3. 换成full_access组成员的登陆凭证，并使用2cloudlab提供的[cloudtrail]()模块来创建CloudTrail服务和S3服务
+4. 换成full_access组成员的登陆凭证，并使用2cloudlab提供的[organizations]()模块来创建子账号
+5. 重制所有子账号下root用户的密码
+
+* 构建security账号
+
+1. 
