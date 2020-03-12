@@ -40,7 +40,57 @@ tags: ["2cloudlab.com", "devops"]
 2cloudlab基于Terraform编写了可复用的模块，这些模块主要托管在github上。每个模块的格式如下所示：
 
 ```terraform
-#
+.
+|____examples
+| |____cloudtrail
+| | |____main.tf
+| | |____outputs.tf
+| | |____README.md
+| | |____variables.tf
+| |____iam_groups
+| | |____main.tf
+| | |____outputs.tf
+| | |____README.md
+| | |____variables.tf
+| |____iam_policies
+| | |____main.tf
+| | |____outputs.tf
+| | |____README.md
+| | |____variables.tf
+|____modules
+| |____cloudtrail
+| | |____main.tf
+| | |____outputs.tf
+| | |____README.md
+| | |____variables.tf
+| |____iam_across_account_assistant
+| | |____main.tf
+| | |____outputs.tf
+| | |____README.md
+| | |____variables.tf
+| |____iam_groups
+| | |____main.tf
+| | |____outputs.tf
+| | |____README.md
+| | |____variables.tf
+| |____iam_policies
+| | |____aws_managed_policies.tf
+| | |____custom_managed_policies.tf
+| | |____main.tf
+| | |____mfa_base_policies.tf
+| | |____outputs.tf
+| | |____README.md
+| | |____variables.tf
+| |____iam_roles
+| | |____main.tf
+| | |____outputs.tf
+| | |____README.md
+| | |____variables.tf
+|____README.md
+|____test
+| |____dep-install.sh
+| |____README.md
+| |____web-cluseter_test.go
 ```
 
 
