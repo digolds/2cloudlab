@@ -93,10 +93,17 @@ tags: ["2cloudlab.com", "devops"]
 | |____web-cluseter_test.go
 ```
 
-
 * modules目录下包含了子功能，用户将引用这个目录下的子功能来完成环境的搭建
 * examples目录下包含了如何使用modules目录下子功能的例子以及对应的说明文档
 * test目录主要测试了modules目录下的子功能
 * README.md文件则是一些说明文档，用户需要参考这些说明文档来使用对应的模块功能
 
-用户在使用2cloudlab所提供的模块时，需要参考的内容有modules目录、examples目录和README.md文件。
+用户在使用2cloudlab所提供的模块时，需要参考modules目录和examples目录下的内容以及对应的README.md文件。接下来的内容将围绕一个具体的示例展开。这个示例将围绕以下几个方面展开：
+
+* 在github上创建2个repository，名称分别是infrastructure_modules和infrastructure_live
+* 在infrastructure_modules中引用并组合2cloudlab所提供的模块，并打上版本
+* infrastructure_live中的内容对应真实世界的环境，需要结合Terragrunt工具来生成
+
+在使用2cloudlab所提供的Terraform模块时，需要在github上注册一个账号，并且需要将注册好的用户名提供给2cloudlab。2cloudlab会授权给这个用户访问Terraform模块。接着用户需要在github上创建2个repository，名称分别是infrastructure_modules和infrastructure_live。
+
+**infrastructure_modules**对2cloudlab所提供的Terraform模块进行了封装。封装的好处是infrastructure_live能够复用infrastructure_modules组合好的模块。除此之外还可以为infrastructure_modules打上版本号，infrastructure_live可以自由切换不同版本。infrastructure_modules
