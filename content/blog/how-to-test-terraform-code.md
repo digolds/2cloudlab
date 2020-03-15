@@ -26,7 +26,42 @@ tags: ["2cloudlab.com", "云计算", "devops", "terraform", "自动化测试"]
 
 ## 2cloudlab模块的自动化测试
 
-2cloudlab的模块都会包含一些自动化测试用例。这些自动化测试用例全部放在一个叫`test`的目录下，每一个自动化测试用例是测试不同的场景。由于这些自动化测试用例都是用`Go`语言来编写的，因此需要使用`Go`语言的运行时环境来运行。除此之外，为了能够高效地编写自动化测试用例，需要引入第三方工具[Terratest](https://github.com/gruntwork-io/terratest)，该工具像一把瑞士军刀，提供了大量通用的操作基础设施的功能。
+2cloudlab的模块都会包含一些自动化测试用例。每一个Terraform模块都会有对应的测试用例，这些测试用例会放在一个`test`目录下（目录结构如下所示），每一个测试用例所验证的场景是不同的。由于这些自动化测试用例都是用`Go`语言来编写的，因此需要使用`Go`语言的运行时环境来运行。除此之外，为了能够高效地编写自动化测试用例，需要引入第三方工具[Terratest](https://github.com/gruntwork-io/terratest)，该工具像一把瑞士军刀，提供了大量通用的基础操作。
+
+```terraform
+.
+|____examples
+| |____iam_across_account_assistant
+| | |____main.tf
+| | |____outputs.tf
+| | |____README.md
+| | |____terraform.tfstate
+| | |____terraform.tfstate.backup
+| | |____variables.tf
+|____modules
+| |____iam_across_account_assistant
+| | |____main.tf
+| | |____outputs.tf
+| | |____README.md
+| | |____variables.tf
+|____test
+| |____dep-install.sh
+| |____iam_across_account_assistant_test.go
+| |____README.md
+```
+
+其中`test`目录下的测试用例`iam_across_account_assistant_test.go`会调用`examples`下的手动测试例子来验证目录`modules`下的Terraform模块`iam_across_account_assistant`。
+
+2cloudlab编写通过以上方式了大量的单元测试以及少量的集成测试。这些测试是遵守了以下原则来编写的:
+
+1. 每一个测试用例都会基于真实环境来执行
+2. 每一个测试用例执行结束后都会销毁已创建的资源
+3. 为每一个资源指定一个独立的命名空间，以免发生名称冲突
+4. 每一个测试用例都会在独立的临时目录下下运行
+5. 为每一个集成测试添加可配置stage步骤
+6. 测试用例之间是相互独立且可并发执行
+
+在编写测试用例之前，有一步关键的验证：静态检测。为Terraform模块实施静态检测只需要花费几分钟，但是确能够避免一些常见的错误，接下来让我们从静态检测开始来一步一步提高产品运行环境的稳定性！
 
 ## 静态检测Terraform的编码
 
@@ -38,7 +73,13 @@ Terraform自身提供了实施静态检测的命令：`terraform validate`。这
 
 ## 针对Terraform模块编写单元测试（Unit Test）
 
-编写单元测试的主要作用是：验证独立模块的可靠性。2cloudlab使用Terraform编写了大量的独立模块，这些模块相互独立，部署每一个模块所需的时间大约在1～5分钟。
+编写单元测试的主要作用是：验证独立模块的可靠性。2cloudlab使用Terraform编写了大量的独立模块，这些模块相互独立，部署每一个模块所需的时间大约在1～5分钟。编写大量小而独立的模块有许多好处。首先，可以组合这些模块来完成复杂的部署;其次，独立的模块可以由不同的团队成员同步研发;最后，独立的模块方便测试。小而独立的模块为测试带来以下好处:
+
+* 可并发执行单元测试用例
+* 执行所有单元测试所需的时间变得更短
+* 可以执行部分单元测试
+
+这些好处能够缩短单元测试运行的时间，使得团队能够及时得到测试报告，进而根据测试报告修复检测到的缺陷。
 
 ## 针对Terraform模块编写集成测试（Integration Test）
 
