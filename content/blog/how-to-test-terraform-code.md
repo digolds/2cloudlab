@@ -52,7 +52,7 @@ tags: ["2cloudlab.com", "云计算", "devops", "terraform", "自动化测试"]
 
 其中`test`目录下的测试用例`iam_across_account_assistant_test.go`会调用`examples`下的手动测试例子来验证目录`modules`下的Terraform模块`iam_across_account_assistant`。
 
-2cloudlab编写通过以上方式了大量的单元测试以及少量的集成测试。这些测试是遵守了以下原则来编写的:
+2cloudlab根据以上目录结构编写了大量的单元测试以及少量的集成测试。这些测试是遵守了以下原则来编写的:
 
 1. 每一个测试用例都会基于真实环境来执行
 2. 每一个测试用例执行结束后都会销毁已创建的资源
@@ -67,7 +67,17 @@ tags: ["2cloudlab.com", "云计算", "devops", "terraform", "自动化测试"]
 
 静态检测的主要作用在于分析Terraform模块是否遵守了Terraform的语法规则。为Terraform实施静态检测是非常有必要的，这种检测能够捕获常见的错误（比如`{}`没有成对出现，拼写错误）。实施静态检测只需要花费几分钟就能做到，因此在提高Terraform模块的质量的过程中，企业应该将静态检测实施起来。
 
-Terraform自身提供了实施静态检测的命令：`terraform validate`。这个命令会在验证当前目录下所有后缀为`.tf`的文件，如果某些文件包含了一些编码错误，那么这些错误会被Terraform暴露出来。除了Terraform自身提供的检测机制，还有一些工具（[tflint](https://github.com/terraform-linters/tflint)和[HashiCorp Sentinel](https://www.hashicorp.com/sentinel/)）也能提供静态检测的功能。
+Terraform自身提供了实施静态检测的命令：`terraform validate`。这个命令会在验证当前目录下所有后缀为`.tf`的文件，如果某些文件包含了一些编码错误，那么这些错误会被Terraform暴露出来。比如当`{}`没有成对出现的时，执行命令`terraform validate`会曝出以下提示：
+
+```terraform
+Error: Argument or block definition required
+
+  on main.tf line 18, in module "iam_across_account_assistant":
+
+An argument or block definition is required here.
+```
+
+除了Terraform自身提供的检测机制，还有一些工具（[tflint](https://github.com/terraform-linters/tflint)和[HashiCorp Sentinel](https://www.hashicorp.com/sentinel/)）也能提供静态检测的功能。
 
 静态检测虽然能够捕获语法上的错误，但是它无法捕获运行时环境上的错误。运行时环境是现实世界中真实的环境，这些环境中的资源都是动态运行的。语法上的错误是比较容易发现并解决的，而运行时环境中的错误是难以察觉且不好解决，因此需要编写Unit Test、Integration Test和End-to-End Test来捕捉运行时环境中的缺陷。如果你已经花了几分钟实施静态检测，那么下一步就需要考虑如何实施单元测试。
 
