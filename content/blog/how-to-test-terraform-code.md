@@ -45,7 +45,6 @@ tags: ["2cloudlab.com", "云计算", "devops", "terraform", "自动化测试"]
 | | |____README.md
 | | |____variables.tf
 |____test
-| |____dep-install.sh
 | |____iam_across_account_assistant_test.go
 | |____README.md
 ```
@@ -89,7 +88,83 @@ An argument or block definition is required here.
 * 执行所有单元测试所需的时间变得更短
 * 可以执行部分单元测试
 
-这些好处能够缩短单元测试运行的时间，使得团队能够及时得到测试报告，进而根据测试报告修复检测到的缺陷。
+这些好处能够缩短单元测试运行的时间，使得团队能够及时得到测试报告，进而根据测试报告修复检测到的缺陷。以下例子是使用Go所编写的单元测试：
+
+```go
+package test
+
+import (
+	"fmt"
+	"path/filepath"
+	"testing"
+
+	"github.com/gruntwork-io/terratest/modules/random"
+	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/gruntwork-io/terratest/modules/test-structure"
+	"github.com/gruntwork-io/terratest/modules/aws"
+	"github.com/aws/aws-sdk-go/service/iam"
+
+	"github.com/stretchr/testify/assert"
+)
+
+//Create full_access group with admin permissions and config with MFA option
+func TestIntegrationIAM2Groups(t *testing.T) {
+	//Make this test case parallel which means it will not block other test cases
+	t.Parallel()
+	//Copy folder "../" to a tmp folder and return the tmp path of "examples"
+	examplesFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples")
+	iam_across_account_assistantFolder := filepath.Join(examplesFolder, "iam_across_account_assistant")
+
+	//Create terraform options which is passed to terraform module
+	expected_group_name := "full_access"
+	expected_user_name := fmt.Sprintf("username-%s", random.UniqueId())
+	user_groups := []map[string]interface{}{
+		{
+			"group_name": expected_group_name,
+			"user_profiles": []map[string]interface{}{
+				{
+					//Use random.UniqueId() to make input value uniqued!
+					"pgp_key":   "keybase:freshairfreshliv",
+					"user_name": expected_user_name,
+				},
+			},
+		},
+	}
+	terraformOptions := &terraform.Options{
+		TerraformDir: iam_across_account_assistantFolder,
+		Vars: map[string]interface{}{
+			"should_require_mfa": true,
+			"user_groups":        user_groups,
+		},
+	}
+
+	//Something like finally in try...catch
+	defer terraform.Destroy(t, terraformOptions)
+
+	//Something like terraform init and terraform apply
+	terraform.InitAndApply(t, terraformOptions)
+
+	//Validate the created group
+	iamClient := aws.NewIamClient(t, "us-east-2")
+
+	resp, err := iamClient.GetGroup(&iam.GetGroupInput {
+		GroupName : &expected_group_name,
+	})
+	if err != nil {
+		return
+	}
+	actual_group_name := *resp.Group.GroupName
+	assert.Equal(t, expected_group_name, actual_group_name, "These 2 groups should be the same.")
+	actual_user_name := *resp.Users[0].UserName
+	assert.Equal(t, expected_user_name, actual_user_name, "These 2 user names should be the same.")
+}
+```
+
+```bash
+--- PASS: TestIntegrationIAM2Groups (204.00s)
+PASS
+ok      module_security/test    204.031s
+```
 
 ## 针对Terraform模块编写集成测试（Integration Test）
 
