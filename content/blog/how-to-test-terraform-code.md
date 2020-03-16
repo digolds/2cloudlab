@@ -26,7 +26,7 @@ tags: ["2cloudlab.com", "云计算", "devops", "terraform", "自动化测试"]
 
 ## 2cloudlab模块的自动化测试
 
-2cloudlab的模块都会包含一些自动化测试用例。每一个Terraform模块都会有对应的测试用例，这些测试用例会放在一个`test`目录下（目录结构如下所示），每一个测试用例所验证的场景是不同的。由于这些自动化测试用例都是用`Go`语言来编写的，因此需要使用`Go`语言的运行时环境来运行。除此之外，为了能够高效地编写自动化测试用例，需要引入第三方工具[Terratest](https://github.com/gruntwork-io/terratest)，该工具像一把瑞士军刀，提供了大量通用的基础操作。
+2cloudlab的模块都会包含一些自动化测试用例。每一个Terraform模块都会有对应的测试用例，这些测试用例会放在一个`test`目录下（目录结构如下所示），每一个测试用例所验证的场景是不同的。由于这些自动化测试用例都是用`Go`语言来编写的，因此需要使用`Go`语言的运行时环境来运行。除此之外，为了能够高效地编写自动化测试用例，需要引入第三方工具[Terratest](https://github.com/gruntwork-io/terratest)，该工具也是基于Go语言来编写的（[这篇文章](https://2cloudlab.com/blog/how-to-use-go-to-develop-part1.md)介绍了Go语言的基础知识），它像一把瑞士军刀，提供了大量通用的基础操作。
 
 ```terraform
 .
