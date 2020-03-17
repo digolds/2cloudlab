@@ -18,7 +18,8 @@ tags: ["Go", "并发", "编程"]
 6. 并发
 7. 错误处理
 8. 结构化数据的转化
-9. 总结
+9. 导入第三方模块
+10. 总结
 
 ## 下载和安装Go
 
@@ -69,6 +70,58 @@ go version go1.11.5 linux/amd64
 * [Vim Editor](https://github.com/fatih/vim-go/)
 * [GitHub Atom](https://atom.io/)
 * [Microsoft Visual Studio Code](https://code.visualstudio.com)
+
+选择IDE之后，需要为其配置调试环境，这里以VS Code为例来配置调试环境，其它IDE也需要配置对应的调试环境。为了能在VS Code里调试Go代码，则需要安装以下插件:
+
+1. VSCode-Go plugin
+
+![](https://2cloudlab.com/images/blog/go-plugin.PNG)
+
+2. Analysis工具
+3. [Delve](https://github.com/Microsoft/vscode-go/wiki/Debugging-Go-code-using-VS-Code)
+
+安装完成之后需要按照以下方式配置Go-Plugin，其中program填写Go程序所在的目录。
+
+![](https://2cloudlab.com/images/blog/VSCode_debug.PNG)
+
+接下来将举2个例子来说明如何调试，其中一个例子是调试Go程序，另外一个例子是调试自动化测试用例。
+
+* 如何调试Go程序
+
+```go
+// main.go
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	fmt.Println("Hello, 2cloudlab.com!")
+}
+```
+
+![](https://2cloudlab.com/images/blog/how-to-debug-go-programming.PNG)
+
+上图主要做3件事：1.切换到debug选项；2.在Go代码中打上断点；3.选中（Launch）并点击调试按钮
+
+* 如何调试测试用例
+
+```go
+// main_test.go
+package test
+
+import (
+	"fmt"
+	"testing"
+)
+
+func TestIntegrationIAM2Groups(t *testing.T) {
+	fmt.Println("Debug in testing")
+}
+```
+
+测试用例的调试和调试Go程序的步骤是一样的。
 
 ## Go常用的命令
 
@@ -365,8 +418,71 @@ func main() {
 {"Bar":"Joe Junior","Baz":"Hello Shabado"}
 ```
 
+## 导入第三方模块
+
+有大量的开发者在github上发布了高质量，可复用的Go包。在我们编写Go代码的时候常常需要引用别人已经写好的功能，此时需要一个包管理工具。该工具能够方便开发者引用别人已经发布的Go包，除此之外，还需要管理同一个Go包的不同版本。为了解决这些问题，需要为Go编程引入包管理工具，这个工具就是:[dep](https://golang.github.io/dep/docs/introduction.html)。
+
+dep工具提供了2个常用命令：`dep init`和`dep ensure`。它们的使用场景如下：
+
+* `dep init`
+
+创建Go项目的时候需要执行该命令，此时会在当前目录下创建`Gopkg.toml`、`Gopkg.lock`和`Vender`文件夹，其中`Gopkg.lock`是自动生成的，并记录了依赖项的版本号（如下示例），而`Vender`文件夹将会放置Go项目的依赖项的源码（比如依赖github上的3方库）。
+
+```bash
+# Gopkg.lock
+[solve-meta]
+  analyzer-name = "dep"
+  analyzer-version = 1
+  input-imports = ["github.com/stretchr/testify/assert"]
+  solver-name = "gps-cdcl"
+  solver-version = 1
+```
+
+* `dep ensure`
+
+在编写Go程序的时候，需要导入3方库，此时为了能够让Go程序运行起来，则需要使用该命令来导入3方库。该命令会把新加入的3方库添加到`Vender`中，并自动更新`Gopkg.lock`。因此如果顺利的话，那么执行完该命令就能够编译和运行编写的Go程序。以下是一个具体示例：
+
+```go
+// main.go
+
+package main
+
+import (
+	"fmt"
+
+	"github.com/stretchr/testify/assert"
+)
+
+func main() {
+	fmt.Println("Hello, 2cloudlab.com!")
+
+	assert.Equal(nil, "", "", "These 2 groups should be the same.")
+}
+```
+
+以上示例引入了3方库`github.com/stretchr/testify/assert`,引入完成之后会生成以下目录结构。其中3方库`stretchr`依赖于`davcgh`和`pmezard`，因此在使用`dep ensure`的时候也会将这两个库引入进来。`stretchr`、`davcgh`和`pmezard`目录下面其实放置了Go程序，因此在使用`go build main.go`的时候，会把这些目录下的Go文件编译一遍。
+
+```go
+\---test
+    |   Gopkg.lock
+    |   Gopkg.toml
+    |   main.go
+    |
+    \---vendor
+        +---github.com
+           +---davecgh
+           |
+           +---pmezard
+           |
+           \---stretchr
+```
+
+
+
 ## 总结
 
-本文介绍了Go编程的基础知识。这些知识足以让你开启Go编程之旅，其中Go常用命令、内置类型和流程控制是经常使用的。本文还推荐了一些IDE，这些IDE能够提高编写程序的效率，你读者应该根据自身的情况来选择！并发是Go里的一大特色，也是使用Go语言的原因之一。Go语言的并发不是多线程，而是通过协程(coroutine)来实现的，底层则是通过跳转命令来实现协程！本文所提到的基础知识是日后编写更加复杂的Go程序所应该具备的，所以务必将本文提到的知识消化理解，千里之行始于足下！
+本文介绍了Go编程的基础知识。这些知识足以让你开启Go编程之旅，其中Go常用命令、内置类型、流程控制和包管理是经常使用的。本文还推荐了一些IDE，这些IDE能够提高编写程序的效率，读者应该根据自身的情况来选择！下载和安装IDE后，还需要为其配置调试环境，调试环境是Go编程必备的工具之一。并发是Go里的一大特色，也是Go相较于其它编程语言的优势之一。Go语言的并发不是多线程，而是通过协程(coroutine)来实现的，底层则是通过跳转命令来实现协程！
+
+本文所提到的基础知识是日后编写更加复杂的Go程序所应该具备的，所以务必将本文提到的知识消化理解，千里之行始于足下！接下来让我们把注意力转移到这篇文章<[如何为产品提供可信度较高的运行环境](https://2cloudlab.com/blog/how-to-test-terraform-code/)>，这篇文章讲述了如何使用Go来编写自动化测试用例，通过它们来测试2cloudlab所提供的Terraform模块。
 
 *[2cloudlab.com](https://2cloudlab.com/)为企业准备产品的运行环境，只需要1天！*
