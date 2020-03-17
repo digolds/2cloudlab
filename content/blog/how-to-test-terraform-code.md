@@ -109,13 +109,13 @@ import (
 
 //Create full_access group with admin permissions and config with MFA option
 func TestIntegrationIAM2Groups(t *testing.T) {
-	//Make this test case parallel which means it will not block other test cases
+	//1. Make this test case parallel which means it will not block other test cases
 	t.Parallel()
-	//Copy folder "../" to a tmp folder and return the tmp path of "examples"
+	//2. Copy folder "../" to a tmp folder and return the tmp path of "examples"
 	examplesFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples")
 	iam_across_account_assistantFolder := filepath.Join(examplesFolder, "iam_across_account_assistant")
 
-	//Create terraform options which is passed to terraform module
+	//3. Create terraform options which is passed to terraform module
 	expected_group_name := "full_access"
 	expected_user_name := fmt.Sprintf("username-%s", random.UniqueId())
 	user_groups := []map[string]interface{}{
@@ -136,15 +136,21 @@ func TestIntegrationIAM2Groups(t *testing.T) {
 			"should_require_mfa": true,
 			"user_groups":        user_groups,
 		},
+		// Retry up to 3 times, with 5 seconds between retries, on known errors
+		MaxRetries:         3,
+		TimeBetweenRetries: 5 * time.Second,
+		RetryableTerraformErrors: map[string]string{
+			"RequestError: send request failed": "Throttling issue?",
+		},
 	}
 
-	//Something like finally in try...catch
+	//4. Something like finally in try...catch
 	defer terraform.Destroy(t, terraformOptions)
 
-	//Something like terraform init and terraform apply
+	//5. Something like terraform init and terraform apply
 	terraform.InitAndApply(t, terraformOptions)
 
-	//Validate the created group
+	//6. Validate the created group
 	iamClient := aws.NewIamClient(t, "us-east-2")
 
 	resp, err := iamClient.GetGroup(&iam.GetGroupInput {
@@ -160,15 +166,34 @@ func TestIntegrationIAM2Groups(t *testing.T) {
 }
 ```
 
+以上自动化测试用例测试了Terraform模块`iam_across_account_assistant`。注意代码中注释，一共分成6个部分，2cloudlab针对Terraform模块所编写的自动化测试用例都会按照以上模式。它们的作用在于：
+
+1. `t.Parallel()`使得所有测试用例能够并发执行，这样的好处是可以缩短执行测试用例所需的整体时间
+2. 会将Terraform模块拷贝到一个临时目录，这样做的好处是避免不同测试场景调用相同Terraform模块所引发的State文件冲突
+3. 在Go中创建Terraform的输入参数，注意参数`MaxRetries`、`TimeBetweenRetries`和`RetryableTerraformErrors`确保了每一个测试用例如果发生了意外错误的时候，依然可以重复执行
+4. 使用`defer`确保测试用例在退出的时候依然能够执行资源销毁操作
+5. 在Go中调用Terraform模块，通过执行命令`terraform init`和`terraform apply`
+6. 验证逻辑，这个验证逻辑因不同的Terraform模块而不同，需要借助Terratest所提供的一些函数来实现
+
+编写完以上测试之后需要执行以下命令来运行该测试用例（其中参数`timeout`能够确保自动化测试有充足的时间执行）:
+
+```terraform
+go test -v -timeout 30m
+```
+
+输出结果如下（该测试用例花了大约204秒）：
+
 ```bash
 --- PASS: TestIntegrationIAM2Groups (204.00s)
 PASS
 ok      module_security/test    204.031s
 ```
 
+2cloudlab提供了大量的Terraform模块，这些模块都是相互独立的。为了确保这些模块的质量，2cloudlab会用Go编写大量的单元测试，因此这些单元测试都会按照以上模式来编写。当Terraform模块都能独立工作的时候，那么如何确保它们组合在一起的时候依然能够正常工作，这个时候就需要通过集成测试来保证。接下来让我们把注意力转移到如何编写和组织集成测试。
+
 ## 针对Terraform模块编写集成测试（Integration Test）
 
-敬请期待...
+集成测试的主要目的是验证几个模块组合在一起时是否能够正常工作。使用Go来编写集成测试的时候，除了要根据单元测试的模式来编写之外，还需要结合Terratest所提供的`test_structure.RunTestStage`。接下来让我们通过一个例子来说明如何编写有效的集成测试。
 
 ## 针对Terraform模块编写端到端的测试（End-to-End Test）
 
@@ -176,7 +201,7 @@ ok      module_security/test    204.031s
 
 ## 为测试环境中的资源定制清除策略
 
-敬请期待...
+在为Terraform模块执行自动化测试的时候，应该为其准备一个独立的测试账号，这个账号能够访问云服务商（比如AWS）。在使用测试账号执行测试用例的时候，会生成临时资源，如果这些资源没有及时销毁，那么会增加云服务使用成本，因此需要定期为测试账号销毁不用的资源。完成这个任务需要借助一些工具（比如[cloud-nuke](https://github.com/gruntwork-io/cloud-nuke)和[aws-nuke](https://github.com/rebuy-de/aws-nuke)），以及一些定期清除策略。
 
 ## 总结
 
