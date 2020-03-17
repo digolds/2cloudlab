@@ -163,7 +163,7 @@ go build -o 2cloudlab main.go
 
 以上生成的可执行性文件将包含调试信息和一些符号信息，这些信息会导致所生成的文件变大，因此需要在生成可执行性文件时去掉这些信息。通过添加以下参数来去掉这些信息：
 
-```
+```bash
 go build -ldflags "-w -s" -o 2cloudlab main.go
 ```
 
