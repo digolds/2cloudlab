@@ -102,13 +102,13 @@ resource "aws_instance" "example" {
 ```terraform
 # main.tf
 terraform {
- backend “s3” {
- encrypt = true
- bucket = "terraform-remote-state-storage-s3"
- dynamodb_table = "terraform-state-lock-dynamo"
- region = us-west-2
- key = path/to/state/file
- }
+  backend "s3" {
+    encrypt        = true
+    bucket         = "terraform-remote-state-storage-s3"
+    dynamodb_table = "terraform-state-lock-dynamo"
+    region         = "us-west-2"
+    key            = "path/to/state/file"
+  }
 }
 ```
 
