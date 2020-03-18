@@ -193,7 +193,66 @@ ok      module_security/test    204.031s
 
 ## 针对Terraform模块编写集成测试（Integration Test）
 
-集成测试的主要目的是验证几个模块组合在一起时是否能够正常工作。使用Go来编写集成测试的时候，除了要根据单元测试的模式来编写之外，还需要结合Terratest所提供的`test_structure.RunTestStage`。接下来让我们通过一个例子来说明如何编写有效的集成测试。
+集成测试的主要目的是验证几个模块组合在一起时是否能够正常工作。使用Go来编写集成测试的时候，除了要根据单元测试的模式来编写之外，还需要结合Terratest所提供的`test_structure.RunTestStage`。接下来让我们通过一个例子来说明如何编写有效的集成测试。这个例子有2个模块，它们分别是：`mysql_database`和`web_app`，其中后者依赖前者。每个模块的职责如下：
+
+`mysql_database`将创建一个RDS服务，其输出的是连接信息（地址+端口），该信息将被`web_app`使用。其对应的脚本代码如下：
+
+```terraform
+// module_name/modules/mysql_database/main.tf
+resource "aws_db_instance" "db_instance" {
+  identifier_prefix   = "2cloudlab.com"
+  engine              = "mysql"
+  allocated_storage   = 10
+  instance_class      = "db.t2.micro"
+  name                = var.db_name
+  username            = var.db_username
+  password            = var.db_password
+  skip_final_snapshot = true
+}
+```
+
+`web_app`将创建一个EC2服务，并且会在端口8080监听请求，并将数据库的连接信息（`mysql_database`的地址+端口）返回给用户，其对应的脚本代码如下：
+
+```terraform
+resource "aws_instance" "example" {
+  ami                    = "ami-0c55b159cbfafe1f0"
+  instance_type          = "t2.micro"
+  vpc_security_group_ids = [aws_security_group.instance.id]
+
+  user_data = <<-EOF
+              #!/bin/bash
+              echo "Hello, World" > index.html
+              nohup busybox httpd -f -p 8080 &
+              EOF
+
+  tags = {
+    Name = "terraform-example"
+  }
+}
+
+resource "aws_security_group" "instance" {
+
+  name = var.security_group_name
+
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+variable "security_group_name" {
+  description = "The name of the security group"
+  type        = string
+  default     = "terraform-example-instance"
+}
+
+output "public_ip" {
+  value       = aws_instance.example.public_ip
+  description = "The public IP of the Instance"
+}
+```
 
 ## 针对Terraform模块编写端到端的测试（End-to-End Test）
 
