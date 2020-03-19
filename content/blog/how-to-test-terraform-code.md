@@ -217,28 +217,7 @@ func TestIntegrationWebApp(t *testing.T) {
 	test_structure.RunTestStage(t, "deploy_web_app", func() { deployWebApp(t, webAppExampleDir) })
 
 	//4. Validate
-	webAppOpts := test_structure.LoadTerraformOptions(t, webAppExampleDir)
-
-	public_ip := terraform.OutputRequired(t, webAppOpts, "public_ip")
-	listening_port := terraform.OutputRequired(t, webAppOpts, "listening_port")
-	url := fmt.Sprintf("http://%s:%s", public_ip, listening_port)
-
-	maxRetries := 10
-	timeBetweenRetries := 10 * time.Second
-
-	config := &tls.Config{}
-	http_helper.HttpGetWithRetryWithCustomValidation(
-		t,
-		url,
-		config,
-		maxRetries,
-		timeBetweenRetries,
-		func(status int, body string) bool {
-			return status == 200 &&
-				strings.Contains(body,
-					fmt.Sprintf("(%s,%s) with (%s,%s)", webAppOpts.Vars["db_address"], webAppOpts.Vars["db_port"], webAppOpts.Vars["db_name"], webAppOpts.Vars["db_password"]),
-				)
-		})
+	test_structure.RunTestStage(t, "validate_web_app", func() { validateWebApp(t, webAppExampleDir) })
 }
 ```
 
@@ -290,6 +269,7 @@ ok      package_aws_web_service/test    160.588s
 ```bash
 SKIP_deploy_db=true \
 SKIP_deploy_web_app=true \
+SKIP_validate_web_app=true
 go test -v -timeout 30m -run 'TestIntegrationWebApp'
 ```
 
