@@ -195,64 +195,107 @@ ok      module_security/test    204.031s
 
 集成测试的主要目的是验证几个模块组合在一起时是否能够正常工作。使用Go来编写集成测试的时候，除了要根据单元测试的模式来编写之外，还需要结合Terratest所提供的`test_structure.RunTestStage`。接下来让我们通过一个例子来说明如何编写有效的集成测试。这个例子有2个模块，它们分别是：`mysql_database`和`web_app`，其中后者依赖前者。每个模块的职责如下：
 
-`mysql_database`将创建一个RDS服务，其输出的是连接信息（地址+端口），该信息将被`web_app`使用。其对应的脚本代码如下：
+* `mysql_database`将创建一个RDS服务，其输出的是连接信息（地址+端口），该信息将被`web_app`使用
+* `web_app`将创建一个EC2服务，并且会在端口8080监听请求，并将数据库的连接信息（`mysql_database`的地址+端口）返回给用户
 
-```terraform
-// module_name/modules/mysql_database/main.tf
-resource "aws_db_instance" "db_instance" {
-  identifier_prefix   = "2cloudlab.com"
-  engine              = "mysql"
-  allocated_storage   = 10
-  instance_class      = "db.t2.micro"
-  name                = var.db_name
-  username            = var.db_username
-  password            = var.db_password
-  skip_final_snapshot = true
+为了验证这2个模块能够放在一起正常工作，则需要编写以下Go代码：
+
+```go
+// web_app_intergration_test.go
+const dbExampleDir = "../examples/mysql_database"
+const webAppExampleDir = "../examples/web_app"
+
+//Start up web app with real db
+func TestIntegrationWebApp(t *testing.T) {
+	//1. Make this test case parallel which means it will not block other test cases
+	t.Parallel()
+	//2. Deploy database
+	defer test_structure.RunTestStage(t, "destroy_db", func() { destroyDb(t, dbExampleDir) })
+	test_structure.RunTestStage(t, "deploy_db", func() { deployDb(t, dbExampleDir) })
+	//3. Deploy web app
+	defer test_structure.RunTestStage(t, "destroy_web_app", func() { destroyWebApp(t, webAppExampleDir) })
+	test_structure.RunTestStage(t, "deploy_web_app", func() { deployWebApp(t, webAppExampleDir) })
+
+	//4. Validate
+	webAppOpts := test_structure.LoadTerraformOptions(t, webAppExampleDir)
+
+	public_ip := terraform.OutputRequired(t, webAppOpts, "public_ip")
+	listening_port := terraform.OutputRequired(t, webAppOpts, "listening_port")
+	url := fmt.Sprintf("http://%s:%s", public_ip, listening_port)
+
+	maxRetries := 10
+	timeBetweenRetries := 10 * time.Second
+
+	config := &tls.Config{}
+	http_helper.HttpGetWithRetryWithCustomValidation(
+		t,
+		url,
+		config,
+		maxRetries,
+		timeBetweenRetries,
+		func(status int, body string) bool {
+			return status == 200 &&
+				strings.Contains(body,
+					fmt.Sprintf("(%s,%s) with (%s,%s)", webAppOpts.Vars["db_address"], webAppOpts.Vars["db_port"], webAppOpts.Vars["db_name"], webAppOpts.Vars["db_password"]),
+				)
+		})
 }
 ```
 
-`web_app`将创建一个EC2服务，并且会在端口8080监听请求，并将数据库的连接信息（`mysql_database`的地址+端口）返回给用户，其对应的脚本代码如下：
+为了方便理解，以上集成测试代码只保留了主体部分，完整的代码可以到[这里](https://github.com/2cloudlab/package_aws_web_service/blob/master/test/web_app_intergration_test.go)去查阅。该集成测试主要完成了以下几个步骤：
 
-```terraform
-resource "aws_instance" "example" {
-  ami                    = "ami-0c55b159cbfafe1f0"
-  instance_type          = "t2.micro"
-  vpc_security_group_ids = [aws_security_group.instance.id]
+1. 调用`t.Parallel()`使得该集成测试不会堵塞住其它自动化测试
+2. 创建数据库服务
+3. 获取第二步数据库连接信息，并将其用于创建WebApp服务
+4. 根据第3步的WebApp返回的url+port来发送HTTP请求，并验证返回结果
+5. 先销毁WebApp资源，再销毁数据库资源
 
-  user_data = <<-EOF
-              #!/bin/bash
-              echo "Hello, World" > index.html
-              nohup busybox httpd -f -p 8080 &
-              EOF
+运行以上集成测试所需的时间如下(大约需要14分钟)：
 
-  tags = {
-    Name = "terraform-example"
-  }
-}
-
-resource "aws_security_group" "instance" {
-
-  name = var.security_group_name
-
-  ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-variable "security_group_name" {
-  description = "The name of the security group"
-  type        = string
-  default     = "terraform-example-instance"
-}
-
-output "public_ip" {
-  value       = aws_instance.example.public_ip
-  description = "The public IP of the Instance"
-}
+```bash
+--- PASS: TestIntegrationWebApp (892.07s)
+PASS
+ok      package_aws_web_service/test    892.095s
 ```
+
+正常情况下，在自动化测试的环境里，需要把每一个测试从头到尾执行一遍。但是，研发人员在本地会反复修改模块，并执行对应的自动化测试用例，如果是这样，那么这种从头开始执行测试用例并最终销毁所创建的资源的漫长过程是不合理的。正确的做法应该是这样：研发人员一开始就将集成测试所需的资源创建，并跳过销毁阶段。在随后的研发过程中，研发人员只会修改某一部分，然后重新部署该部分所对应的资源，其它未修改的部分则不需要重新部署。为了实现这种可选择执行哪些模块的部署和销毁，则需要借助Terratest所提供的`test_structure.RunTestStage`功能。使用这个功能可以划分不同阶段并可选择那个阶段是需要执行的而哪些阶段是不需要执行的。让我们接着分析以上集成测试的例子来理解这一过程。
+
+假设研发人员开始测试WebApp服务，他/她需要输入以下命令来创建集成测试所需的资源，同时避免销毁(通过设置`SKIP_destroy_db`和`SKIP_destroy_web_app`为`true`来实现)这些资源。
+
+```bash
+SKIP_destroy_db=true \
+SKIP_destroy_web_app=true \
+go test -v -timeout 30m -run 'TestIntegrationWebApp'
+```
+
+该研发人员发现web_app模块的一些bug，并花了一个小时修复这些bug。他／她准备验证修复的bug，因此需要再次部署与web_app相关的资源，他／她可以通过以下命令来实现(通过`SKIP_deploy_db=true`来跳过数据库模块相关的资源创建)：
+
+```bash
+SKIP_destroy_db=true \
+SKIP_destroy_web_app=true \
+SKIP_deploy_db=true \
+go test -v -timeout 30m -run 'TestIntegrationWebApp'
+```
+
+运行以上指令的输出结果如下所示，整个运行时间缩短为160s。
+
+```bash
+--- PASS: TestIntegrationWebApp (160.56s)
+PASS
+ok      package_aws_web_service/test    160.588s
+```
+
+如果该研发人员修复了这些bug，那么他/她只需要执行销毁操作，如下所示：
+
+```bash
+SKIP_deploy_db=true \
+SKIP_deploy_web_app=true \
+go test -v -timeout 30m -run 'TestIntegrationWebApp'
+```
+
+通过以上示例可知：集成测试所花费的时间会远远大于每个独立的单元测试所需的时间；通过机器执行集成测试应该从头到尾执行一遍，以便确保每一步都能够覆盖到；研发人员在本地进行集成测试的时候，需要选择哪些阶段可以执行而哪些阶段应该避免重复执行，以便减少集成测试的运行时间，及时得到测试反馈。
+
+一个研发团队在编写自动化测试的时候，不仅要编写大量的单元测试来验证模块是能够单独正常工作的，而且还需要编写一部分集成测试来验证模块组合在一起也是能正常工作的。每运行一次集成测试都有可能发现新的缺陷，修复这些缺陷能够增强团队对自己的输出成果的信心，但是集成测试通过并不能说明线上的真实环境也能正常工作！为了进一步增强团队的信心，需要做进一步的End-to-End测试。
 
 ## 针对Terraform模块编写端到端的测试（End-to-End Test）
 
