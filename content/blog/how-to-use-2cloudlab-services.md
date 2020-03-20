@@ -351,3 +351,5 @@ terragrunt apply
 2cloudlab的模块托管在github上，企业需要注册一个github账号，并将该账号提供给2cloudlab才能访问2cloudlab所提供的模块。使用2cloudlab所提供的模块时，最好的做法是在github上创建2个repository：`infrastructure_modules`和`infrastructure_live`，并根据前面内容来构建这2个repository。
 
 `infrastructure_modules`主要封装了2cloudlab所提供的模块，而`infrastructure_live`则会引用`infrastructure_modules`中的模块。为了能够减少复制黏贴所引发的错误，`infrastructure_live`中的内容主要是由后缀为`.hcl`的文件组成。这些文件根据现实世界中所需要的资源而划分成不同的模块，并最终由Terragrunt工具执行。一个完整的产品运行环境是分步实现的，首先需要创建云服务账号，在不同的账号下创建不同的资源，这些资源有网络资源、数据库资源、日志资源等等。因此在`infrastructure_live`需要将不同的资源模块独立在不同的目录中，并按照定义好的依赖关系依次执行每一个模块。
+
+*[2cloudlab.com](https://2cloudlab.com/)为企业准备产品的运行环境，只需要1天！*
