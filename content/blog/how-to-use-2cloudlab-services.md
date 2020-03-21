@@ -12,9 +12,9 @@ tags: ["2cloudlab.com", "devops"]
 
 1. 创建一个完整的产品运行环境的任务列表
 2. 如何使用2cloudlab所提供的Terraform模块
-3. 如何构建infrastructure_modules
-4. 如何构建infrastructure_live
-5. 在infrastructure_modules中引用2cloudlab的Terraform模块
+3. 如何构建[infrastructure_modules](https://github.com/2cloudlab/infrastructure-modules)
+4. 如何构建[infrastructure_live](https://github.com/2cloudlab/infrastructure-live)
+5. 在infrastructure_modules中引用[2cloudlab的Terraform模块](https://github.com/2cloudlab/module_security/tree/master/modules/iam_across_account_assistant)
 6. 在infrastructure_live中引用infrastructure_modules
 7. 总结
 
