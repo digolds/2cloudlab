@@ -13,6 +13,10 @@ git push origin
 echo "generate static site by hugo"
 hugo -D -d ../p2cloudlab/
 
+#small images
+cp -a ../p2cloudlab/images/. ../p2cloudlab/small_images/
+optimize-images ../p2cloudlab/small_images/
+
 #push static web site to git
 echo "push static web site to git"
 cd ../p2cloudlab/
