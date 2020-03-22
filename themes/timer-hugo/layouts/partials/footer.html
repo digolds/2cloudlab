@@ -42,7 +42,7 @@
 {{ "<!-- Fancybox -->" | safeHTML }}
 <script src="{{ "plugins/facncybox/jquery.fancybox.js" | absURL }}"></script>
 {{ "<!-- template main js -->" | safeHTML }}
-{{ $script := resources.Get "js/script.js" | minify}}
+{{ $script := resources.Get "js/script.js"}}
 <script src="{{ $script.Permalink }}"></script>
 {{ "<!-- google analitycs -->" | safeHTML }}
 <script>
