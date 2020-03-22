@@ -39,7 +39,7 @@
             <div class="col-md-12">
                 {{ with .Params.image }}
                 <div class="post-img">
-                    <img class="img-fluid" alt="" src="{{ . | absURL }}">
+                    <img class="img-fluid lazy" alt="" data-src="{{ . | absURL }}">
                 </div>
                 {{ end }}
                 <div class="post-content">
