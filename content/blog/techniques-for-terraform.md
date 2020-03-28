@@ -5,7 +5,7 @@ description : "本文记录了2cloudlab.com在使用Terraform、aws-vault和Go�
 type: post
 image: images/blog/terraform-tactics.png
 author: 郑思龙
-tags: ["Terraform", "经验", "云计算"]
+tags: ["Terraform", "自动化经验", "云计算", "Go"]
 ---
 
 1. Terraform实用技巧
@@ -51,6 +51,27 @@ resource "aws_launch_configuration" "launch_configuration_instance" {
 
 ```go
 go test -v -run TestIntegrationOrganization
+```
+
+2. 如何根据tag(`+build integration`)来执行一组测试用例？
+
+```go
+// intergration_test.go
+// +build integration
+
+func TestCase1(t *testing.T) {
+    // ...
+}
+
+func TestCase2(t *testing.T) {
+    // ...
+}
+```
+
+在文件*intergration_test.go*中指定tag：`// +build integration`，运行以下命令将执行该文件中的所有自动化测试用例。
+
+```bash
+go test -v -run -tags=integration
 ```
 
 ## 组合Terraform、aws-vault和Go工具的实用技巧
