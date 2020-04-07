@@ -60,6 +60,8 @@ Trunk-based Development是指：所有研发人员围绕主分支(也就是我�
 
 为了能够自动化编译和测试新的提交，需要借助CI服务器。通过CI服务器构建编译和测试2个阶段（如下图所示）。这么做的目的是确保每一次提交都能够被机器自动化的验证，从而确保每一次提交都没有破坏`trunk`。
 
+![](https://2cloudlab.com/images/blog/pipelines1.png)
+
 6. 如果某一次提交破坏了`trunk`分支，那么应该停下手中的任务，优先恢复`trunk`分支
 
 团队在日常的研发事务中总是会犯错，如果一次疏忽导致`trunk`分支无法通过测试，那么需要第一时间解决这个问题。如果这个问题无法快速解决，那么需要将此次提交撤销，并回退到上一次提交。这么做就是要确保`trunk`分支随时可用。
@@ -72,15 +74,22 @@ Trunk-Based Development自身并无没有给团队带来任何好处。为团队
 
 CI（Continues Integration）是指将各个研发团队的研发成果正确且快速地集成在一起，并提供给其他团队（测试团队、DevOps团队等）使用。为了将Trunk-Based Development向整个研发部门推广，则需要一个好的CI服务。每一个提交到`trunk`上的改动，都会自动地触发CI服务，并由该服务获取`trunk`上的源码并顺序执行自定义的一些步骤。这些步骤有编译该源码和执行单元测试，每一步执行结束后都会输出一些结果，这些结果有成功或者失败，如果失败则会出现失败的信息。为了能够让团队成员及时看到失败的结果，一种做法是将在团队周围放置一台大电视，用于显示CI服务的执行结果。
 
-除了要搭建CI服务，还需要应用一些发布策略。比如上图从`trunk`分支中拉出`release`分支，这么做是为了基于`release`分支对外发布产品，同时团队的其他成员依然能够在`trunk`上提交代码。由于`release`分支主要是为了对外发布产品，因此它不仅需要CI的支持，还需要CD（Continue Deployment）的支持，2者结合就是CI/CD。与`trunk`不同，CI服务不仅需要监测`release`分支的变化并自动地编译源码、执行单元测试，而且还需要将编译的结果归档到团队内部共享的存储服务上，并自动地触发CD服务，使得CD服务能够将编译结果从存储服务中自动地部署到研发环境（dev）、测试环境（test）、预生产环境（stage）和生产环境（prod）。环境越多，实施自动化部署将任务也将增多，因此企业需要结合自身的现实状况来决定哪些环境是需要的（比如大多数企业只需要stage和prod环境就足够了）。
+除了要搭建CI服务，还需要应用一些发布策略。比如上图从`trunk`分支中拉出`release`分支，这么做是为了基于`release`分支对外发布产品，同时团队的其他成员依然能够在`trunk`上提交代码。由于`release`分支主要是为了对外发布产品，因此它不仅需要CI的支持，还需要CD（Continuous Delivery）的支持，2者结合就是CI/CD。与`trunk`不同，CI服务不仅需要监测`release`分支的变化并自动地编译源码、执行单元测试，而且还需要将编译的结果归档到团队内部共享的存储服务上，并自动地触发CD服务，使得CD服务能够将编译结果从存储服务中自动地部署到研发环境（dev）、测试环境（test）、预生产环境（stage）和生产环境（prod）。环境越多，实施自动化部署将任务也将增多，因此企业需要结合自身的现实状况来决定哪些环境是需要的（比如大多数企业只需要stage和prod环境就足够了）。
 
 ## Trunk-Based Development的实施细节
 
-读者可以参考以下步骤在团队中实施Trunk-Based Development。
+不同企业在研发团队中实施Trunk-Based Development都会有一些细微的差别，对于大多数需要**研发软件产品**的企业，可以参考以下步骤在研发团队中实施Trunk-Based Development。
+
+* 将产品相关的代码放到一个repository里，并且严格要求这个repository的分支数量每天不能超过研发人数（比如该研发团队有5个研发，2个测试，1个PO，1个UX，1个SM以及1个架构师，一共11个人）
+* 该repository有一个长期存在的分支`trunk`或者`master`。当需要对外发布的时候则需要拉出`release`分支，当有新的功能要发布的时候，将该分支删除并拉取新的`release`分支。研发人员可以直接在`trunk`或`master`分支上提交代码，当然也可以拉取`feature`分支，但是`feature`分支的生命周期应该在1天之内
+* 搭建CI服务，比如可以考虑使用Jenkins或者使用github的Actions。前者需要自己搭建，工作量大，服务器可以是自建，也可以使用云服务提供商的服务器（比如阿里云或AWS）。后者只需要编写`.yaml`文件就可以构建CI服务，服务器是github提供的
+* CI服务器会检测`trunk`和`release`分支，每个次提交，都会触发CI服务器，构建代码和执行自动化测试。`trunk`分支所对应的CI构建流程，其运行一次所需要的时间需要控制在30分钟之内，其目的是为了检测每次提交都是正常的。`release`分支所对应的CI构建流程，其运行一次所需要的时间也需要控制在30分钟之内并归档编译出来的结果，除此之外还需为该分支搭建CD服务。CD服务能够将编译出来的结果自动部署到其它环境（比如stage和prod）
+* 为团队的每一个研发人员预留时间学习和掌握之前提到的技巧，使得团队成员达成共识
+* 每次发布只能通过`release`分支，修复bug和性能优化的改动应该提交到`trunk`分支，最终通过cherry-pick的方式将这些提交merge到`release`分支。当有新功能对外发布时，需要删除原来的`release`分支，并从`trunk`分支拉取新的`release`分支
 
 ## 结论和参考
 
-Trunk-based Development已经被各大公司成功实践了很十几年，这些公司有Google、Facebook、LinkedIn等。企业在研发**产品**时，想要在研发部门中顺利地实施Trunk-based Development，还需要掌握一些技巧和搭建自动化基础设施。这些技巧需要所有研发人员达成共识，并养成习惯。当习惯形成之后，则需要借助一些自动化基础设施来加速研发流程，这个研发流程就是CI/CD。当研发流程搭建起来之后，则需要应用一些发布策略。一切就绪之后，整个研发团队的研发效率将会达到一个质的飞跃。
+Trunk-based Development已经被各大公司成功实践了很十几年，这些公司有Google、Facebook、LinkedIn等。企业在研发**产品**时，想要在研发部门中顺利地实施Trunk-based Development，还需要掌握一些技巧和搭建自动化基础设施。这些技巧需要所有研发人员达成共识，并养成习惯。当习惯形成之后，则需要借助一些自动化基础设施来加速研发流程，这个研发流程就是CI/CD。当研发流程搭建起来之后，则需要应用一些发布策略。一切就绪之后，整个研发团队的研发效率将会达到一个质的飞跃。在研发团队中实施Trunk-based Development以及为其搭建CI服务只是构建企业级软件研发流程的第一步。当新功能完成研发，并准备好发布的时候，也需要一套基础设施将研发好的功能及时高效地发布到用户现场，这就是Continuous Delivery(CD)。企业要想搭建完整的CI/CD流程，除了实施本文提到CI部分，还需要参考这篇文章[<如何提高企业的研发效率--CI/CD>](https://2cloudlab.com/blog/why-organization-should-practice-cicd/)来实施CD部分。
 
 本文的内容参考了大量国外的资料，这些资料可以进一步加深读者对Trunk-based development的理解，读者可以根据自身的实际情况进一步学习国外最新的技术，并将其应用到自己的项目当中。
 
@@ -92,3 +101,5 @@ Trunk-based Development已经被各大公司成功实践了很十几年，这些
 6. [Google DevOps tech](https://cloud.google.com/solutions/devops/devops-tech-trunk-based-development)
 7. [The best branching model to work with Git](https://medium.com/@grazibonizi/the-best-branching-model-to-work-with-git-4008a8098e6a)
 8. [What is Trunk-Based Development?](https://paulhammant.com/2013/04/05/what-is-trunk-based-development/)
+
+*[2cloudlab.com](https://2cloudlab.com/)为企业准备产品的运行环境，只需要1天！*
