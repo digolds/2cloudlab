@@ -72,6 +72,19 @@ Infrastructure as code是实现CICD的一种方式，它的基础是用脚本或
 
 CICD更加具体地指出实现高效DevOps应该关注的核心部分--持续集成和持续发布。因此大部分企业都应该优先实施持续集成和持续发布。在实施CICD的过程中需要借助Infrastructure as code方式，这种方式能够引入版本控制系统和实现自动化。支持Infrastructure as code方式的工具有很多，企业常用的有:Terraform、Packer、Go、Python、Docker等。其中Terraform能够基于云服务商快速创建资源和准备软件环境，在这之后，需要结合其它工具进一步部署产品或服务。
 
-Terraform是一个基础工具，适用于大多数企业，它能够解决资源创建和准备的问题，因此企业应该把它作为打造高效DevOps的工具之一。使用Terraform时，不仅要掌握Terraform知识，还需要结合工程经验，这篇文章:[如何在企业中高效使用Terraform](https://2cloudlab.com/blog/how-to-apply-terraform-across-entire-enterprises/)，能够帮助企业高效使用Terraform，从而减少企业在实施DevOps过程中遇到的问题。
+Terraform是一个基础工具，适用于大多数企业，它能够解决资源创建和准备的问题，因此企业应该把它作为打造高效DevOps的工具之一。使用Terraform时，不仅要掌握Terraform知识，还需要结合工程经验，这篇文章:[如何在企业中高效使用Terraform](https://2cloudlab.com/blog/how-to-apply-terraform-across-entire-enterprises/)，能够帮助企业高效使用Terraform，从而减少企业在实施DevOps过程中遇到的问题。除此之外，下面列举的书籍也能够帮助企业顺利实施DevOps：
+
+* Infrastructure as Code: Managing Servers in the Cloud by Kief Morris (O’Reilly)
+* Site Reliability Engineering: How Google Runs Production Systems by Betsy Beyer, Chris Jones, Jennifer Petoff, and Niall Richard Murphy (O’Reilly)
+* The DevOps Handbook: How To Create World-Class Agility, Reliability, & Security in Technology Organizations by Gene Kim, Jez Humble, Patrick Debois, and John Willis (IT Revolution Press)
+* Designing Data Intensive Applications by Martin Kleppmann (O’Reilly)
+* Continuous Delivery: Reliable Software Releases through Build, Test, and Deployment Automation by Jez Humble and David Farley (Addison-Wesley Professional)
+* Release It! Design and Deploy Production-Ready Software by Michael T. Nygard (The Pragmatic Bookshelf)
+* Kubernetes In Action by Marko Luksa (Manning)
+* Leading the Transformation: Applying Agile and DevOps Principles at Scale by Gary Gruver and Tommy Mouser (IT Revolution Press)
+* Visible Ops Handbook by by Kevin Behr, Gene Kim, and George Spafford (Information Technology Process Institute)
+* Effective DevOps by Jennifer Davis and Katherine Daniels (O’Reilly)
+* Lean Enterprise by Jez Humble, Joanne Molesky, Barry O’Reilly (O’Reilly)
+* Hello, Startup: A Programmer’s Guide to Building Products, Technologies, and Teams by Yevgeniy Brikman (O’Reilly)
 
 ___[2cloudlab.com](https://2cloudlab.com/)为企业准备产品的运行环境，只需要1天！___

@@ -48,7 +48,12 @@ ul li {
   display: inline-block; /* Needed to add space between the bullet and the text */ 
   width: 1em; /* Also needed for space (tweak if needed) */
   margin-left: -1em; /* Also needed for space (tweak if needed) */
+  margin-top: 1.5em; /* Also needed for space (tweak if needed) */
 }
+
+.post-container ul li:first-child::before {
+  margin-top: 0em;
+ }
 
 a:hover {
   text-decoration: none;
