@@ -3,10 +3,12 @@ title: "如何提高企业的研发效率--Kubernetes的最佳实践"
 date: 2020-03-18T12:21:58+06:00
 description : ""
 type: post
-image: images/blog/trunk-based-development-6995662e.png
+image: images/blog/Kubernetes-logo-1.png
 author: 郑思龙
 tags: ["Kubernetes", "Docker", "CI/CD", "云计算", "软件研发效率"]
 ---
+
+
 
 ## 参考
 

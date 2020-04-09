@@ -14,7 +14,8 @@ tags: ["软件研发流程", "trunk-based development", "CI/CD", "云计算", "�
 2. 团队需要掌握哪些技巧来实践Trunk-based Development？
 3. 为Trunk-Based Development配套CI服务
 4. Trunk-Based Development的实施细节
-5. 结论和参考
+5. 如何使用github来实施Trunk-Based Development
+6. 结论和参考
 
 ## 什么是Trunk-based Development？
 
@@ -87,9 +88,23 @@ CI（Continues Integration）是指将各个研发团队的研发成果正确且
 * 为团队的每一个研发人员预留时间学习和掌握之前提到的技巧，使得团队成员达成共识
 * 每次发布只能通过`release`分支，修复bug和性能优化的改动应该提交到`trunk`分支，最终通过cherry-pick的方式将这些提交merge到`release`分支。当有新功能对外发布时，需要删除原来的`release`分支，并从`trunk`分支拉取新的`release`分支
 
+## 如何使用github来实施Trunk-Based Development
+
+github是一个非常有影响力的程序员社交平台。这个平台不仅向全世界的开发者提供了线上交流的平台，而且提供了方便开发者研发软件所需的功能。其中，有2个功能非常流行，一个是代码托管和CI/CD服务，而且这2个服务是免费的！这2个服务使得任何研发团队都可以快速搭建现代化的CI/CD流程。
+
+github提供了大多数功能给开发者使用，这些功能有：账号管理、源码托管、Action服务（也就是CI/CD）和协作沟通的线上通道。接下来我将使用这些功能并通过一个例子来介绍如何在github上实践Trunk-Based Development以及为其搭建CI服务。
+
+1. 在github上创建一个repository，这个repository用于放置产品的源码
+2. 为`master`和`release`分支创建对应的CI服务，也就是在`.github/workflows`目录中创建后缀为`.yml`或`.yaml`的文件。具体解释如下：
+3. 将每一个参与研发的人员加入到这个repository中，并授予他们可读写的权限
+4. 让其中一个研发人员基于`master`分支拉取最新代码，并且拉出一个分支`feature_update_readme`，修改README.md。在本地运行测试，如果通过则将修改提交到`feature_update_readme`分支，并推送到github
+5. 到github页面中选择此次提交，并创建pull request。这个pull request会触发CI，同时其他成员将看到这个pull request，并可以在上面提供意见，该意见可以被你看到，直到修改通过之后便可以合并
+6. 当需要对外发布的时候，那么可以拉取另外一个分支`release`，对应的CI服务会启动，并将生成的可运行结果存储到github的package存储
+7. 当发布的产品有问题的时候，可以通过cherry-pick从`master`分支选取对应的commit合并到`release`分支，此时还是会触发对应的CI服务
+
 ## 结论和参考
 
-Trunk-based Development已经被各大公司成功实践了很十几年，这些公司有Google、Facebook、LinkedIn等。企业在研发**产品**时，想要在研发部门中顺利地实施Trunk-based Development，还需要掌握一些技巧和搭建自动化基础设施。这些技巧需要所有研发人员达成共识，并养成习惯。当习惯形成之后，则需要借助一些自动化基础设施来加速研发流程，这个研发流程就是CI/CD。当研发流程搭建起来之后，则需要应用一些发布策略。一切就绪之后，整个研发团队的研发效率将会达到一个质的飞跃。在研发团队中实施Trunk-based Development以及为其搭建CI服务只是构建企业级软件研发流程的第一步。当新功能完成研发，并准备好发布的时候，也需要一套基础设施将研发好的功能及时高效地发布到用户现场，这就是Continuous Delivery(CD)。企业要想搭建完整的CI/CD流程，除了实施本文提到CI部分，还需要参考这篇文章[<如何提高企业的研发效率--CI/CD>](https://2cloudlab.com/blog/why-organization-should-practice-cicd/)来实施CD部分。
+Trunk-based Development已经被各大公司成功实践了十几年，这些公司有Google、Facebook、LinkedIn等。企业在研发**产品**时，想要在研发部门中顺利地实施Trunk-based Development，还需要掌握一些技巧和搭建自动化基础设施。这些技巧需要所有研发人员达成共识，并养成习惯。当习惯形成之后，则需要借助一些自动化基础设施来加速研发流程，这个研发流程就是CI/CD。当研发流程搭建起来之后，则需要应用一些发布策略。一切就绪之后，整个研发团队的研发效率将会达到一个质的飞跃。在研发团队中实施Trunk-based Development以及为其搭建CI服务只是构建企业级软件研发流程的第一步。当新功能完成研发，并准备好发布的时候，也需要一套基础设施将研发好的功能及时高效地发布到用户现场，这就是Continuous Delivery(CD)。企业要想搭建完整的CI/CD流程，除了实施本文提到CI部分，还需要参考这篇文章[<如何提高企业的研发效率--CI/CD>](https://2cloudlab.com/blog/why-organization-should-practice-cicd/)来实施CD部分。
 
 本文的内容参考了大量国外的资料，这些资料可以进一步加深读者对Trunk-based development的理解，读者可以根据自身的实际情况进一步学习国外最新的技术，并将其应用到自己的项目当中。
 
