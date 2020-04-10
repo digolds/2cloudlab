@@ -14,12 +14,12 @@ tags: ["软件研发流程", "trunk-based development", "CI/CD", "云计算", "�
 2. 团队需要掌握哪些技巧来实践Trunk-based Development？
 3. 为Trunk-Based Development配套CI服务
 4. Trunk-Based Development的实施细节
-5. 如何使用github来实施Trunk-Based Development
+5. 使用github来实施Trunk-Based Development的基本思路
 6. 结论和参考
 
 ## 什么是Trunk-based Development？
 
-Trunk-based Development是指：所有研发人员围绕主分支(也就是我们常常见到的`master`分支)来共同研发，在研发过程中拒绝创建存活时间较长的分支，并使用Feature Toggles和Branch by Abstraction等技术在主分支上逐步发布需要长时间（通常是1周）才能研发完成的功能。[官方](https://trunkbaseddevelopment.com/#one-line-summary)对Trunk-based Development的概括如下所示：
+Trunk-based Development是指：所有研发人员围绕主分支`trunk`(也就是github上的`master`分支)来共同研发，在研发过程中拒绝创建存活时间较长的分支，并使用Feature Toggles和Branch by Abstraction等技术在主分支上逐步发布需要长时间（通常是1周）才能研发完成的功能。[官方](https://trunkbaseddevelopment.com/#one-line-summary)对Trunk-based Development的概括如下所示：
 
 > A source-control branching model, where developers collaborate on code in a single branch called ‘trunk’ *, resist any pressure to create other long-lived development branches by employing documented techniques. They therefore avoid merge hell, do not break the build, and live happily ever after.
 
@@ -88,23 +88,36 @@ CI（Continues Integration）是指将各个研发团队的研发成果正确且
 * 为团队的每一个研发人员预留时间学习和掌握之前提到的技巧，使得团队成员达成共识
 * 每次发布只能通过`release`分支，修复bug和性能优化的改动应该提交到`trunk`分支，最终通过cherry-pick的方式将这些提交merge到`release`分支。当有新功能对外发布时，需要删除原来的`release`分支，并从`trunk`分支拉取新的`release`分支
 
-## 如何使用github来实施Trunk-Based Development
+## 使用github来实施Trunk-Based Development的基本思路
 
-github是一个非常有影响力的程序员社交平台。这个平台不仅向全世界的开发者提供了线上交流的平台，而且提供了方便开发者研发软件所需的功能。其中，有2个功能非常流行，一个是代码托管和CI/CD服务，而且这2个服务是免费的！这2个服务使得任何研发团队都可以快速搭建现代化的CI/CD流程。
+github是一个非常有影响力的程序员社交平台。这个平台不仅向全世界的开发者提供了线上交流的平台，而且提供了方便开发者研发软件所需的功能。其中，有2个功能非常流行，一个是代码托管和Actions服务，而且这2个服务是免费的！这2个服务使得任何研发团队都可以快速搭建现代化的CI/CD流程。
 
-github提供了大多数功能给开发者使用，这些功能有：账号管理、源码托管、Action服务（也就是CI/CD）和协作沟通的线上通道。接下来我将使用这些功能并通过一个例子来介绍如何在github上实践Trunk-Based Development以及为其搭建CI服务。
+github提供了大多数功能给开发者使用，这些功能有：账号管理、源码托管、Action服务（也就是CI/CD）、文件存储和协作沟通的线上通道。接下来我将介绍在github上实践Trunk-Based Development的基本思路。在掌握这些思路之后，读者需要进一步参考这篇文章[<从提出想法到对外发布产品-如何0成本在github上缩短该过程>](https://2cloudlab.com/blog/how-to-setup-ci-service-base-on-github/)来实践Trunk-Based Development。
 
 1. 在github上创建一个repository，这个repository用于放置产品的源码
-2. 为`master`和`release`分支创建对应的CI服务，也就是在`.github/workflows`目录中创建后缀为`.yml`或`.yaml`的文件。具体解释如下：
+2. 为`master`和`release`分支创建对应的CI服务，也就是在`.github/workflows`目录中创建2个文件：`master.yml`和`release.yml`。每个文件定义了一个workflow，每个workflow定义了触发条件和一些执行步骤。`master.yml`针对`master`分支定义了build，test步骤，每次提交到该分支都会执行build和test步骤；`release.yml`针对`release`分支定义了build，test，archive，每次在`release`分支上打tag（比如`v0.0.1`）都会在该分支上执行build，test和archive步骤。将创建的`master.yml`和`release.yml`文件推送到该repository上
 3. 将每一个参与研发的人员加入到这个repository中，并授予他们可读写的权限
-4. 让其中一个研发人员基于`master`分支拉取最新代码，并且拉出一个分支`feature_update_readme`，修改README.md。在本地运行测试，如果通过则将修改提交到`feature_update_readme`分支，并推送到github
-5. 到github页面中选择此次提交，并创建pull request。这个pull request会触发CI，同时其他成员将看到这个pull request，并可以在上面提供意见，该意见可以被你看到，直到修改通过之后便可以合并
-6. 当需要对外发布的时候，那么可以拉取另外一个分支`release`，对应的CI服务会启动，并将生成的可运行结果存储到github的package存储
-7. 当发布的产品有问题的时候，可以通过cherry-pick从`master`分支选取对应的commit合并到`release`分支，此时还是会触发对应的CI服务
+4. 研发人员可以直接在`master`分支上提交，也可以拉出`feature`分支进行修改，最终合并到`master`分支，但是这个`feature`分支的生命周期不能超过1天。当研发人员在`master`分支上提交代码后，会自动触发`master.yml`所定义的workflow。该workflow将执行build和test步骤来确保`trunk`分支是正常的
+5. 如果使用`feature`分支，则会用到github的pull request功能。这个功能可以帮助团队成员进行Code Review。当某一名成员发起pull request时，同样也会触发`master.yml`所定义的workflow。团队的其他成员则可以在pull request的操作面板上提交意见，查看此次发起提交的运行结果
+6. 当需要对外发布的时候，那么可以拉取另外一个分支`release`，然后对该分支打上tag（比如`v0.0.1`），此时`release.yml`所定义的workflow会启动，该workflow除了执行步骤build和test，最终还要执行archive步骤。执行archive的时候会把生成的结果发布到github的release存储。release存储是对外开放的，任何人都可以到release存储获取并使用你发布的产品
+7. 当发布的产品有bug的时（比如功能缺陷，性能差劲等），可以通过cherry-pick从`master`分支选取对应的commit合并到`release`分支。当已知的bug都修复了，那么在`release`分支上打上一个tag（比如`v0.0.2`），此时会触发`release.yml`所定义的workflow
+8. 当进入下一次迭代并准备好发布新功能的时候，那么需要把之前的`release`分支删除，并且再从分支`master`拉出新的`release`分支，此时产品的版本号应该变成`v0.1.x`
+
+通过以上思路便可以在github上创建一个高效的基于Trunk-Based Development的CI流程，而且它是**免费**且适用于**全世界的开发者**的。
+
+当以上CI流程搭建完毕之后，研发人员只需要向`master`分支提交代码，此时Actions服务就会自动执行build和test步骤来验证此次提交是正确的（通过`master.yml`所定义的workflow来保证）。
+
+当研发人员在`release`分支打上tag的时候（比如`v0.0.1`或者`v0.0.2`），此时Actions服务会自动执行build、test和archive步骤（通过`release.yml`所定义的workflow来保证），其中archive步骤会把生成的结果发布到github的release存储中。
+
+为了能够更好地理解以上过程，我将在这篇文章[<从提出想法到对外发布产品-如何0成本在github上缩短该过程>](https://2cloudlab.com/blog/how-to-setup-ci-service-base-on-github/)中，通过一个具体的例子来说明如何基于github搭建CI流程。
 
 ## 结论和参考
 
-Trunk-based Development已经被各大公司成功实践了十几年，这些公司有Google、Facebook、LinkedIn等。企业在研发**产品**时，想要在研发部门中顺利地实施Trunk-based Development，还需要掌握一些技巧和搭建自动化基础设施。这些技巧需要所有研发人员达成共识，并养成习惯。当习惯形成之后，则需要借助一些自动化基础设施来加速研发流程，这个研发流程就是CI/CD。当研发流程搭建起来之后，则需要应用一些发布策略。一切就绪之后，整个研发团队的研发效率将会达到一个质的飞跃。在研发团队中实施Trunk-based Development以及为其搭建CI服务只是构建企业级软件研发流程的第一步。当新功能完成研发，并准备好发布的时候，也需要一套基础设施将研发好的功能及时高效地发布到用户现场，这就是Continuous Delivery(CD)。企业要想搭建完整的CI/CD流程，除了实施本文提到CI部分，还需要参考这篇文章[<如何提高企业的研发效率--CI/CD>](https://2cloudlab.com/blog/why-organization-should-practice-cicd/)来实施CD部分。
+Trunk-based Development已经被各大公司成功实践了十几年，这些公司有Google、Facebook、LinkedIn等。企业在研发**产品**时，想要在研发部门中顺利地实施Trunk-based Development，还需要掌握一些技巧和搭建自动化基础设施。这些技巧需要所有研发人员达成共识，并养成习惯。
+
+当习惯形成之后，则需要借助一些自动化基础设施来加速研发流程，这个研发流程就是CI/CD。目前有许多成熟的工具提供CI的支持，比如我们可以免费使用github提供的服务来快速搭建CI流程（读者可以参考这篇文章[<从提出想法到对外发布产品-如何0成本在github上缩短该过程>](https://2cloudlab.com/blog/how-to-setup-ci-service-base-on-github/)）。
+
+当研发流程搭建起来之后，则需要应用一些发布策略。一切就绪之后，整个研发团队的研发效率将会达到一个质的飞跃。在研发团队中实施Trunk-based Development以及为其搭建CI服务只是构建企业级软件研发流程的第一步。当新功能完成研发，并准备好发布的时候，也需要一套基础设施将研发好的功能及时高效地发布到用户现场，这就是Continuous Delivery(CD)。企业要想搭建完整的CI/CD流程，除了实施本文提到CI部分，还需要参考这篇文章[<如何提高企业的研发效率--CI/CD>](https://2cloudlab.com/blog/why-organization-should-practice-cicd/)来实施CD部分。
 
 本文的内容参考了大量国外的资料，这些资料可以进一步加深读者对Trunk-based development的理解，读者可以根据自身的实际情况进一步学习国外最新的技术，并将其应用到自己的项目当中。
 
