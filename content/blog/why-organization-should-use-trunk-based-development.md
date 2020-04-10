@@ -97,13 +97,15 @@ github提供了大多数功能给开发者使用，这些功能有：账号管�
 1. 在github上创建一个repository，这个repository用于放置产品的源码
 2. 为`master`和`release`分支创建对应的CI服务，也就是在`.github/workflows`目录中创建2个文件：`master.yml`和`release.yml`。每个文件定义了一个workflow，每个workflow定义了触发条件和一些执行步骤。`master.yml`针对`master`分支定义了build，test步骤，每次提交到该分支都会执行build和test步骤；`release.yml`针对`release`分支定义了build，test，archive，每次在`release`分支上打tag（比如`v0.0.1`）都会在该分支上执行build，test和archive步骤。将创建的`master.yml`和`release.yml`文件推送到该repository上
 3. 将每一个参与研发的人员加入到这个repository中，并授予他们可读写的权限
-4. 研发人员可以直接在`master`分支上提交，也可以拉出`feature`分支进行修改，最终合并到`master`分支，但是这个`feature`分支的生命周期不能超过1天。当研发人员在`master`分支上提交代码后，会自动触发`master.yml`所定义的workflow。该workflow将执行build和test步骤来确保`trunk`分支是正常的
+4. 研发人员可以直接在`master`分支上提交，也可以拉出`feature`分支进行修改，最终合并到`master`分支，但是这个`feature`分支的生命周期不能超过1天。当研发人员在`master`分支上提交代码后，会自动触发`master.yml`所定义的workflow。该workflow将执行build和test步骤来确保`master`分支是正常的
 5. 如果使用`feature`分支，则会用到github的pull request功能。这个功能可以帮助团队成员进行Code Review。当某一名成员发起pull request时，同样也会触发`master.yml`所定义的workflow。团队的其他成员则可以在pull request的操作面板上提交意见，查看此次发起提交的运行结果
 6. 当需要对外发布的时候，那么可以拉取另外一个分支`release`，然后对该分支打上tag（比如`v0.0.1`），此时`release.yml`所定义的workflow会启动，该workflow除了执行步骤build和test，最终还要执行archive步骤。执行archive的时候会把生成的结果发布到github的release存储。release存储是对外开放的，任何人都可以到release存储获取并使用你发布的产品
 7. 当发布的产品有bug的时（比如功能缺陷，性能差劲等），可以通过cherry-pick从`master`分支选取对应的commit合并到`release`分支。当已知的bug都修复了，那么在`release`分支上打上一个tag（比如`v0.0.2`），此时会触发`release.yml`所定义的workflow
 8. 当进入下一次迭代并准备好发布新功能的时候，那么需要把之前的`release`分支删除，并且再从分支`master`拉出新的`release`分支，此时产品的版本号应该变成`v0.1.x`
 
-通过以上思路便可以在github上创建一个高效的基于Trunk-Based Development的CI流程，而且它是**免费**且适用于**全世界的开发者**的。
+通过以上思路便可以在github上创建一个高效的基于Trunk-Based Development的CI流程（如下图所示），而且它是**免费**且适用于**全世界的开发者**的。
+
+![](https://2cloudlab.com/images/blog/trunk-based-ci-service.png)
 
 当以上CI流程搭建完毕之后，研发人员只需要向`master`分支提交代码，此时Actions服务就会自动执行build和test步骤来验证此次提交是正确的（通过`master.yml`所定义的workflow来保证）。
 
