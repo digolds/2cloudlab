@@ -92,7 +92,7 @@ CI（Continues Integration）是指将各个研发团队的研发成果正确且
 
 github是一个非常有影响力的程序员社交平台。这个平台不仅向全世界的开发者提供了线上交流的平台，而且提供了方便开发者研发软件所需的功能。其中，有2个功能非常流行，一个是代码托管和Actions服务，而且这2个服务是免费的！这2个服务使得任何研发团队都可以快速搭建现代化的CI/CD流程。
 
-github提供了大多数功能给开发者使用，这些功能有：账号管理、源码托管、Action服务（也就是CI/CD）、文件存储和协作沟通的线上通道。接下来我将介绍在github上实践Trunk-Based Development的基本思路。在掌握这些思路之后，读者需要进一步参考这篇文章[<从提出想法到对外发布产品-如何0成本在github上缩短该过程>](https://2cloudlab.com/blog/how-to-setup-ci-service-base-on-github/)来实践Trunk-Based Development。
+github提供了大多数功能给开发者使用，这些功能有：账号管理、源码托管、Action服务（也就是CI/CD）、文件存储和协作沟通的线上通道。接下来我将介绍在github上实践Trunk-Based Development的基本思路。在掌握这些思路之后，读者需要进一步参考这篇文章[<如何0成本在github上构建CI>](https://2cloudlab.com/blog/how-to-setup-ci-service-base-on-github/)来实践Trunk-Based Development。
 
 1. 在github上创建一个repository，这个repository用于放置产品的源码
 2. 为`master`和`release`分支创建对应的CI服务，也就是在`.github/workflows`目录中创建2个文件：`master.yml`和`release.yml`。每个文件定义了一个workflow，每个workflow定义了触发条件和一些执行步骤。`master.yml`针对`master`分支定义了build，test步骤，每次提交到该分支都会执行build和test步骤；`release.yml`针对`release`分支定义了build，test，archive，每次在`release`分支上打tag（比如`v0.0.1`）都会在该分支上执行build，test和archive步骤。将创建的`master.yml`和`release.yml`文件推送到该repository上
@@ -111,13 +111,13 @@ github提供了大多数功能给开发者使用，这些功能有：账号管�
 
 当研发人员在`release`分支打上tag的时候（比如`v0.0.1`或者`v0.0.2`），此时Actions服务会自动执行build、test和archive步骤（通过`release.yml`所定义的workflow来保证），其中archive步骤会把生成的结果发布到github的release存储中。
 
-为了能够更好地理解以上过程，我将在这篇文章[<从提出想法到对外发布产品-如何0成本在github上缩短该过程>](https://2cloudlab.com/blog/how-to-setup-ci-service-base-on-github/)中，通过一个具体的例子来说明如何基于github搭建CI流程。
+为了能够更好地理解以上过程，我将在这篇文章[<如何0成本在github上构建CI>](https://2cloudlab.com/blog/how-to-setup-ci-service-base-on-github/)中，通过一个具体的例子来说明如何基于github搭建CI流程。
 
 ## 结论和参考
 
 Trunk-based Development已经被各大公司成功实践了十几年，这些公司有Google、Facebook、LinkedIn等。企业在研发**产品**时，想要在研发部门中顺利地实施Trunk-based Development，还需要掌握一些技巧和搭建自动化基础设施。这些技巧需要所有研发人员达成共识，并养成习惯。
 
-当习惯形成之后，则需要借助一些自动化基础设施来加速研发流程，这个研发流程就是CI/CD。目前有许多成熟的工具提供CI的支持，比如我们可以免费使用github提供的服务来快速搭建CI流程（读者可以参考这篇文章[<从提出想法到对外发布产品-如何0成本在github上缩短该过程>](https://2cloudlab.com/blog/how-to-setup-ci-service-base-on-github/)）。
+当习惯形成之后，则需要借助一些自动化基础设施来加速研发流程，这个研发流程就是CI/CD。目前有许多成熟的工具提供CI的支持，比如我们可以免费使用github提供的服务来快速搭建CI流程（读者可以参考这篇文章[<如何0成本在github上构建CI>](https://2cloudlab.com/blog/how-to-setup-ci-service-base-on-github/)）。
 
 当研发流程搭建起来之后，则需要应用一些发布策略。一切就绪之后，整个研发团队的研发效率将会达到一个质的飞跃。在研发团队中实施Trunk-based Development以及为其搭建CI服务只是构建企业级软件研发流程的第一步。当新功能完成研发，并准备好发布的时候，也需要一套基础设施将研发好的功能及时高效地发布到用户现场，这就是Continuous Delivery(CD)。企业要想搭建完整的CI/CD流程，除了实施本文提到CI部分，还需要参考这篇文章[<如何提高企业的研发效率--CI/CD>](https://2cloudlab.com/blog/why-organization-should-practice-cicd/)来实施CD部分。
 
