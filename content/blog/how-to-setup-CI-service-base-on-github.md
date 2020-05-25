@@ -67,14 +67,161 @@ github平台存储了开发者的代码，提供了搭建CI的Action服务，拥
 这个例子是由Go语言来编写的，完整的源码可以到[这里](https://github.com/2cloudlab/demo_for_ci)获取，其目录结构如下所示：
 
 ```go
-mylib
+.
+|____.github
+| |____workflows
+| | |____integration_workflow.yaml
+| | |____master_workflow.yaml
+|____go.mod
+|____main.go
+|____main_integration_test.go
+|____main_test.go
+|____Makefile
+|____mylib
+| |____external_lib.go
+| |____external_lib_test.go
 ```
 
-其中`.github/workflows`中定义了2个流程，由它们构成这个示例的CI，其余部分是Go相关的源码。
+其中`.github/workflows`目录下有2个文件`master_workflow.yaml`和`integration_workflow.yaml`，由它们构成这个示例的CI，其余部分是Go相关的源码。github的Actions服务会根据这2个文件中的内容来启动虚拟机并执行其中定义的步骤。接下来让我们看看这2个文件的区别。
+
+首先，让我们看看`master_workflow.yaml`中的内容:
+```yaml
+name: Daily routines
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.13
+
+      - name: Check out code
+        uses: actions/checkout@v1
+
+      - name: Lint Go Code
+        run: |
+          export PATH=$PATH:$(go env GOPATH)/bin # temporary fix. See https://github.com/actions/setup-go/issues/14
+          go get -u golang.org/x/lint/golint 
+          make lint
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.13
+
+      - name: Check out code
+        uses: actions/checkout@v1
+
+      - name: Run Unit tests.
+        run: make test-coverage
+```
+
+以上内容主要分为以下2部分：
+
+* `on`定义了触发条件
+
+这部分的含义是如果有修改推送或者PR到`master`分支，那么Actions服务将会根据`jobs`中定义的内容来启动虚拟机并执行相关的步骤
+
+* `jobs`定义了执行步骤
+
+这部分定义了2个job，它们分别是`lint`和`test`。每一个job运行在一台虚拟机或者容器里，上面运行着Ubuntu操作系统，job之间是相互独立同时运行的。这些job可以引用一些可复用的Actions模块（比如`lint`中的`actions/setup-go@v1`和`actions/checkout@v1`），每个模块定义了一些执行步骤（比如准备Go环境和拉取该Go示例的源码)。
+
+当研发人员向`master`分支提交代码，Actions就会根据该`yaml`文件，创建2台虚拟机或者容器，同时执行`lint`和`test`。`lint`的作用是检查Go的语法问题，而`test`的作用是运行单元测试并生成测试报告。如果其中有一个job失败了，那么整个流程是失败的，研发工作者可以及时看到整个流程的结果，如下图所示：
+
+![](https://2cloudlab.com/images/blog/master-workflow-partial-fail.png)
+
+其次，让我们看看`integration_workflow.yaml`中的内容：
+```yaml
+name: Package routines
+on:
+  create:
+    tags:
+      - v*
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.13
+
+      - name: Check out code
+        uses: actions/checkout@v1
+
+      - name: Lint Go Code
+        run: |
+          export PATH=$PATH:$(go env GOPATH)/bin # temporary fix. See https://github.com/actions/setup-go/issues/14
+          go get -u golang.org/x/lint/golint 
+          make lint
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.13
+
+      - name: Check out code
+        uses: actions/checkout@v1
+
+      - name: Run all tests.
+        run: make all-tests-coverage
+
+  build:
+    name: Integration
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v1
+
+      - name: Validates GO releaser config
+        uses: docker://goreleaser/goreleaser:latest
+        with:
+          args: check
+
+      - name: Create package on GitHub
+        uses: docker://goreleaser/goreleaser:latest
+        with:
+          args: release
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+```
+
+以上内容新增了`build`任务，这个任务需要等待`lint`和`test`任务成功之后才会执行。它使用了`docker://goreleaser/goreleaser:latest`来制作集成包，并发布到github的存储服务（如下图所示）。除此之外，这个workflow的`test`任务执行了单元测试和集成测试，之所以执行集成测试，是因为在这个阶段需要将各个模块集成到一起测试，确保软件整体是正常工作的，同时也确保了下游团队拿到的集成包是可信的。由于添加了集成测试，因此执行该过程所需的时间会比前面另外一个过程所需的时间长，从而使得团队无法及时看到结果。这也就是为什么我们不希望将集成测试放在`master_workflow.yaml`中执行。
+
+![](https://2cloudlab.com/images/blog/integration-workflow-success.png)
+
+有了以上2个文件，研发工作者只需要专注于软件功能的研发。在新功能的研发阶段，研发工作者只需要修改`master`分支，其对应的master_workflow流程会及时响应每一次修改。在准备发布新功能的阶段，发布工作者只需要拉取新的分支（比如`integration`）并为其打上类似`v0.0.2`的tag，对应的integration_workflow流程将生成打包结果并归档到github的免费存储服务，供其他团队使用。
 
 ## 总结
 
-研发工作者的每一次提交都会在较短的时间内得到反馈，以便及时修复提交之后产生的问题。每一次提交都会触发一系列活动：准备编译环境、安装依赖库、获取源代码、检测代码的合法性、编译源代码、执行自动化测试、生成测试报告以及归档编译通过的集成安装包。用户只需要下载归档好的安装包，而研发工作者则专注于软件功能的研发，整个过程就是CI
+构建现代CI的方式有很多种，其中github提供了一些免费的服务来解决这个问题，这些服务分别是源码托管服务、Actions服务和存储服务。开发者只需要定义`yaml`文件就可以将这3个服务串联在一起创建出一个可靠的CI。在github上构建CI的优势有2个：**免费**和**共享其他开发者的成果**。任何团队都可以免费地使用这3种服务，除此之外，CI的构建者可以使用其他人制作好的可复用模块来快速搭建CI。
 
-[Building a basic CI/CD pipeline for a Golang application using GitHub Actions](https://brunopaz.dev/blog/building-a-basic-ci-cd-pipeline-for-a-golang-application-using-github-actions)
-[Creating a CI/CD pipeline using Github Actions](https://medium.com/@michaelekpang/creating-a-ci-cd-pipeline-using-github-actions-b65bb248edfe)
+本文通过一个Go示例来解释了基于Trunk-Based Development，在github上构建CI。这个示例定义了2个`yaml`文件，它们分别是：`master_workflow.yaml`和`integration_workflow.yaml`。每个文件对应一个分支，并作用于不同的研发阶段，比如master_worflow流程的主要作用在于确保`master`分支一直处于健康状态，而integration_workflow流程则确保对外发布一个可信度较高的集成包。
+
+虽然通过github能够轻松地构建CI，但是它也是有局限的。首先，它的Actions服务的免费套餐是有时间限制的（2,000 minutes/month），超出了这个限制则需要升级为付费用户。其次，通过中国区访问它的存储服务的延时较大，从而导致用户下载集成包的过程变慢了。最后，如果要集成CD，那么需要设置访问凭证，从而暴露了风险。
+
+关于Actions服务的了解，读者可以参考以下文章
+
+* [Building a basic CI/CD pipeline for a Golang application using GitHub Actions](https://brunopaz.dev/blog/building-a-basic-ci-cd-pipeline-for-a-golang-application-using-github-actions)
+* [Creating a CI/CD pipeline using Github Actions](https://medium.com/@michaelekpang/creating-a-ci-cd-pipeline-using-github-actions-b65bb248edfe)
+
+*[2cloudlab.com](https://2cloudlab.com/)为企业准备产品的运行环境，只需要1天！*
