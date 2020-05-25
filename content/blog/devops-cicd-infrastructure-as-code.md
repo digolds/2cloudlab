@@ -86,5 +86,8 @@ Terraform是一个基础工具，适用于大多数企业，它能够解决资�
 * Effective DevOps by Jennifer Davis and Katherine Daniels (O’Reilly)
 * Lean Enterprise by Jez Humble, Joanne Molesky, Barry O’Reilly (O’Reilly)
 * Hello, Startup: A Programmer’s Guide to Building Products, Technologies, and Teams by Yevgeniy Brikman (O’Reilly)
+* DevOps for Serverless Applications
+* Monolith to Microservices
+* Building Microservices
 
 ___[2cloudlab.com](https://2cloudlab.com/)为企业准备产品的运行环境，只需要1天！___
