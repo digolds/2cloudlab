@@ -15,6 +15,7 @@ tags: ["Kubernetes", "Docker", "CI/CD", "云计算", "微服务"]
 3. 为什么选择K8S
 4. K8S的组成部分
 5. K8S的资源类型
+6. 在AWS上搭建K8S服务的选项
 
 ## Kubernetes所解决的问题
 
@@ -80,13 +81,13 @@ K8S期初是由Google研发的，并在内部管理里了十几万台服务器�
 
 让我们先从用户角度来审视K8S，然后逐渐深入到各个组件。从用户角度来说，K8S在用户和一族机器之间提供了一层抽象。通过这层抽象，用户只需要给K8S提供`yaml`文件，K8S就能够根据该文件调度资源（比如创建容器，部署应用，替换无用的资源等），如下图所示：
 
-![]()
+![](https://2cloudlab.com/images/blog/kubernetes-simple.png)
 
 为了操作K8S，那么需要一个类似汽车方向盘的东西，而这个东西就是kubectl。这是K8S官方提供的命令行工具，任何操作K8S的命令，都应该通过该工具下达。用户要做的只是在`yaml`文件里定义：创建哪种类型的容器以及创建几个，它们需要的CPU和内存是多少等等，并通过kubectl工具将该文件发送到K8S服务，该服务自己就能根据`yaml`文件中的内容选择一个最优的方案来调度资源（包括选择服务器，监控节点和容器状态，弹性伸缩容器数量，重启容器等等）。
 
 如果你站近一点审视K8S，如下图所示：
 
-![]()
+![](https://2cloudlab.com/images/blog/kubernetes-architecture.png)
 
 你会发现K8S由2部分组成，它们分别是**Control Plane**和**Worker Nodes**。接下来让我们看看这2部分的具体内容。
 
@@ -145,6 +146,50 @@ Pod资源是K8S的基础单元。每个pod可容纳一个或者几个相关的�
 4. pod的运行环境是短暂的
 
 pod的运行环境是不停地变化的，当pod从某个Worker Node迁移到另外一个Worker Node时它的运行环境是不一样的。这里的运行环境指的是磁盘上产生的信息会因为pod的迁移而变化。因此pod中的容器实例不应该依赖磁盘存储。
+
+* Controllers
+
+虽然pod是K8S的基础单元，但是用户不会直接创建它们。一个pod是运行在Worker Node上的，如果这个pod因为异常退出，那么运行在该Worker Node上的kubelet会重新启动新的pod，这种特性使得K8S具有自动自愈的能力。但是，如果整个Worker Node因异常退出，那么运行在这个Worker Node上的所有Pod都会受到影响。为了使这个Worker Node上的pod迁移到另外一个Worker Node上，那么需要一个更高的逻辑单元，也就是K8S的Controller资源。这类资源可以跨Worker Node迁移Pod，比如某个Worker Node退出了，Controller资源就可以选择另外一个健康的Worker Node，并将在上面启动新的pod，从而代替已经退出的pod。每个Worker Node上面同时运行了多个pod，每个pod都会受到某一个Controller资源的管理。Deployment是K8S中常见的Controller，用户只需要在yaml文件中定义该类资源，并提交给K8S，然后K8S会自动创建一个Deployment资源。接着，Deployment资源会根据yaml文件里所定义的内容来创建pod，这些内容有:
+
+1. 部署什么类型的pod，这类pod的容器image是什么?
+2. 这类pod需要同时运行几份?
+3.  如果该pod需要更新，那么采取哪种更新策略?
+
+Deployment会自动部署pod并让其运行在不同的Worker Node上，然后会一直监控这些pod的运行状态，自动选择健康的Worker Node来替换不健康的Worker Node。如果需要更新pod，那么只需要更新Deployment的yaml文件(比如更新Docker image的tag)，并提交给K8S，它会根据指定的更新策略(比如rolling deployment 或 canary deployment)来更新正在运行的pod。
+
+* Namespaces
+
+Namespaces是K8S的某一类资源，它允许用户为资源分区。分区的作用是为了逻辑上隔离不同的研发环境，比如一个数字化产品需要test，stage，prod环境，每一个环境都会运行一族服务器资源，为了单独操作某个环境的资源，那么需要借助Namespace来分区。在K8S中，几乎所有资源都是运行在某一个Namespace里，如果创建某类资源时没有定义Namespace，那么该资源将会创建在一个default的Namespace，这个Namespace是K8S保留的，为了使用其它Namespace，那么用户需要自己创建所需的Namespace。最后要注意的是，Namespace只是为资源从逻辑上进行了分区，并不会影响不同分区不同资源的通信和交互。
+
+* Services和Service Discovery
+
+每一个pod都会有一个对应的IP地址，但是这个pod上的IP地址会经常改变，比如pod从A节点换到B节点，这些pod的IP地址就改变了。一般情况下，你不会直接与单个pod通信，而会通过一个Service资源来和许多相同的pod通信，而这个Service资源拥有固定的IP地址，它可以将请求均匀分配给背后的pod。一般情况下，一个服务会由相同的pod组成，为了高可用性，这些pod会运行在不同的Worker Node上。为了使这些pod对外提供服务，那么需要告诉K8S创建Service资源，并由该资源分配请求给背后的pod以及对外提供固定的IP地址。该Service资源的调用者可以是K8S中的资源或者是外部资源。K8S中的资源可以通过环境变量或者内置的DNS服务来发现服务。比如，一个pod启动之后它会把K8S中已有服务的域名加载到环境变量里，并通过内置的DNS服务来发现服务。假设我们部署了一个服务，创建了一个Service资源，叫backend，一个Deployment资源和许多pod。为了使用该服务，我们可以拿到这个服务的域名信息，格式为backend.<NAMESPACE>.svc.cluster.local，其中NAMESPACE为该Service资源所在的分区。
+
+* 配置和加密信息
+
+为了支持相同容器实例在不同环境调用不同资源，那么可以借助ConfigMap，它是一个key/value键值对，value可以是简单的字符串类型或者文件内容。K8S将ConfigMap存储在etcd里，pod在启动的时候可将ConfigMap作为环境变量或者放到该pod的文件系统里，通过这种方式可以使不同环境相同的实例访问不同资源。
+
+如果需要为pod提供一些敏感信息，比如数据库的密码，那么需要借助Kubernetes Secret。Secrets类似于ConfigMaps但是有以下特点:
+
+当pod需要使用这些敏感信息时，K8S只会将其存储在该pod的内存里或者文件系统里，K8S确保这些敏感信息不会持久化存储。这种做法确保了敏感信息不容易泄露。除此之外，这些信息是以加密的方式存储在etcd里的。
+
+**注意:** etcd的加密功能只在1.13或之后版本的K8S出现，大多数K8S服务是不支持这种加密功能的。之前版本的K8S甚至不会将敏感信息加密存储到etcd里。
+
+## 在AWS上搭建K8S服务的选项
+
+在AWS上搭建K8S服务的方式有以下3种，它们的困难等级从难到易。
+
+* 完全自己搭建
+
+在AWS上完全自己搭建K8S，则需要借助EC2计算资源。你需要在EC2实例上安装Docker，K8S，并将这些实例连接成一个整体。你还需要配置Master Nodes和Worker Nodes，为每一个Node添加合适的访问权限，不仅如此，你还需要为其添加存储资源，定时更新等等。这些工作如果是给一个专业的K8S团队来实现，那么至少需要3到6个月。
+
+* 借助K8S工具
+
+市面上有很多工具能够帮助你轻松在AWS上搭建K8S服务，这些工具有eksctl, kops, kubespray, kubeadm等。虽然这些工具能够帮助你通过几行命令就能创建K8S族，但是它们依然难以结合自身情况定制和管理K8S族。不仅如此，这些工具还不支持Infrastructure As Code，这就使得你没法使用版本控制来跟踪历史。与自己搭建类似，这些工具没办法帮助维护K8S族，你依然需要定期更新软件，确保K8S服务是高可用的。
+
+* 使用AWS的EKS服务
+
+Amazon EKS是开箱即用的K8S服务，用户可以直接通过它创建K8S服务，并直接使用。其中的维护，更新之类的工作则全都由AWS处理，这种方案特别适合没有能力自己搭建K8S服务的团队。不过这种选项一些缺点，它的收费模式是按照每个实例每小时0.1美元计费的，除此之外，AWS无法及时将K8S的新功能添加到EKS服务。
 
 ## 参考
 
