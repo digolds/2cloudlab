@@ -1,6 +1,6 @@
 ---
 title: "从提出想法->对外发布产品--如何0成本在github上缩短该过程"
-date: 2020-03-17T12:21:58+06:00
+date: 2020-03-19T12:21:58+06:00
 description : ""
 type: post
 image: images/blog/github.jpg
