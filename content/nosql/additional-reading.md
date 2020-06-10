@@ -1,14 +1,14 @@
 ---
 title: "NoSQL的学习资料"
 date: 2019-02-21T12:27:38+06:00
-description: "后续的内容将涉及DynamoDB的API，比如通过AWS CLI来操作DynamoDB。为了操作DynamoDB，我们需要搭建DynamoDB的环境。"
+description: "这篇文章收录了一些关于NoSQL的英文资料。有的解释NoSQL为何能规模化而SQL却受到限制；有的涉及NoSQL的单表设计原则，以及解释为何需要使用单表；其中有一篇文章是关于如何将SQL中多张有关联的表转化成DynamoDB中的单张表。还有一些关于DynamoDB的视频资料，其中的内容讲述了NoSQL的设计原则，以及如何高效使用DynamoDB。读者可以通过这些学习资料来掌握NoSQL的理论知识，通过这些知识来设计既能支持100TBs以上数据又能输出稳定性能的数据应用方案。"
 type: post
 image: images/blog/additional-reading.png
 author: Alex
 tags: ["NoSQL", "DynamoDB", "Data-Intensive"]
 ---
 
-这篇文章收录了一些关于NoSQL的学习资料。有的解释NoSQL为何能规模化而SQL却受到限制；有的涉及NoSQL的单表设计原则，以及解释为何需要使用单表。还有一些关于DynamoDB的视频资料，其中的内容讲述了NoSQL的设计原则，以及如何高效使用DynamoDB。
+这篇文章收录了一些关于NoSQL的英文资料。有的解释NoSQL为何能规模化而SQL却受到限制；有的涉及NoSQL的单表设计原则，以及解释为何需要使用单表；其中有一篇文章是关于如何将SQL中多张有关联的表转化成DynamoDB中的单张表。还有一些关于DynamoDB的视频资料，其中的内容讲述了NoSQL的设计原则，以及如何高效使用DynamoDB。读者可以通过这些学习资料来掌握NoSQL的理论知识，通过这些知识来设计既能支持100TBs以上数据又能输出稳定性能的数据应用方案。
 
 ## 文章:
 
@@ -29,10 +29,11 @@ tags: ["NoSQL", "DynamoDB", "Data-Intensive"]
 
 ## 参考资料:
 
-* [Awesome DynamoDB](https://github.com/alexdebrie/awesome-dynamodb) -- A GitHub repo with DynamoDB links and resources.
+* [Awesome DynamoDB](https://github.com/alexdebrie/awesome-dynamodb) -- A GitHub repo with DynamoDB links and resources
 * [DynamoDB landing page](https://aws.amazon.com/dynamodb/)
 * [AWS Developer Guide Docs](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html)
 * [AWS CLI reference for DynamoDB](https://docs.aws.amazon.com/cli/latest/reference/dynamodb/index.html)
 * [Boto3 (Python client library for AWS) docs](http://boto3.readthedocs.io/en/latest/reference/services/dynamodb.html)
 * [Javascript client library for AWS](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html)
-* [Document Client cheat sheet (Javascript)](https://github.com/dabit3/dynamodb-documentclient-cheat-sheet). Created by [Nader Dabit](https://twitter.com/dabit3).
+* [Document Client cheat sheet (Javascript)](https://github.com/dabit3/dynamodb-documentclient-cheat-sheet).Created by [Nader Dabit](https://twitter.com/dabit3)
+* [原文链接](https://www.dynamodbguide.com/additional-reading)

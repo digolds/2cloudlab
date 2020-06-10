@@ -1,14 +1,16 @@
 ---
 title: "DynamoDB的关键概念"
-date: 2019-02-21T12:27:38+06:00
-description: "在这一章，我们将讨论关于DynamoDB的关键概念。完成这一章的学习之后，你将对以下概念有进一步的认识"
+date: 2019-02-11T12:27:38+06:00
+description: "在使用DynamoDB之前，我们需要了解一些基础概念，这些概念涉及了：表（tables），数据项（items）和每项数据的属性（attributes）、主键（primary keys），有简单主键（Partition Key）和复合主键（Partition Key + Sort Key）、附加索引（secondary indexes）、DynamoDB的读写能力。"
 type: post
 image: images/blog/key-concepts.png
 author: Alex
 tags: ["NoSQL", "DynamoDB", "Data-Intensive"]
 ---
 
-在这一章，我们将讨论关于DynamoDB的关键概念。完成这一章的学习之后，你将对以下概念有进一步的认识：
+在使用DynamoDB之前，我们需要了解一些基础概念，这些概念涉及了：表（tables），数据项（items）和每项数据的属性（attributes）、主键（primary keys），有简单主键（Partition Key）和复合主键（Partition Key + Sort Key）、附加索引（secondary indexes）、DynamoDB的读写能力。
+
+本文将讨论关于DynamoDB的关键概念。完成这一章的学习之后，你将对以下概念有进一步的认识：
 
 * 表（tables），数据项（items）和每项数据的属性（attributes）
 * 主键（primary keys），有简单主键（Partition Key）和复合主键（Partition Key + Sort Key）
