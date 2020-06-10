@@ -25,9 +25,13 @@ theme = "timer-hugo"
         url     = "blog"
         weight  = 5
     [[menu.nav]]
+        name    = "NoSQL"
+        url     = "nosql"
+        weight  = 6
+    [[menu.nav]]
         name    = "联系我们"
         url     = "contact"
-        weight  = 6
+        weight  = 7
 
 # Site Params
 [params]
