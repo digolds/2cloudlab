@@ -1,4 +1,12 @@
-# 关于Dynamo的论文
+---
+title: "关于Dynamo的论文"
+date: 2019-02-21T12:27:38+06:00
+description: "在2004这一年，Amazon.com的增长速度很快，最终其Oracle上的数据规模达到极限，限制了其业务的发展。为了摆脱这种限制，Amazon开始考虑建立他们自己的数据库（注意：在公司内部搭建一个数据库系统是非常糟糕的想法）。在研发自家的数据库之后，亚马逊的工程师创建了创造了**Amazon Dynamo**数据库，这个数据库支撑了大部分Amazon.com业务，包括其购物车。"
+type: post
+image: images/blog/the-dynamo-paper.png
+author: Alex
+tags: ["NoSQL", "DynamoDB", "Data-Intensive"]
+---
 
 在2004这一年，Amazon.com的增长速度很快，最终其Oracle上的数据规模达到极限，限制了其业务的发展。为了摆脱这种限制，Amazon开始考虑建立他们自己的数据库（注意：在公司内部搭建一个数据库系统是非常糟糕的想法）。在研发自家的数据库之后，亚马逊的工程师创建了创造了**Amazon Dynamo**数据库，这个数据库支撑了大部分Amazon.com业务，包括其购物车。
 
@@ -73,4 +81,4 @@ Strong consistency model对于某些场景相当重要-比如银行账户中的�
 * [Dynamo: Amazon's Highly Available Key-value Store](http://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf)
 * [CAP Theorum](https://en.wikipedia.org/wiki/CAP_theorem)
 * [Amazon Takes Another Pass at NoSQL with DynamoDB](http://readwrite.com/2012/01/18/amazon-enters-the-nosql-market/)
-* [原文链接](https://2cloudlab.com/nosql/the-dynamo-paper/)
+* [原文链接](https://www.dynamodbguide.com/the-dynamo-paper)

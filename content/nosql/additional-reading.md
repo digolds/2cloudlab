@@ -1,6 +1,16 @@
-# Additional Reading
+---
+title: "NoSQL的学习资料"
+date: 2019-02-21T12:27:38+06:00
+description: "后续的内容将涉及DynamoDB的API，比如通过AWS CLI来操作DynamoDB。为了操作DynamoDB，我们需要搭建DynamoDB的环境。"
+type: post
+image: images/blog/additional-reading.png
+author: Alex
+tags: ["NoSQL", "DynamoDB", "Data-Intensive"]
+---
 
-## Articles:
+这篇文章收录了一些关于NoSQL的学习资料。有的解释NoSQL为何能规模化而SQL却受到限制；有的涉及NoSQL的单表设计原则，以及解释为何需要使用单表。还有一些关于DynamoDB的视频资料，其中的内容讲述了NoSQL的设计原则，以及如何高效使用DynamoDB。
+
+## 文章:
 
 * [SQL, NoSQL, and Scale: How DynamoDB scales where relational databases don't](https://www.alexdebrie.com/posts/dynamodb-no-bad-queries/) - This is a post of mine explaining the core architectural decisions that allow NoSQL databases to scale further than their SQL brethren.
 * [The What, Why, and When of Single-Table Design with DynamoDB](https://www.alexdebrie.com/posts/dynamodb-single-table/) - A deep look at what it means to do single-table design in DynamoDB and why you would want to. It also includes a few situations where you may want to avoid single-table design.
@@ -9,7 +19,7 @@
 * [From relational DB to single DynamoDB table: a step-by-step exploration](https://www.trek10.com/blog/dynamodb-single-table-relational-modeling/) - Another great post by Forrest Brazeal. It's a detailed walkthrough of how to use the single-table DynamoDB pattern in a complex use case.
 * [Why the PIE theorem is more relevant than the CAP theorem](https://www.alexdebrie.com/posts/choosing-a-database-with-pie/) - Another post I wrote about choosing a database that includes consideration of DynamoDB.
 
-## Videos:
+## 视频:
 
 * [Advanced Design Patterns for DynamoDB (reInvent 2017)](https://www.youtube.com/watch?v=jzeKPKpucS0). Rick Houlihan is a master of DynamoDB and has some great tips.
 * [Advanced Design Pattens for DynamoDB (reInvent 2018)](https://www.youtube.com/watch?v=HaEPXoXVf2k). Rick Houlihan is back with more tips. The first half is similar to 2017, but the second half has different examples. Highly recommended. Get the slides here.
@@ -17,7 +27,7 @@
 * [Data Modeling with DynamoDB (reInvent 2019)](https://www.youtube.com/watch?v=DIQVJqiSUkE). A gentler introduction to DynamoDB single-table concepts. Watch this video if Rick's is too advanced.
 * [Using (and ignoring) DynamoDB Best Practices in Serverless (ServerlessConf NYC 2019)](https://acloud.guru/series/serverlessconf-nyc-2019/view/dynamodb-best-practices). This talk focuses on using DynamoDB in Serverless applications.
 
-## Reference material:
+## 参考资料:
 
 * [Awesome DynamoDB](https://github.com/alexdebrie/awesome-dynamodb) -- A GitHub repo with DynamoDB links and resources.
 * [DynamoDB landing page](https://aws.amazon.com/dynamodb/)

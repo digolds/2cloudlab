@@ -1,4 +1,12 @@
-# DynamoDB的环境搭建
+---
+title: "DynamoDB的环境搭建"
+date: 2019-02-21T12:27:38+06:00
+description: "后续的内容将涉及DynamoDB的API，比如通过AWS CLI来操作DynamoDB。为了操作DynamoDB，我们需要搭建DynamoDB的环境。"
+type: post
+image: images/blog/environment-setup.png
+author: Alex
+tags: ["NoSQL", "DynamoDB", "Data-Intensive"]
+---
 
 后续的内容将涉及DynamoDB的API，比如通过AWS CLI来操作DynamoDB。为了操作DynamoDB，我们需要搭建DynamoDB的环境。
 
