@@ -3,7 +3,7 @@ title: "DynamoDB中，每项数据（item）的构成单元"
 date: 2019-02-22T12:27:38+06:00
 description: "DynamoDB中的每条数据是构成整个数据集的基础，它对应着关系型数据库中的某一张表中的某一行数据或者对应MongoDB中一个文档，又或者是编程当中的一个对象（比如一个用户对象）。每条数据由主键唯一标识，而主键是在创建表的时候指定的。除了主键之外，每条数据也可以包含其它属性，这些属性与主键组成了一条完整的数据单元（比如：一个用户数据由user_id, name, phone组成，其中user_id是主键）。每个属性（包括主键）都有对应类型，比如string，numbers，lists，sets等，当写入或查询数据的时候，这些类型都需要提供。"
 type: post
-image: images/blog/key-concepts.png
+image: images/blog/anatomy-of-an-item.png
 author: Alex
 tags: ["NoSQL", "DynamoDB", "Data-Intensive"]
 ---
@@ -90,9 +90,7 @@ string类型是基础的数据类型，字符集为Unicode，对应的编码方�
 "Age": { "N": "29" }
 ```
 
-The number type represents positive and negative numbers, or zero. It can be used for precision up to 38 digits.
-
-Note that you will send your number up as a string value. However, you may do numerical operations on your number attributes when working with condition expressions.
+数值类型的取值是实数，包括正数（+9.80），负数（-7）和0。它的精度最多是38位（比如9.9999999999999999999999999999999999999E+125）。需要注意的是，你必须以字符串的形式提供数值类型，比如`"29"`而不是`29`，然而，当使用条件表达式时，你却能使用数值操作作用于数值属性。
 
 **Binary类型**
 
@@ -104,9 +102,7 @@ Note that you will send your number up as a string value. However, you may do nu
 "SecretMessage": { "B": "bXkgc3VwZXIgc2VjcmV0IHRleHQh" }
 ```
 
-You can use DynamoDB to store Binary data directly, such as an image or compressed data. Generally, larger binary blobs should be stored in something like Amazon S3 rather than DynamoDB to enable greater throughput, but you may use DynamoDB if you like.
-
-When using Binary data types, you must base64 encode your data before sending to DynamoDB.
+你可以在DynamoDB中存储二进制数据，比如一张图片或压缩过的信息。对于数据量过大的二进制信息，一般会存储在AWS的S3服务上，而不会存储在DynamoDB上，这么做的好处是保持DynamoDB的吞吐量。在使用这种类型的属性时，需要先将二进制信息进行base64编码，然后再设置到该类属性并上传到DynamoDB。
 
 **Boolean类型**
 
@@ -118,7 +114,7 @@ When using Binary data types, you must base64 encode your data before sending to
 "IsActive": { "BOOL": "false" }
 ```
 
-The Boolean type stores either "true" or "false".
+布尔类型的值有2个："true"或"false".
 
 **Null类型**
 
@@ -130,7 +126,7 @@ The Boolean type stores either "true" or "false".
 "OrderId": { "NULL": "true" }
 ```
 
-The Null type stores a boolean value of either "true" or "false". I would generally recommend against using it.
+Null类型的值有2个："true"或"false"。一般情况下，不建议使用这种类型。
 
 **List类型**
 
@@ -142,9 +138,7 @@ The Null type stores a boolean value of either "true" or "false". I would genera
 "Roles": { "L": [ "Admin", "User" ] }
 ```
 
-The List type allows you to store a collection of values in a single attribute. The values are ordered and do not have to be of the same type (e.g. string or number).
-
-You can operate directly on list elements using expressions.
+列表类型允许在单个属性中存储多个值。列表中每一项数据其类型可以不同，比如同一个列表里包含一个string元素和一个number元素。你可以通过[表达式](https://2cloudlab.com/nosql/expression-basics/)来操作列表里的元素。
 
 **Map类型**
 
@@ -168,9 +162,7 @@ You can operate directly on list elements using expressions.
 }
 ```
 
-Like the List type, the Map type allows you to store a collection of values in a single attribute. For a Map attribute, these values are stored in key-value pairs, similar to the map or dictionary objects in most programming languages.
-
-Also like the List type, you can operate directly on map elements using expressions.
+Map和列表一样，允许在单个属性上存储多个元素，与列表不同的是，每个元素都会有一个关联的key，有点类似于大多数编程语言中的字典类型。与列表类型一样，你可以通过表达式来操作Map里的元素。
 
 **String Set类型**
 
@@ -182,9 +174,7 @@ Also like the List type, you can operate directly on map elements using expressi
 "Roles": { "SS": [ "Admin", "User" ] }
 ```
 
-DynamoDB includes three different Set types which allow you to maintain a collection of unique items of the same type. The String Set is used to hold a set of strings.
-
-Sets can be particularly useful with expressions. You can run update commands to add & remove elements to a set without fetching & inserting the whole object. You may also check for the existence of an element within a set when updating or retrieving items.
+String Set是集合类型，它的特点是所有集合的元素的类型必须统一：都是string类型，其次集合里的所有元素必须是不同的。集合与表达式一起使用能够带来一些实用的效果，比如你可以根据集合里的元素来修改数据，这种修改可以不触发读取数据的操作，从而具有很好的性能。
 
 **Number Set类型**
 
@@ -196,9 +186,7 @@ Sets can be particularly useful with expressions. You can run update commands to
 "RelatedUsers": { "NS": [ "123", "456", "789" ] }
 ```
 
-DynamoDB includes three different Set types which allow you to maintain a collection of unique items of the same type. The Number Set is used to hold a set of numbers.
-
-Sets can be particularly useful with expressions. You can run update commands to add & remove elements to a set without fetching & inserting the whole object. You may also check for the existence of an element within a set when updating or retrieving items.
+Number Set类型与String Set类型是类似的，唯一的区别是这种集合中的元素类型是number。
 
 **Binary Set类型**
 
@@ -214,10 +202,8 @@ Sets can be particularly useful with expressions. You can run update commands to
 ] }
 ```
 
-DynamoDB includes three different Set types which allow you to maintain a collection of unique items of the same type. The Binary Set is used to hold a set of binary values.
+Binary Set类型与String Set类型是类似的，唯一的区别是这种集合中的元素类型是binary。
 
-Sets can be particularly useful with expressions. You can run update commands to add & remove elements to a set without fetching & inserting the whole object. You may also check for the existence of an element within a set when updating or retrieving items.
-
-With the basics of Items in mind, let's insert and retrieve our first items.
+对以上关于数据项构成单元有一些基础的理解之后，接下来让[我们插入和查询一些数据项](https://2cloudlab.com/nosql/inserting-retrieving-items/)。
 
 * [原文链接](https://www.dynamodbguide.com/anatomy-of-an-item#primary-keys)
