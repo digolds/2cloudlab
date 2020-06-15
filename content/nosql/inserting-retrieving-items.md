@@ -16,17 +16,15 @@ tags: ["NoSQL", "DynamoDB", "Data-Intensive"]
 
 在演练本文列举的用例之前，首先需要创建一张表。我们将创建一张表Users，并为该表定义了一个简单主键："Username"，它的类型是string。
 
-When creating a table, you will need to provide AttributeDefinitions for each attribute you need to define. An attribute definition includes the name and type of the attribute. For us, this means we have an attribute with the name "Username" and of type "S", for String. You only need to define attributes which are used in your primary key or are used in secondary indexes.
-
-You'll then need to provide the KeySchema of your table. This is where you define your primary key, including a HASH key and an optional RANGE key. In this example, we're using a simple primary key so we're just using Username as a HASH key.
+当创建表时，你需要为主键或索引提供属性定义。这些属性定义包含了属性名和属性类型。在Users这张表中，我们使用"Username"作为主键，其类型是string（"S"）。除此之外，你还需要为该表指定KeySchema。This is where you define your primary key, including a HASH key and an optional RANGE key. In this example, we're using a simple primary key so we're just using Username as a HASH key.
 
 Finally, you'll need to specify a TableName and the ProvisionedThroughput for your table. We'll keep the Read and Write Capacity Units at 1 since this is just an example.
 
-With these notes in mind, let's create our table:
+有了以上概念, 让我们运行以下指令来创建表"Users":
 
 ```bash
 $ aws dynamodb create-table \
-  --table-name UsersTable \
+  --table-name Users \
   --attribute-definitions '[
     {
         "AttributeName": "Username",
