@@ -1,7 +1,7 @@
 ---
 title: "DynamoDB的学习指南"
 date: 2020-03-15T12:27:38+06:00
-description: "在使用DynamoDB之前，我们需要了解一些基础概念，这些概念涉及了：表（tables），数据项（items）和每项数据的属性（attributes）、主键（primary keys），有简单主键（Partition Key）和复合主键（Partition Key + Sort Key）、附加索引（secondary indexes）、DynamoDB的读写能力。"
+description: "如果你在软件行业（尤其是后端服务的研发）里从业几年，你肯定会听说过与存储和处理数据相关的几个时髦的技术词：NoSQL，大数据，云计算，ServerLess，ACID，CAP，分布式等等。驱动这些技术发展的原因是多样的，主要有以下几点："
 type: post
 image: images/blog/nosql-index.png
 author: 郑思龙，Alex
