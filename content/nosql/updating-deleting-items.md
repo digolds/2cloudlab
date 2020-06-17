@@ -16,26 +16,26 @@ tags: ["NoSQL", "DynamoDB", "Data-Intensive"]
 
 ## 删除单项数据
 
-zuiThe final single-item action to cover is DeleteItem. There will be times when you want to delete Items from your tables, and this is the action you'll use.
+最后一个关于单项数据的操作是删除操作，也就是DeleteItem。在有些场景，你需要删除表中的某项数据，而这个操作则能满足该场景。
 
-The DeleteItem action is pretty simple -- just provide the key of the Item you'd like to delete:
+DeleteItem操作相当简单--你只需要提供想要删除数据项的主键信息，如下所示：
 
 ```bash
 $ aws dynamodb delete-item \
-    --table-name UsersTable \
+    --table-name Users \
     --key '{
       "Username": {"S": "daffyduck"}
     }' \
     $LOCAL
 ```
 
-Your Item is deleted! If you try to retrieve your Item with a GetItem, you'll get an empty response.
+以上操作将把"Username"为"daffyduck"的数据项从表中移除。如果你想通过GetItem操作来获取该用户，那么你将得到空的结果。
 
-Similar to the PutItem call, you can add a --condition-expression to only delete your Item under certain conditions. Let's say we want to delete Yosemite Sam, but only if he's younger than 21 years old:
+类似于PutItem操作，你能够使用`--condition-expression`来指定删除的条件。比如我想删除该用户，但是前提条件是该用户的年龄必须是少于21岁，示例如下：
 
 ```bash
 $ aws dynamodb delete-item \
-    --table-name UsersTable \
+    --table-name Users \
     --key '{
       "Username": {"S": "yosemitesam"}
     }' \
@@ -44,7 +44,10 @@ $ aws dynamodb delete-item \
       ":a": {"N": "21"}
     }' \
     $LOCAL
-```
 
 An error occurred (ConditionalCheckFailedException) when calling the DeleteItem operation: The conditional request failed
-Because Yosemite Sam is 73 years old, the conditional check failed and the delete did not go through.
+```
+
+通过以上示例的执行结果可知：由于Yosemite Sam已经73岁了，所以条件表达式将无法通过，最终导致此次删除操作失败。
+
+## 结论
