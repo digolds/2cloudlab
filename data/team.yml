@@ -1,14 +1,8 @@
-enable  : true
-title   : 创始团队
-members  :
-  - name  : 郑思龙
-    image : images/team/team-1.png
-    designation : 创始人
-    description : 曾从业于医疗, 建筑行业。拥有5个AWS认证，擅长企业的云端架构以及迁移。
-    linkedIn    : https://www.linkedin.com/in/silong-zheng-33bb2a94/
-  
-  - name  : 轩亚楠
-    image : images/team/team-2.jpg
-    designation : 创始人
-    description : 曾从业于医疗，金融行业。拥有PMP和Scrum认证，擅长企业DevOps的实施。
-    linkedIn    : https://www.linkedin.com/in/yanan-xuan-36b521164/
+enable: true
+title: 创始团队
+members:
+  - name: 郑思龙
+    image: images/team/team-1.png
+    designation: 创始人
+    description: 曾从业于医疗, 建筑行业。拥有5个AWS认证，擅长企业的云端架构以及迁移。
+    linkedIn: https://www.linkedin.com/in/silong-zheng-33bb2a94/
