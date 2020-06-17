@@ -1,6 +1,6 @@
 ---
 title: "如何在DynamoDB中同时操作多项数据"
-date: 2019-02-26T12:27:38+06:00
+date: 2020-02-26T12:27:38+06:00
 description: "在过去的章节里，我们一次只能操作一项数据--比如插入，查找，更新以及删除单项数据。而在这篇文章里，我们将一次同时操作多项数据。从这章开始，我们将创建一张具有复合主键的表，并在该表中同时操作多项数据。"
 type: post
 image: images/blog/working-with-multiple-items.png
