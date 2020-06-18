@@ -21,7 +21,7 @@ tags: ["NoSQL", "DynamoDB", "Data-Intensive"]
 
 以上提到的技术和工具都有对应的书籍介绍，而这个系列的文章（其列表如下）将聚焦在NoSQL数据库上，特别是AWS提供的DynamoDB。对于想要从事数据服务研发的工程师们，掌握NoSQL技能是必备的，因为它能够存储大规模数据（超过100TBs）的同时提供稳定的性能（数据操作的时间低于1ms），而要想在SQL数据库中拥有同样的能力，则需要付出巨大的代价，有时甚至无法实现！
 
-NoSQL类型的数据库有很多，包括MongoDB，CouchDB和DynamoDB等。之所以使用DynamoDB的原因之一是它完全托管于AWS，开发者无需准备运行它的机器就能直接创建表。除此之外，DynamoDB还提供了永久的免费套餐。基于DynamoDB的这些优势，你准备好了吗？
+NoSQL类型的数据库有很多，包括MongoDB，CouchDB和DynamoDB等。之所以使用DynamoDB的原因之一是它完全托管于AWS，开发者无需准备运行它的机器就能直接创建表。除此之外，DynamoDB还提供了永久的免费套餐。你想成为操作大规模数据的大师吗？如果答案是：Yes，那么你可以使用DynamoDB，并根据以下文章来实现这个目标！
 
 ## 介绍
 
