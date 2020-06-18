@@ -40,7 +40,7 @@ NoSQL类型的数据库有很多，包括MongoDB，CouchDB和DynamoDB等。之�
 ## 多项数据操作
 
 * 3.1  [同时处理多项数据](https://2cloudlab.com/nosql/working-with-multiple-items/)
-* 3.2  查询
+* 3.2  [查询](https://2cloudlab.com/nosql/querying/)
 * 3.3  遍历
 * 3.4  过滤
 
