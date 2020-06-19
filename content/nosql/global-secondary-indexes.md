@@ -228,6 +228,6 @@ $ aws dynamodb scan \
 
 全局附加索引的用途很多，比如你可以在一小部分退还订单中查找所有昨天返回的订单，而不用在整张表中遍历所有订单。
 
-这一章介绍了全局附加索引的基础知识，下一章的内容将介绍的DynamoDB流概念。
+这一章介绍了全局附加索引的基础知识，下一章的内容将介绍的[DynamoDB流概念](https://2cloudlab.com/nosql/dynamodb-streams/)。
 
 * [原文链接](https://www.dynamodbguide.com/global-secondary-indexes)
