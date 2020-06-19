@@ -8,6 +8,8 @@ author: Alex
 tags: ["NoSQL", "DynamoDB", "Data-Intensive"]
 ---
 
+
+
 在之前的[文章](https://2cloudlab.com/nosql/secondary-indexes/)中，我们学习了附加索引的基础知识。在本文中，我们将深入到本地附加索引。首先，我们将涉及本地附加索引的基础，紧接着通过一个例子来使用本地附加索引。Let's Go!
 
 ## 本地附加索引的基础知识
