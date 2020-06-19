@@ -8,7 +8,7 @@ author: Alex
 tags: ["NoSQL", "DynamoDB", "Data-Intensive"]
 ---
 
-在DynamoDB中，查找操作的功能十分强大。它允许开发者根据相同的分区键来查询拥有不同排序键的数据项。本文将介绍查询操作的基础知识，分为以下几部分：
+在DynamoDB中，查找操作的功能十分强大。它允许开发者根据相同的分区键来查询拥有不同[排序键](https://2cloudlab.com/nosql/key-concepts/)的数据项。本文将介绍查询操作的基础知识，分为以下几部分：
 
 * 根据某个分区键查找多项数据
 * 基于排序键和使用关键字表达式来查询多项数据
@@ -18,7 +18,7 @@ tags: ["NoSQL", "DynamoDB", "Data-Intensive"]
 
 ## 根据某个分区键查找多项数据
 
-在之前的章节里，我们实践了如何一次操作一项数据。这种操作适合于一些场景，比如：一次操作一个用户信息，这些信息可能是该用户的简介或姓名。
+在之前的章节里，我们实践了如何[一次操作一项数据](https://2cloudlab.com/nosql/inserting-retrieving-items/)。这种操作适合于一些场景，比如：一次操作一个用户信息，这些信息可能是该用户的简介或姓名。
 
 然而，在某些场景，这样的数据操作就不适用了，比如操作用户的订单。有时你可能只需要获取某个订单数据，但是，有的时候我们想获取某个用户的所有订单信息。如果每个订单的信息由不同的分区键识别，那么查找这些订单的效率会很慢。
 
@@ -108,7 +108,7 @@ $ aws dynamodb query \
 
 > Give me all of the OrderIds for a particular Username where the Amount was greater than $50.
 
-有2种方法可以解决以上问题。然而，最为理想的做法是使用排序键和Query操作来确定最终的返回结果。这使得开发者能够使用关键字表达式来快速找到想要的数据。还有一种可行但是却低效的办法：使用Filter，并将Filter作用于非关键字主键上。
+有2种方法可以解决以上问题。然而，最为理想的做法是使用排序键和Query操作来确定最终的返回结果。这使得开发者能够使用关键字表达式来快速找到想要的数据。还有一种可行但是却低效的办法：[使用Filter](https://2cloudlab.com/nosql/filtering/)，并将Filter作用于非关键字主键上。
 
 在这一节，我们将看到如何使用关键字表达式来缩小查询结果。之前，我们已经使用了`--key-condition-expression`选项来指定分区键，不仅如此，我们还可以指定排序键，而Query操作将查找满足这些键的多项数据。
 
@@ -253,6 +253,6 @@ $ aws dynamodb query \
 }
 ```
 
-以上，我们涉及了Query API的基础知识。Query是DynamoDB众多功能中最为强大的功能，但是，为了高效使用它，你在数据建模时需要认真想想数据查询模式。在下一篇文章里，我们将了解更加耗时的Scan操作。
+以上，我们涉及了Query API的基础知识。Query是DynamoDB众多功能中最为强大的功能，但是，为了高效使用它，你在数据建模时需要认真想想数据查询模式。在[下一篇文章里](https://2cloudlab.com/nosql/scans/)，我们将了解更加耗时的Scan操作。
 
 * [原文链接](https://www.dynamodbguide.com/querying)

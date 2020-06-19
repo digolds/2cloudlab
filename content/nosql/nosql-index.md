@@ -47,9 +47,9 @@ NoSQL类型的数据库有很多，包括MongoDB，CouchDB和DynamoDB等。之�
 ## 高级功能
 
 * 4.1  [附加索引](https://2cloudlab.com/nosql/secondary-indexes/)
-* 4.2  本地附加索引
-* 4.3  全局附加索引
-* 4.4  DynamoDB流
+* 4.2  [本地附加索引](https://2cloudlab.com/nosql/local-secondary-indexes)
+* 4.3  [全局附加索引](https://2cloudlab.com/nosql/global-secondary-indexes/)
+* 4.4  [DynamoDB流](https://2cloudlab.com/nosql/dynamodb-streams/)
 
 ## 运维相关
 

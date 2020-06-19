@@ -8,11 +8,11 @@ author: Alex
 tags: ["NoSQL", "DynamoDB", "Data-Intensive"]
 ---
 
-在过去的章节里，我们一次只能操作一项数据--比如插入，查找，更新以及删除单项数据。而在这篇文章里，我们将一次同时操作多项数据。从这章开始，我们将创建一张具有复合主键的表，并在该表中同时操作多项数据。
+在过去的章节里，我们一次只能操作一项数据--比如[插入，查找](https://2cloudlab.com/nosql/inserting-retrieving-items/)，[更新以及删除单项数据](https://2cloudlab.com/nosql/updating-deleting-items/)。而在这篇文章里，我们将一次同时操作多项数据。从这章开始，我们将创建一张具有复合主键的表，并在该表中同时操作多项数据。
 
-复合主键对于DynamoDB而言非常有用。它允许你通过一个查询操作就能获取一组相关的数据项，除此之外，它还有其它强大的用途。
+[复合主键](https://2cloudlab.com/nosql/anatomy-of-an-item/)对于DynamoDB而言非常有用。它允许你通过一个查询操作就能获取一组相关的数据项，除此之外，它还有其它强大的用途。
 
-本文将创建一张具有复合主键的表。然后我们将使用BatchWriteItem API来批量生成多项数据。后续的几篇文章将使用Query和Scan API作用到这些数据。
+本文将创建一张具有复合主键的表。然后我们将使用BatchWriteItem API来批量生成多项数据。后续的几篇文章将使用[Query](https://2cloudlab.com/nosql/querying/)和[Scan](https://2cloudlab.com/nosql/scans/) API作用到这些数据。
 
 ## 创建表
 
@@ -104,7 +104,7 @@ $ aws dynamodb create-table \
 
 ## 批量写入多项数据
 
-到目前为止，我们已经创建了表"UserOrdersTable"。为了同时操作多项数据，接下来我们将向该表写入多项数据。有一种批量写入多项数据的方式是借助BatchWriteItem API。这个API能让你在一次请求中最毒同时插入或者删除25项数据。借助这个API，你甚至能在同一请求中操作不同的表。
+到目前为止，我们已经创建了表"UserOrdersTable"。为了同时操作多项数据，接下来我们将向该表写入多项数据。有一种批量写入多项数据的方式是借助BatchWriteItem API。这个API能让你在一次请求中最多同时插入或者删除25项数据。借助这个API，你甚至能在同一请求中操作不同的表。
 
 然而使用BatchWriteAPI会有一些限制。首先，你无法在其中使用UpdateItem API，因为UpdateItem只能单独使用。其次，你无法使用条件表达式。
 
@@ -112,9 +112,9 @@ $ aws dynamodb create-table \
 
 另外一种：一项或多项数据的插入是失败的。 这是一种比较常见的错误，比如你的操作超出了表的写入限制或AWS内部的错误。如果时这种错误，那么返回的结果将返回那些没有执行成功的数据项，而这些数据项将放置在"UnprocessedItems"字段中。
 
-下面这个示例展示了BatchWriteItem的用法，它将向"UserOrdersTable"中插入25项数据。每项数据不仅有"Username"属性，还有"OrderId"属性。OrderId属性的值是时间戳，格式如：20171230 + 一个随机数。除此之外还有Amount属性，该属性描述了订单的数量。
+下面这个示例展示了BatchWriteItem的用法，它将向"UserOrdersTable"中插入25项数据。每项数据不仅有"Username"属性，还有"OrderId"属性。OrderId属性的值是时间戳，格式如：<OrderDate>-<RandomInteger>。除此之外还有Amount属性，该属性描述了订单额度。
 
-在下一篇文章中，我们将基于插入的数据项来实践多项数据的查询操作。
+在[下一篇文章中](https://2cloudlab.com/nosql/querying/)，我们将基于插入的数据项来实践多项数据的查询操作。
 
 ```bash
 $ aws dynamodb batch-write-item \

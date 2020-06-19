@@ -8,9 +8,9 @@ author: Alex
 tags: ["NoSQL", "DynamoDB", "Data-Intensive"]
 ---
 
-在过去的几篇文章里，我们讨论了关键字表达式，条件表达式，映射表达式以及更新表达式。本文将讨论最后一类表达式--过滤器表达式。
+在过去的几篇文章里，我们讨论了[关键字表达式，条件表达式，映射表达式以及更新表达式](https://2cloudlab.com/nosql/expression-basics/)。本文将讨论最后一类表达式--过滤器表达式。
 
-过滤器表达式用于Query和Scan操作，它在作用于这些操作所返回的数据集，并过滤出满足条件的数据项，进而返回给客户端。在深入了解Filter之前，我们有必要来了解一下Query或Scan底层的执行过程。
+过滤器表达式用于[Query](https://2cloudlab.com/nosql/querying/)和[Scan](https://2cloudlab.com/nosql/scans/)操作，它在作用于这些操作所返回的数据集，并过滤出满足条件的数据项，进而返回给客户端。在深入了解Filter之前，我们有必要来了解一下Query或Scan底层的执行过程。
 
 ## Query和Scan的执行过程
 
@@ -30,7 +30,7 @@ tags: ["NoSQL", "DynamoDB", "Data-Intensive"]
 
 Filter表达式与关键字表达式类似，都可以和Query操作配合--你只需要在过滤表达式中指定想要过滤的属性，查询结果就会更具该表达式来过滤。
 
-让我们基于之前Query来查找用户"daffyduck"的订单。这一次我们想依据订单量来过滤数据，比如我们只想返回订单量超过100美元的订单，示例如下：
+让我们基于之前Query来查找用户"daffyduck"的订单。这一次我们想依据订单额度来过滤数据，比如我们只想返回订单量超过100美元的订单，示例如下：
 
 ```bash
 $ aws dynamodb query \

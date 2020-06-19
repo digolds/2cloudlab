@@ -8,9 +8,9 @@ author: Alex
 tags: ["NoSQL", "DynamoDB", "Data-Intensive"]
 ---
 
-到目前为止，大部分的读操作主要是基于表的主键来执行的，要么通过[GetItem](https://2cloudlab.com/nosql/inserting-retrieving-items/)或者Query完成。使用表的主键来查找数据项是非常高效的一种做法，同时也避免了使用Scan来遍历整张表。
+到目前为止，大部分的读操作主要是基于表的主键来执行的，要么通过[GetItem](https://2cloudlab.com/nosql/inserting-retrieving-items/)或者[Query](https://2cloudlab.com/nosql/querying/)完成。使用表的主键来查找数据项是非常高效的一种做法，同时也避免了使用[Scan](https://2cloudlab.com/nosql/scans/)来遍历整张表。
 
-然而，使用主键会限制数据的查询模式。比如，在之前的查询示例中，我们将订单日期作为排序键，使得我们可以根据订单的日期来快速获取某个客户的所有订单。这就意味着我们无法根据订单量来快速获取某个客户的所有订单，因为订单量并不是主键属性。为了解决这个问题，我们可以使用Filter表达式来解决，但是这种办法并不高效，因为Filter是作用在返回的数据集上。那么有什么办法能让返回的数据集就是根据订单数量的大小来决定的？
+然而，使用主键会限制数据的查询模式。比如，在之前的查询示例中，我们将订单日期作为排序键，使得我们可以根据订单的日期来快速获取某个客户的所有订单。这就意味着我们无法根据订单量来快速获取某个客户的所有订单，因为订单量并不是主键属性。为了解决这个问题，我们可以使用[Filter](https://2cloudlab.com/nosql/filtering/)表达式来解决，但是这种办法并不高效，因为Filter是作用在返回的数据集上。那么有什么办法能让返回的数据集就是根据订单数量的大小来决定的？
 
 幸运的是，DynamoDB有一个附加索引的功能，它允许开发者定义其它附加主键，而这些主键可以用于Query（查询）或Scan（遍历）操作。
 
@@ -18,9 +18,9 @@ tags: ["NoSQL", "DynamoDB", "Data-Intensive"]
 
 ## 附加索引的类型有几种？
 
-DynamoDB支持2类附加索引，它们分别是：本地索引（local secondary indexs）和全局索引（global secondary indexes）。
+DynamoDB支持2类附加索引，它们分别是：[本地索引（local secondary indexs）](https://2cloudlab.com/nosql/local-secondary-indexes/)和[全局索引（global secondary indexes）](https://2cloudlab.com/nosql/global-secondary-indexes/)。
 
-本地索引只能创建在具有复合主键的表之上，它的分区键与复合主键的分区键是一样的，但是却使用了不同的排序键。使用本地索引的一种场景是之前根据订单量来获取某客户的所有订单的示例。
+本地索引只能创建在具有[复合主键](https://2cloudlab.com/nosql/key-concepts/)的表之上，它的分区键与复合主键的分区键是一样的，但是却使用了不同的排序键。使用本地索引的一种场景是之前根据订单量来获取某客户的所有订单的示例。
 
 全局索引能够创建与表的主键完全不一样的附加主键。比如：你可以在一张具有附加主键的表上使用全局索引来创建简单键，或者你也可以选择与主键完全不同的属性来创建附加的复合主键。当然，如果一张表只有一个简单主键，那么你依然可以使用全局索引来创建附加的复合主键。
 
