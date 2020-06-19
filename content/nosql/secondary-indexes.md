@@ -1,6 +1,6 @@
 ---
 title: "DynamoDB的附加索引"
-date: 2020-03-01T12:27:38+06:00
+date: 2020-03-02T12:27:38+06:00
 description: "到目前为止，大部分的读操作主要是基于表的主键来执行的，要么通过GetItem或者Query完成。使用表的主键来查找数据项是非常高效的一种做法，同时也避免了使用Scan来遍历整张表。"
 type: post
 image: images/blog/secondary-indexes.png

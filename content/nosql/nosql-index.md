@@ -41,8 +41,8 @@ NoSQL类型的数据库有很多，包括MongoDB，CouchDB和DynamoDB等。之�
 
 * 3.1  [同时处理多项数据](https://2cloudlab.com/nosql/working-with-multiple-items/)
 * 3.2  [查询](https://2cloudlab.com/nosql/querying/)
-* 3.3  遍历
-* 3.4  过滤
+* 3.3  [遍历](https://2cloudlab.com/nosql/scans/)
+* 3.4  [过滤](https://2cloudlab.com/nosql/filtering/)
 
 ## 高级功能
 
