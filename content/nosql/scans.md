@@ -159,3 +159,5 @@ $ aws dynamodb scan \
 }
 ```
 在下一篇文章里，我们将学习DynamoDB的[Filter](https://2cloudlab.com/nosql/filtering/)功能，以及将其与Query和Scan操作结合在一起使用。
+
+* [原文链接](https://www.dynamodbguide.com/scans)

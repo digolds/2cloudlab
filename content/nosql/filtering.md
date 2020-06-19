@@ -74,3 +74,5 @@ $ aws dynamodb query \
 最后一点需要注意的是：不能在Filter表达式中使用主键属性。这是合理的，因为你已经可以使用关键字表达式来查询数据了，为什么还需要在Filter表达式中将主键属性指定为过滤条件呢！然而这个限制不适用于Scan操作--也就是说，你依然可以在过滤表达式中使用主键属性。
 
 这篇文章将是最后一篇关于如何同时操作多项数据的。在接下来的章节里，我们将学习更多高级的功能比如[附加索引](https://2cloudlab.com/nosql/secondary-indexes/)和DynamoDB的流。
+
+* [原文链接](https://www.dynamodbguide.com/filtering)
