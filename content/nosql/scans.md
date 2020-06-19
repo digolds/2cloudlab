@@ -3,7 +3,7 @@ title: "在DynamoDB中，谨慎使用Scans操作"
 date: 2020-02-28T12:27:38+06:00
 description: "本文将介绍DynamoDB的Scans操作。该操作是DynamoDB的重型武器。做一个相似的对比: GetItem操作就是是一对镊子，可以夹出某个特定的物件。Query操作像把铁铲，能挖出一大堆物件，但是其作用的范围依旧很小。然而，Scan操作就像一辆拖拉机，把整个修整区域翻个底朝天。"
 type: post
-image: images/blog/querying.png
+image: images/blog/scans.png
 author: Alex
 tags: ["NoSQL", "DynamoDB", "Data-Intensive"]
 ---

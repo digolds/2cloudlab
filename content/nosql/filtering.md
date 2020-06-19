@@ -3,7 +3,7 @@ title: "在DynamoDB中使用Filter表达式"
 date: 2020-03-01T12:27:38+06:00
 description: "在过去的几篇文章里，我们讨论了关键字表达式，条件表达式，映射表达式以及更新表达式。本文将讨论最后一类表达式--过滤器表达式。"
 type: post
-image: images/blog/querying.png
+image: images/blog/filtering.png
 author: Alex
 tags: ["NoSQL", "DynamoDB", "Data-Intensive"]
 ---

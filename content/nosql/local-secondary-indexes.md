@@ -3,7 +3,7 @@ title: "DynamoDB的本地附加索引"
 date: 2020-03-03T12:27:38+06:00
 description: "在之前的[文章](https://2cloudlab.com/nosql/secondary-indexes/)中，我们学习了附加索引的基础知识。在本文中，我们将深入到本地附加索引。首先，我们将涉及本地附加索引的基础，紧接着通过一个例子来使用本地附加索引。Let's Go!"
 type: post
-image: images/blog/secondary-indexes.png
+image: images/blog/local-secondary-indexes.png
 author: Alex
 tags: ["NoSQL", "DynamoDB", "Data-Intensive"]
 ---
