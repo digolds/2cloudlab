@@ -21,16 +21,17 @@
 
 <style type="text/css">
     @media (min-width: 1200px) {
-    .post-container{
-        max-width: 800px;
+        .post-container {
+            max-width: 800px;
+        }
     }
-  }
-  img {
-    max-width: 100%;
-    max-height: 100%;
-    display: block;
-    margin: auto;
-}
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        display: block;
+        margin: auto;
+    }
 </style>
 
 <section class="single-post">
@@ -48,6 +49,13 @@
             </div>
         </div>
     </div>
+</section>
+
+<section>
+    <script src="https://utteranc.es/client.js" repo="2cloudlab/comments" issue-term="pathname" theme="github-light"
+        crossorigin="anonymous" async>
+
+        </script>
 </section>
 
 {{ partial "cta.html" . }}
