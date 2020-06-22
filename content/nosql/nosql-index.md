@@ -63,7 +63,7 @@ NoSQL类型的数据库有很多，包括MongoDB，CouchDB和DynamoDB等。之�
 
 * 6.1  概要
 * 6.2  [层级结构的数据](https://2cloudlab.com/nosql/hierarchical-data/)
-* 6.3  Leaderboard & Write Sharding
+* 6.3  [如何在DynamoDB中实现排名榜](https://2cloudlab.com/nosql/leaderboard-write-sharding/)
 
 ## ADDITIONAL CONCEPTS
 
