@@ -16,4 +16,4 @@ tags: ["NoSQL", "DynamoDB", "Data-Intensive"]
 
 在整个过程中，你将学到如何将**write sharding**结合**scatter-gather**在一起实现这种积分榜。
 
-我想脱帽致敬[Chris Shenton](https://twitter.com/Shentonfreude)，起初是他和我讨论了这种实现积分榜的方法。AWS也[其官方文档里](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html)提供了一个在游戏行业中使用积分榜的例子。然而，该例子只针对多个游戏使用了多个积分榜，而不是一个积分榜记录了多个游戏。
+我想脱帽致敬[Chris Shenton](https://twitter.com/Shentonfreude)，起初是他和我讨论了这种实现积分榜的方法。AWS也在[其官方文档里](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html)提供了一个在游戏行业中使用积分榜的例子。然而，该例子只针对多个游戏使用了多个积分榜，而不是一个积分榜记录了多个游戏。
