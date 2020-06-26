@@ -1,6 +1,6 @@
 ---
 title: "DynamoDB的学习指南"
-date: 2020-03-15T12:27:38+06:00
+date: 2020-04-15T12:27:38+06:00
 description: "如果你在软件行业（尤其是后端服务的研发）里从业几年，你肯定会听说过与存储和处理数据相关的几个时髦的技术词：NoSQL，大数据，云计算，ServerLess，ACID，CAP，分布式等等。驱动这些技术发展的原因是多样的，主要有以下几点："
 type: post
 image: images/blog/nosql-index.png
@@ -68,6 +68,7 @@ NoSQL类型的数据库有很多，包括MongoDB，CouchDB和DynamoDB等。之�
 ## ADDITIONAL CONCEPTS
 
 * 7.1  如何选择索引类型？
+* 7.2  [由amazon.com背后的数据系统所引发的思考](https://2cloudlab.com/nosql/amazon-back-end-data-system/)
 
 ## 数据库对比
 
