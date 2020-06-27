@@ -42,7 +42,7 @@ theme = "timer-hugo"
     description = "2cloudlab是云计算解决方案提供商，致力于云计算和DEVOPS。我们渴望通过云计算技术来帮助企业进行数字化转型。提高企业的研发效率、降低企业的研发成本以及加快企业的创新速度是我们成立的初衷！"
     author = "2cloudlab"
     # Google Analitycs
-    googleAnalitycsID = "Your ID"
+    googleAnalitycsID = "UA-171018621-1"
 
     # Banner Section
     [params.banner]
