@@ -152,3 +152,5 @@ amazon.com是服务于全球的在线电商，遍布全球的用户在它的平�
 * 拥有一批擅长MongoDB的专业人才和运维人才
 
 对于有清晰业务模式的企业，以及能够预计到其业务模式将会带来大规模的用户，那么这类企业应该考虑使用DynamoDB作为其数据服务的技术支持。要想使DynamoDB助力企业发展，则还需了解如何正确使用DynamoDB，这部分的内容将在下一节展开。
+
+对于需要了解DynamoDB基础知识的读者，可以到[DynamoDB学习指南](https://2cloudlab.com/nosql/nosql-index/)。那里包含了大量关于DynamoDB的基础知识，它们从最基本的概念讲起，[什么是DynamoDB](https://2cloudlab.com/nosql/what-is-dynamo-db/)；如何在本地电脑上[安装一个DynamoDB](https://2cloudlab.com/nosql/environment-setup/)，以便读者能在本地实践。紧接着，介绍了关于单项数据以及多项数据的操作，这些操作有[DeleteItem，UpdateItem](https://2cloudlab.com/nosql/updating-deleting-items/)，[PutItem](https://2cloudlab.com/nosql/inserting-retrieving-items/)，[Query](https://2cloudlab.com/nosql/querying/)和[Scan](https://2cloudlab.com/nosql/scans/)。在这个过程中还应用了[条件表达式](https://2cloudlab.com/nosql/expression-basics/)，比如[Filter表达式](https://2cloudlab.com/nosql/filtering/)。除了一些基础知识之外，还包括一些有用的例子，比如如何在DynamoDB中表示[层级结构的数据](https://2cloudlab.com/nosql/hierarchical-data/)，如何在DynamoDB中实现一个[冠军榜](https://2cloudlab.com/nosql/leaderboard-write-sharding/)来展示Top 3的数据。
