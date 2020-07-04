@@ -25,56 +25,57 @@ NoSQL类型的数据库有很多，包括MongoDB，CouchDB和DynamoDB等。之�
 
 ## 介绍
 
-* 1.1  [什么是DynamoDB？](https://2cloudlab.com/nosql/what-is-dynamo-db/)
-* 1.2  [DynamoDB的关键概念](https://2cloudlab.com/nosql/key-concepts/)
-* 1.3  [关于Dynamo的论文](https://2cloudlab.com/nosql/the-dynamo-paper/)
-* 1.4  [DynamoDB的环境搭建](https://2cloudlab.com/nosql/environment-setup/)
+* 1.1 [什么是DynamoDB？](https://2cloudlab.com/nosql/what-is-dynamo-db/)
+* 1.2 [DynamoDB的关键概念](https://2cloudlab.com/nosql/key-concepts/)
+* 1.3 [关于Dynamo的论文](https://2cloudlab.com/nosql/the-dynamo-paper/)
+* 1.4 [DynamoDB的环境搭建](https://2cloudlab.com/nosql/environment-setup/)
 
 ## 单项数据操作
 
-* 2.1  [DynamoDB中，每项数据（item）的构成单元](https://2cloudlab.com/nosql/anatomy-of-an-item/)
-* 2.2  [在DynamoDB中插入和读取数据项](https://2cloudlab.com/nosql/inserting-retrieving-items/)
-* 2.3  [基础表达式](https://2cloudlab.com/nosql/expression-basics/)
-* 2.4  [更新和删除数据项](https://2cloudlab.com/nosql/updating-deleting-items/)
+* 2.1 [DynamoDB中，每项数据（item）的构成单元](https://2cloudlab.com/nosql/anatomy-of-an-item/)
+* 2.2 [在DynamoDB中插入和读取数据项](https://2cloudlab.com/nosql/inserting-retrieving-items/)
+* 2.3 [基础表达式](https://2cloudlab.com/nosql/expression-basics/)
+* 2.4 [更新和删除数据项](https://2cloudlab.com/nosql/updating-deleting-items/)
 
 ## 多项数据操作
 
-* 3.1  [同时处理多项数据](https://2cloudlab.com/nosql/working-with-multiple-items/)
-* 3.2  [查询](https://2cloudlab.com/nosql/querying/)
-* 3.3  [遍历](https://2cloudlab.com/nosql/scans/)
-* 3.4  [过滤](https://2cloudlab.com/nosql/filtering/)
+* 3.1 [同时处理多项数据](https://2cloudlab.com/nosql/working-with-multiple-items/)
+* 3.2 [查询](https://2cloudlab.com/nosql/querying/)
+* 3.3 [遍历](https://2cloudlab.com/nosql/scans/)
+* 3.4 [过滤](https://2cloudlab.com/nosql/filtering/)
 
 ## 高级功能
 
-* 4.1  [附加索引](https://2cloudlab.com/nosql/secondary-indexes/)
-* 4.2  [本地附加索引](https://2cloudlab.com/nosql/local-secondary-indexes)
-* 4.3  [全局附加索引](https://2cloudlab.com/nosql/global-secondary-indexes/)
-* 4.4  [DynamoDB流](https://2cloudlab.com/nosql/dynamodb-streams/)
+* 4.1 [附加索引](https://2cloudlab.com/nosql/secondary-indexes/)
+* 4.2 [本地附加索引](https://2cloudlab.com/nosql/local-secondary-indexes)
+* 4.3 [全局附加索引](https://2cloudlab.com/nosql/global-secondary-indexes/)
+* 4.4 [DynamoDB流](https://2cloudlab.com/nosql/dynamodb-streams/)
 
 ## 运维相关
 
-* 5.1  Provisioning tables
-* 5.2  安全
-* 5.3  备份和恢复
-* 5.4  自动伸缩
-* 5.5  Global Tables
+* 5.1 Provisioning tables
+* 5.2 安全
+* 5.3 备份和恢复
+* 5.4 自动伸缩
+* 5.5 Global Tables
 
 ## 数据建模案例
 
-* 6.1  概要
-* 6.2  [层级结构的数据](https://2cloudlab.com/nosql/hierarchical-data/)
-* 6.3  [如何在DynamoDB中实现排名榜](https://2cloudlab.com/nosql/leaderboard-write-sharding/)
+* 6.1 概要
+* 6.2 [层级结构的数据](https://2cloudlab.com/nosql/hierarchical-data/)
+* 6.3 [如何在DynamoDB中实现排名榜](https://2cloudlab.com/nosql/leaderboard-write-sharding/)
 
 ## ADDITIONAL CONCEPTS
 
-* 7.1  如何选择索引类型？
-* 7.2  [由amazon.com背后的数据系统所引发的思考](https://2cloudlab.com/nosql/amazon-back-end-data-system/)
+* 7.1 如何选择索引类型？
+* 7.2 [由amazon.com背后的数据系统所引发的思考](https://2cloudlab.com/nosql/amazon-back-end-data-system/)
+* 7.3 [如何正确使用DynamoDB](https://2cloudlab.com/nosql/how-to-use-dynamodb-effectively/)
 
 ## 数据库对比
 
-* 8.1  MongoDB vs. DynamoDB
+* 8.1 MongoDB vs. DynamoDB
 
 ## 其它学习资源
 
-* 9.1  [NoSQL的学习资料](https://2cloudlab.com/nosql/additional-reading/)
-* 9.2  [原文链接](https://www.dynamodbguide.com)
+* 9.1 [NoSQL的学习资料](https://2cloudlab.com/nosql/additional-reading/)
+* 9.2 [原文链接](https://www.dynamodbguide.com)
