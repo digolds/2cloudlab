@@ -20,7 +20,7 @@ DynamoDB的表能够存储大量的数据，为了提高查找性能，研发人
 为了实现以上提到的应用场景，则需要了解DynamoDB Stream内部的逻辑以及它与其它服务的关系。[这篇文章](https://2cloudlab.com/nosql/dynamodb-streams/)将从以下几个方面来讲解DynamoDB Stream：
 
 1. DynamoDB Stream的构成以及其周边服务
-2. DynamoDB Stream的限制
+2. 使用DynamoDB Stream的注意事项
 3. 基于DynamoDB Stream的设计模式
 4. 参考
 
@@ -51,6 +51,10 @@ DynamoDB Stream只允许使用者（也就是上图的Consumers）从中批量�
 ![](https://2cloudlab.com/images/blog/DynamoDB-stream-with-kcl.png)
 
 与Lambda Function作为Consumers不同，KCL Workers需要运行在服务器上（比如EC2或Kubernetes的节点上），并且需要研发人员考虑规模化的问题，比如决定运行几个Workers等。除此之外，研发人员还要基于[KCL和DynamoDB Streams Kinesis Adapter](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.KCLAdapter.html)编写数据读取应用。
+
+## 使用DynamoDB Stream的注意事项
+
+DynamoDB Stream能够捕获DynamoDB Table中变化的数据，并保留24小时。
 
 ## 参考
 
