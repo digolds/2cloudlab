@@ -79,7 +79,7 @@ Records[
     {
         "EventName":"Delete",
         "ID":"123",
-        "Name":"2cloudlab.com"
+        "Name":"https://2cloudlab.com"
     }
 ]
 ```
