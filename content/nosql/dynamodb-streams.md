@@ -54,7 +54,61 @@ DynamoDB Stream只允许使用者（也就是上图的Consumers）从中批量�
 
 ## 使用DynamoDB Stream的注意事项
 
-DynamoDB Stream能够捕获DynamoDB Table中变化的数据，并保留24小时。
+DynamoDB Stream能够捕获DynamoDB Table中变化的数据，并保留24小时。每项数据（Record）按照作用到表上的时间先后进入到Stream中的某一个Shard（根据该Record的Key来选择Shard），而且同一Record只会出现一次而不会出现多次，这些特性使得DynamoDB Stream能够用于同步数据（比如将不同区域的数据同步成一致的状态）。
+
+DynamoDB Stream不会占用DynamoDB Table的读写单元（WCU和RCU），而是直接使用了类似于DB中的[Transactions Log](https://en.wikipedia.org/wiki/Transaction_log)结构来获取变更的数据，因此其它服务从DynamoDB Stream读取数据时，不会影响其关联**表**（Table）的性能。
+
+DynamoDB Stream会根据DynamoDB Table中分区（Partition）的数量创建相同数量的Shards，每一个Shard都会有一些限制，比如，调用GetRecords接口最多能返回1000条Record，返回的数据量最多是1MB。因此，当需要将数据从DynamoDB Stream中发送到另外一个下游服务，则需要考虑下游服务的写入数据的速率。比如，从DynamoDB Stream中读取数据的速率是10M/S，而下游Elastic Search只能支撑最大的写入数据的速率是1M/S，那么此时需要调整读取数据的应用（Lambda Function或KCL Worker）或者提高Elastic Search写入数据的速率，以便上下游的服务的数据流转速率是匹配的。
+
+在DynamoDB Stream内部，每一个Shard，最多能同时支持2个Consumers，如果有2个以上Consumer来读取同一个Shard，那么很有可能会引发数据读取失败的错误。因此要想规模化DynamoDB Stream的读取数据的操作，则首先要确保其关联表中的数据是均匀分布的，其次要将Consumers均匀分配给不同的Shards，最后要确保每一个Shard不能同时被2个以上的Consumers占用。
+
+对于需要DynamoDB Stream同步数据的应用场景，如果在同步过程中出现了错误，那么需要将已经执行成功的数据回退并重新处理整批数据。原因在于数据的最终状态依赖于DB中Transactions的次序，而DynamoDB Stream中变更的数据，其次序与DB中Transactions的次序是一致的。假设我们向DynamoDB Table中新增一项数据（Record，其ID是123），接着再进行修改，之后再删除，此时DynamoDB Table的Transaction Log里会出现3个Transactions，分别对应Insert，Update和Delete操作以及相关的数据，而这些操作所产生的Records会以同样的次序出现在DynamoDB Stream里，如下所示：
+
+```bash
+Records[
+    {
+        "EventName":"Insert",
+        "ID":"123",
+        "Name":"2cloudlab.com"
+    },
+    {
+        "EventName":"Update",
+        "ID":"123",
+        "Name":"https://2cloudlab.com"
+    },
+    {
+        "EventName":"Delete",
+        "ID":"123",
+        "Name":"2cloudlab.com"
+    }
+]
+```
+
+假设，在一次同步过程中出错了，比如处理以下数据时出错了：
+
+```bash
+{
+    "EventName":"Insert",
+    "ID":"123",
+    "Name":"2cloudlab.com"
+}
+```
+
+如果同步程序忽略错误而继续处理后续的数据，比如：
+
+```bash
+{
+    "EventName":"Update",
+    "ID":"123",
+    "Name":"https://2cloudlab.com"
+}
+```
+
+由于目标数据库没有ID为123的数据，因此这次更新目标数据库的操作将失败。将DynamoDB Stream中的数据发送到其它系统这个过程会伴随着错误，因此研发人员需要根据不同的应用场景设计出错误处理方案。接下来，让我们看看如何基于DynamoDB Stream来设计健壮的事件驱动型系统。
+
+## 基于DynamoDB Stream的设计模式
+
+DynamoDB Stream非常适合于事件驱动型架构（[event-driven architecture](https://en.wikipedia.org/wiki/Event-driven_architecture)）。
 
 ## 参考
 
