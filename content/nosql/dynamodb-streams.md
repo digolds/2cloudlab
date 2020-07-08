@@ -141,7 +141,7 @@ DynamoDB Stream非常适合于事件驱动型架构（[event-driven architecture
 
 ![](https://2cloudlab.com/images/blog/event-driven-architecture-dynamodb-stream-failed-handle.png)
 
-上图存在一个问题。如果步骤2和步骤10处理同一个Record，那么结果是Statistics中的信息将是不准确的。因此为了避免这类错误，则需要将步骤2和步骤10之前的2个Lambda函数设计成具有[idempotent](https://en.wikipedia.org/wiki/Idempotence)属性。具有该属性的函数即便是执行多次，也不会影响Statistics中的最终结果。
+上面的解决方案依然存在问题。如果步骤2和步骤10处理同一个Record，那么结果是Statistics中的信息将是不准确的。因此为了避免这类错误，则需要将步骤2和步骤10之前的2个Lambda函数设计成具有[idempotent](https://en.wikipedia.org/wiki/Idempotence)属性。具有该属性的函数即便是执行多次，也不会影响Statistics中的最终结果。
 
 ## 参考
 
