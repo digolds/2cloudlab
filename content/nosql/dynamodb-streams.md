@@ -127,6 +127,22 @@ DynamoDB Stream非常适合于事件驱动型架构（[event-driven architecture
 
 该解决方案的运作过程是：新闻编辑者将新闻上传到DynamoDB，紧接着DynamoDB Stream将触发Lambda函数，而Lambda函数会将新闻的变化（比如新添，修改或删除新闻）填充到Elastic Search中。终端用户一方面能够从DynamoDB中获取一篇或多篇文章，另外一方面也能够通过关键字从Elastic Search中搜索感兴趣的文章。
 
+到目前为止，一切都非常顺利，但是如果以上描述的整个过程中某一个环节出现了错误（比如上图的环节1或者2）应该怎么办？
+
+**2. 如何处理事件驱动型架构中的错误**
+
+事件驱动型系统中的错误主要分为2类：组件与组件之间通信相关的错误和组件自身的错误。前者是可以自动修复的，比如某一个时间段网络太拥堵而导致信息丢失了，这类错误只需要通过重新尝试就可以解决。而后者是无法自动修复，并需要人为干预，才能修复。比如，新闻工作者想上传一篇超过400KB的文章，可是基于现有的系统，传输时会提示失败，原因在于DynamoDB的Item，其大小不能超过400KB。
+
+任何一类错误均有可能在上图的1和2中发生，如果发生，则需要一个异常处理的机制来纠正这些错误。针对组件与组件之间的错误，则只需要通过重新尝试的机制来解决。比如上图的第2步，如果因网络原因无法将数据填入Elastic Search，那么Lambda会自动重新执行Lambda函数，重试的时间间隔按照[Exponential backoff](https://en.wikipedia.org/wiki/Exponential_backoff)的方式来决定。但是如果是Lambda函数自身的错误，那么为了纠正这类错误则需要分场景来考虑。
+
+一种场景是需要依赖数据的次序的，比如，现在所遇到的往Elastic Search中填入数据的例子。如果我们处理某一个数据出错时，这个错误是因为Lambda函数自身所引起的，那么这个错误是不能忽略的，而是要及时通知给相关的研发人员。接到通知后，研发人员需要分析Lambda函数的日志，并采取修补措施。
+
+另外一种场景是不依赖于数据的次序的，比如，统计投票数量等信息。此时，如果我们处理某一个数据出错时，则可以将这个出错的信息记录到一个队列里，并继续处理下一条记录。当这些错误的信息超过一定量时，则通知相关的研发人员。接到通知后，研发人员则需要分析Lambda函数的日志，并采取修补措施。下图为这种场景的异常处理机制：
+
+![](https://2cloudlab.com/images/blog/event-driven-architecture-dynamodb-stream-failed-handle.png)
+
+上图存在一个问题。如果步骤2和步骤10处理同一个Record，那么结果是Statistics中的信息将是不准确的。因此为了避免这类错误，则需要将步骤2和步骤10之前的2个Lambda函数设计成具有[idempotent](https://en.wikipedia.org/wiki/Idempotence)属性。具有该属性的函数即便是执行多次，也不会影响Statistics中的最终结果。
+
 ## 参考
 
 * [How to perform ordered data replication between applications by using Amazon DynamoDB Streams](https://aws.amazon.com/blogs/database/how-to-perform-ordered-data-replication-between-applications-by-using-amazon-dynamodb-streams/)
