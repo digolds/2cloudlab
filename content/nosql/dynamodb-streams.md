@@ -133,15 +133,27 @@ DynamoDB Stream非常适合于事件驱动型架构（[event-driven architecture
 
 事件驱动型系统中的错误主要分为2类：组件与组件之间通信相关的错误和组件自身的错误。前者是可以自动修复的，比如某一个时间段网络太拥堵而导致信息丢失了，这类错误只需要通过重新尝试就可以解决。而后者是无法自动修复，并需要人为干预，才能修复。比如，新闻工作者想上传一篇超过400KB的文章，可是基于现有的系统，传输时会提示失败，原因在于DynamoDB的Item，其大小不能超过400KB。
 
-任何一类错误均有可能在上图的1和2中发生，如果发生，则需要一个异常处理的机制来纠正这些错误。针对组件与组件之间的错误，则只需要通过重新尝试的机制来解决。比如上图的第2步，如果因网络原因无法将数据填入Elastic Search，那么Lambda会自动重新执行Lambda函数，重试的时间间隔按照[Exponential backoff](https://en.wikipedia.org/wiki/Exponential_backoff)的方式来决定。但是如果是Lambda函数自身的错误，那么为了纠正这类错误则需要分场景来考虑。
+任何一类错误均有可能在上图的1和2中发生，如果发生，则需要一个异常处理的机制来纠正这些错误。针对组件与组件之间的错误，则只需要通过重新尝试的机制来解决。比如上图的第2步，如果因网络原因无法将数据填入Elastic Search，那么Lambda会自动重新执行Lambda函数，重试的时间间隔按照[Exponential backoff](https://en.wikipedia.org/wiki/Exponential_backoff)的方式来决定。AWS Lambda的重试行为会因调用者来决定，具体如下：
 
-一种场景是需要依赖数据的次序的，比如，现在所遇到的往Elastic Search中填入数据的例子。如果我们处理某一个数据出错时，这个错误是因为Lambda函数自身所引起的，那么这个错误是不能忽略的，而是要及时通知给相关的研发人员。接到通知后，研发人员需要分析Lambda函数的日志，并采取修补措施。
+* 同步调用(比如通过API Gateway调用Lambda函数)：不会触发重试行为，而是由调用者决定重试次数
+* 异步调用(比如通过SQS和SNS调用Lambda函数)：默认情况会重试2次，因此重试结束后，如果依然没有解决错误，那么需要将事件存储到Dead Letter Queue (DLQ)
+* 基于流的调用(比如通过Dynamo DB Streams调用Lambda函数): Lambda会反复执行失败的任务，直到数据过期或者执行成功
+
+但是如果是Lambda函数自身的错误，那么为了纠正这类错误则需要分场景来考虑。一种场景是需要依赖数据的次序的，比如，现在所遇到的往Elastic Search中填入数据的例子。如果我们处理某一个数据出错时，这个错误是因为Lambda函数自身所引起的，那么这个错误是不能忽略的，而是要及时通知给相关的研发人员。接到通知后，研发人员需要分析Lambda函数的日志，并采取修补措施。
 
 另外一种场景是不依赖于数据的次序的，比如，统计投票数量等信息。此时，如果我们处理某一个数据出错时，则可以将这个出错的信息记录到一个队列里，并继续处理下一条记录。当这些错误的信息超过一定量时，则通知相关的研发人员。接到通知后，研发人员则需要分析Lambda函数的日志，并采取修补措施。下图为这种场景的异常处理机制：
 
 ![](https://2cloudlab.com/images/blog/event-driven-architecture-dynamodb-stream-failed-handle.png)
 
 上面的解决方案依然存在问题。如果步骤2和步骤10处理同一个Record，那么结果是Statistics中的信息将是不准确的。因此为了避免这类错误，则需要将步骤2和步骤10之前的2个Lambda函数设计成具有[idempotent](https://en.wikipedia.org/wiki/Idempotence)属性。具有该属性的函数即便是执行多次，也不会影响Statistics中的最终结果。
+
+**3. 如何大规模读取DynamoDB Stream**
+
+为了获得变更之后的数据，你需要借助一个处理器来从DynamoDB Stream中读取数据，常见的处理器有Lambda函数。现在假设，市场部门的人找到你，让你帮忙从DynamoDB中获取新闻的点击量，以便他们能分析哪类新闻，在哪些时间段的点击量是最高的。一个较好的做法是编写另外一个Lambda函数，并将DynamoDB Stream设置成该Lambda函数的触发器。这个Lambda函数的作用是把关于新闻流行度的统计信息分发到市场部门的分析系统，以便市场人员能够使用它们的分析系统来找到最受欢迎的新闻以及人群分布情况等。加上这个新的Lambda函数之后，The New York Times报社的解决方案如下：
+
+![](https://2cloudlab.com/images/blog/event-driven-architecture-dynamodb-stream-with-marketing.png)
+
+虽然，DynamoDB Stream能同时支持2个不同的Lambda函数（上图的Lambda和Transform statistics），但是这么做会导致这2个Lambda函数占用相同的资源，从而每一个Lambda函数的读取数据的效率变低。尤其是当你需要再添加一个Lambda函数，用于同步数据时，DynamoDB Stream就无法同时支持这3个Lambda函数。
 
 ## 参考
 
@@ -151,3 +163,4 @@ DynamoDB Stream非常适合于事件驱动型架构（[event-driven architecture
 * [Event-driven processing with Serverless and DynamoDB streams](https://www.serverless.com/blog/event-driven-architecture-dynamodb/)
 * [Challenges and patterns for building event-driven architectures](https://www.serverless.com/blog/stream-based-challenges-and-patterns/)
 * [DynamoDB Streams Use Cases and Design Patterns](https://aws.amazon.com/blogs/database/dynamodb-streams-use-cases-and-design-patterns/)
+* [How AWS Lambda Retry really works](https://medium.com/@enrico.portolan/how-aws-lambda-retry-really-works-fb823e78b4a1)
