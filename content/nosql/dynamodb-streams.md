@@ -113,13 +113,19 @@ DynamoDB Stream非常适合于事件驱动型架构（[event-driven architecture
 
 假设，你是The New York Times报社，当前的用户量有100+万。用户希望能够快速打开热门的新闻，除此之外，还希望能够通过关键字来搜索相关文章。为了解决当下这些问题，让我们看一个比较简单的方案。
 
-* 一个简单的基于事件驱动型架构的例子
+**1. 一个简单的基于事件驱动型架构的例子**
 
-根据以上描述，我们选择了DynamoDB，Lambda以及Elastic Search来解决问题，结果如下图所示：
+根据以上需求，我们选择了DynamoDB，Lambda以及Elastic Search来解决提到的问题，结果如下图所示：
 
 ![](https://2cloudlab.com/images/blog/event-driven-architecture-dynamodb-stream.png)
 
+其中，DynamoDB用于存储新闻，并提供高效获取数据的能力，新闻工作者可以将编辑的新闻提交到DynamoDB，终端用户可以根据新闻的ID打开这篇新闻。
 
+为了支持查询，我们需要引入Elastic Search，它具有全文搜索的能力，但是依旧需要研发人员启动并管理多个实例（如果需要Serverless的搜索服务，那么可以考虑使用[algolia](https://www.algolia.com/)）。
+
+接下来，我们需要向Elastic Search填充数据。为了持续填充变化的数据，则需要借助DynamoDB Stream和Lambda。研发人员需要在存储新闻信息的表上启用DynamoDB Stream，选择合适的语言（GO，Python，Java）编写一个Lambda函数，该函数通过调用Elastic Search的SDK来填入数据。最后，将DynamoDB Stream与Lambda函数映射在一起。
+
+该解决方案的运作过程是：新闻编辑者将新闻上传到DynamoDB，紧接着DynamoDB Stream将触发Lambda函数，而Lambda函数会将新闻的变化（比如新添，修改或删除新闻）填充到Elastic Search中。终端用户一方面能够从DynamoDB中获取一篇或多篇文章，另外一方面也能够通过关键字从Elastic Search中搜索感兴趣的文章。
 
 ## 参考
 
