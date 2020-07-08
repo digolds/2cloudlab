@@ -153,7 +153,17 @@ DynamoDB Stream非常适合于事件驱动型架构（[event-driven architecture
 
 ![](https://2cloudlab.com/images/blog/event-driven-architecture-dynamodb-stream-with-marketing.png)
 
-虽然，DynamoDB Stream能同时支持2个不同的Lambda函数（上图的Lambda和Transform statistics），但是这么做会导致这2个Lambda函数占用相同的资源，从而每一个Lambda函数的读取数据的效率变低。尤其是当你需要再添加一个Lambda函数，用于同步数据时，DynamoDB Stream就无法同时支持这3个Lambda函数。
+虽然，DynamoDB Stream能同时支持2个不同的Lambda函数（上图的Lambda和Transform statistics），但是这么做会导致这2个Lambda函数占用相同的资源，从而每一个Lambda函数的读取数据的效率变低。尤其是当你需要再添加一个Lambda函数，用于同步数据时，DynamoDB Stream就无法同时支持这3个Lambda函数。这个就是我们所说的规模化问题，接下来让我们看看有哪些方法能够规模化读取DynamoDB Stream。
+
+规模化DynamoDB Stream的方法主要有2种，分别是不考虑数据次序的规模化和考虑次序的规模化。比如，之前我们要为市场部门提取统计信息的应用场景则是不需要考虑数据产生的次序的，而像数据同步，检索数据等应用场景则需要考虑数据产生的次序。下面我们来针对这2种不同的应用场景来实施规模化DynamoDB Stream方案。
+
+**不考虑数据次序来规模化**DynamoDB Stream，则可以借助SNS，SQS和Lambda服务来实现。具体思路是只允许使用一个Lambda函数从DynamoDB Stream读取数据，并将读取到的数据发送给SNS，接着SNS再以广播的方式将数据分发到不同的SQS，每个SQS均有一群Consumers，如下图所示：
+
+![](https://2cloudlab.com/images/blog/event-driven-architecture-dynamodb-stream-scale-SQS.png)
+
+**考虑数据次序来规模化**DynamoDB Stream，则可以考虑使用Kinesis Streams和Lambda。Kinesis Streams也是流服务，与DynamoDB不同的是，它可以同时支持多个不同类别的Consumers。为了使用Kinesis Streams服务，需要在Lambda函数里调用KCL SDK，该SDK专门用于操作Kinesis Streams服务。为了让数据按照DynamoDB Stream中的次序进入到Kinesis Streams，则需要设置为每一个数据设置`SequenceNumberForOrdering`和`PartitionKey`，前者用于确保数据的次序，后者则确保该数据存在于Kinesis Streams中的哪一个Shard。由于Kinesis Streams与众多AWS服务集成，因此可以轻松实现多种规模化场景，如下图所示：
+
+![](https://2cloudlab.com/images/blog/event-driven-architecture-dynamodb-stream-scale-Kinesis.png)
 
 ## 参考
 
