@@ -33,8 +33,9 @@ DynamoDB Stream是DynamoDB服务所提供的一个功能，它需要结合Dynamo
 上图涉及到DynamoDB Stream的工作流程是：
 
 1. Producers将向表中修改数据，包括添加数据，修改已有数据，删除数据等。这些操作均是基于HTTPS协议来发起的。
-2. DynamoDB将修改之后的数据发送给DynamoDB Stream（向每个Shard中写入数据的速率最多是1MB/S），数据在DynamoDB中只能存放24小时，在这之后，数据将自动从DynamoDB Stream中移除。
-3. 每个Consumer从对应的Shard中批量读取记录，每次最多能读取1000条记录或者每秒最多能读取2MB数据，只要有一个条件满足，则读取数据的操作将停止并将读到的数据返回给Consumer。读取操作是基于HTTPS协议来发起的。
+2. DynamoDB将修改之后的数据写入内部的Transactions Log文件，DynamoDB Stream从该文件中读取更新之后的数据并存放24小时，在这之后，数据将自动从DynamoDB Stream中移除。
+3. Lambda平台向每一个Shard发送HTTPS请求并以poll的方式监听所有的Shards。
+4. Lambda平台从Shard中批量读取新数据（Records），并以Sync的方式启动一个Lambda Function实例，并将Records传入并执行该实例。如果结果返回成功，那么Lambda平台会继续读取下一批数据，失败则把当前的数据集传入该函数实例，并重新执行。
 
 上图涉及到DynamoDB Stream的内部逻辑以及外部交互：
 
@@ -108,7 +109,17 @@ Records[
 
 ## 基于DynamoDB Stream的设计模式
 
-DynamoDB Stream非常适合于事件驱动型架构（[event-driven architecture](https://en.wikipedia.org/wiki/Event-driven_architecture)）。
+DynamoDB Stream非常适合于事件驱动型架构（[event-driven architecture](https://en.wikipedia.org/wiki/Event-driven_architecture)）。事件驱动型架构的基本思想是：当一个事件发生了（比如用户注册或者购买了一件商品），该事件将被记录下来，并由事件响应者（比如全文搜索系统或分析系统等）处理这些事件。接下来，让我们通过一个例子来应用这种架构。
+
+假设，你是The New York Times报社，当前的用户量有100+万。用户希望能够快速打开热门的新闻，除此之外，还希望能够通过关键字来搜索相关文章。为了解决当下这些问题，让我们看一个比较简单的方案。
+
+* 一个简单的基于事件驱动型架构的例子
+
+根据以上描述，我们选择了DynamoDB，Lambda以及Elastic Search来解决问题，结果如下图所示：
+
+![](https://2cloudlab.com/images/blog/event-driven-architecture-dynamodb-stream.png)
+
+
 
 ## 参考
 
