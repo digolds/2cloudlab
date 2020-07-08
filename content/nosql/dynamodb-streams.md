@@ -165,6 +165,10 @@ DynamoDB Stream非常适合于事件驱动型架构（[event-driven architecture
 
 ![](https://2cloudlab.com/images/blog/event-driven-architecture-dynamodb-stream-scale-Kinesis.png)
 
+让我们回到The New York Times报社例子。之前提到，一共有3个不同的Lambda函数同时读取DynamoDB Stream，它们的作用分别是检索新闻，同步数据和分析数据。为了突破DynamoDB Stream的限制，则需要借助Kinesis Streams，最终我们的The New York Times报社解决方案如下所示：
+
+![](https://2cloudlab.com/images/blog/event-driven-architecture-dynamodb-stream-scale-the-demo.png)
+
 ## 参考
 
 * [How to perform ordered data replication between applications by using Amazon DynamoDB Streams](https://aws.amazon.com/blogs/database/how-to-perform-ordered-data-replication-between-applications-by-using-amazon-dynamodb-streams/)
