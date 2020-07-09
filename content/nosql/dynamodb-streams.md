@@ -169,6 +169,16 @@ DynamoDB Stream非常适合于事件驱动型架构（[event-driven architecture
 
 ![](https://2cloudlab.com/images/blog/event-driven-architecture-dynamodb-stream-scale-the-demo.png)
 
+从上图可知，我们的用户分布于全球，主要是美国和日本，因此上图的DynamoDB有2份，其中的数据是一样的（通过Sync Data函数来实现同步，当然你也可以使用Global Table来同步数据），它们分别位于美国和中国的机房。中国的用户通常优先访问中国区的数据，如果因为各种原因（比如，机房停电）导致中国区的数据无法使用，那么才会退而访问美国区的DynamoDB，然而这会导致中国区用户打开报社网站变慢。
+
+为了加快不同地区的用户打开报社网站的速度，我们添加了CloudFront节点，它是一款能够根据用户所在区域（比如，中国，日本，美国等）来缓存页面的资源（包括CSS，JS，HTML，Image和视频等）。该服务主要缓存了2部分资源，它们分别是API Gateway和S3。
+
+API Gateway的主要作用是将DynamoDB服务和Elastic Search服务对外暴露出来。除此之外，它还能够限流，以免访问报社网站的流量激增时导致DynamoDB或Elastic Search无法处理部分请求。最后，它还能对外提供Restful APIs，这些APIs能被手机端和浏览器端的应用调用。注意，我们在这里直接将API Gateway挂接到了DynamoDB，这种方式适用于简单的业务场景（比如用户的界面的数据结构与DynamoDB中存储的数据结构相似），如果涉及到复杂的应用场景，那么则需要在它们之间添加Lambda函数，这么做不仅增加了系统的复杂度，同时也会增加费用。DynamoDB不支持全文搜索，为了搜索根据关键字搜索相关新闻，则需要借助Elastic Search。为了向其中填入数据，则需要基于DynamoDB Stream，数据库中的每一次修改（新增，更新，删除等）都会及时更新到Elastic Search。之后，API Gateway只需要将将Elastic API暴露出来，其它应用（包括手机端和网页端）就能使用它来实现全文搜索功能。
+
+S3是AWS的对象存储服务，它能存储各种对象，包括文本文件，图片，视频等，单个对象的大小最多是5GB。我们报社的例子是基于浏览器的Web应用，因此它的前端相关的代码（CSS，JS，HTML）均存放在S3中。不仅如此，每一篇新闻都会包含图片或视频，这些资源也都存放在S3中。由于每篇新闻所占存储空间无法确定（有可能超过400KB，DynamoDB中每一个数据项其大小不能超过400KB），因此为了支持字数较多的新闻，则需要将新闻内容放到S3中，并为每篇新闻生成一个S3链接存储于DynamoDB中。虽然解决了存储大对象的问题，但是却分离了数据（一部分数据在DynamoDB中，另外一部分数据在S3中），从而引发了数据一致性的问题。因此，可以考虑将字数少的新闻直接存放在DynamoDB中，而对于字数较多的新闻存放于S3中。
+
+最后，该报社有3类服务需要用到DynamoDB Stream，它们分别是检索数据，分析数据和同步数据。因此我们使用了Kinesis Stream，这个服务能够规模化DynamoDB Stream。这3类服务需要通过Lambda服务来实现，分别定义了Sync Data，Aggregate Data，Index Data函数。其中Aggregate Data将数据聚合到RedShift中，市场团队基于RedShift来分析哪类新闻是最受欢迎的，以及报社的用户群体分布等信息。
+
 ## 参考
 
 * [How to perform ordered data replication between applications by using Amazon DynamoDB Streams](https://aws.amazon.com/blogs/database/how-to-perform-ordered-data-replication-between-applications-by-using-amazon-dynamodb-streams/)
