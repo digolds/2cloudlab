@@ -1,10 +1,10 @@
 ---
-title: "如何设计企业级应用环境"
+title: "设计数据应用的最佳实践"
 type: portfolio
 date: 2018-07-12T16:54:54+06:00
 description : "This is meta description"
-caption: Product Mockup
-image: images/portfolio/item-2.jpg
+caption: NoSQL, Data, Large Scale
+image: images/portfolio/data-intensive-best-practices.png
 category: ["mockup","design"]
 liveLink: https://www.themefisher.com
 client: Julia Robertson

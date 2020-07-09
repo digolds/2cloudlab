@@ -3,8 +3,8 @@ title: "如何构建企业级VPC"
 type: portfolio
 date: 2018-07-12T16:57:54+06:00
 description : "This is meta description"
-caption: Fashion Design
-image: images/portfolio/item-4.jpg
+caption: VPC, 安全
+image: images/portfolio/vpc.png
 category: ["fashion","package"]
 liveLink: https://www.themefisher.com
 client: Julia Robertson

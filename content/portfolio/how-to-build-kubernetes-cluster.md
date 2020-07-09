@@ -3,8 +3,8 @@ title: "如何构建Kubernetes cluster"
 type: portfolio
 date: 2018-07-12T16:56:54+06:00
 description : "This is meta description"
-caption: 3D Model Design
-image: images/portfolio/item-3.jpg
+caption: Kubernetes, Docker
+image: images/portfolio/Kubernetes-logo-1.png
 category: ["3d-model","product"]
 liveLink: https://www.themefisher.com
 client: Julia Robertson
