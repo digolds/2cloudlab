@@ -57,6 +57,8 @@ theme = "timer-hugo"
             title   = "云计算"
         [[params.banner.flipText]]
             title   = "DevOps"
+        [[params.banner.flipText]]
+            title   = "数据服务"
 
     # Homepage About Section
     [params.about]
