@@ -77,7 +77,7 @@ theme = "timer-hugo"
     [params.portfolio]
         enable  = true
         title   = "开箱即用的解决方案"
-        subtitle= "企业的数字化转型是分阶段进行的。一般需要解决网络互联、数据存储、邮箱系统、源码托管、建设研发流水线以及研发产品等等。以下列举了每个企业都会面临的常见问题所对应的解决方案。"
+        subtitle= "Serverless模块帮助企业发展初期快速验证想法，NoSQL模块能够快速打造大规模数据服务，Kubernetes + Docker助力企业构建微服务等等"
 
     [params.footer]
         [[params.footer.socialIcon]]
