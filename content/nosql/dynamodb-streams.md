@@ -22,13 +22,14 @@ DynamoDB的表能够存储大量的数据，为了提高查找性能，研发人
 1. DynamoDB Stream的构成以及其周边服务
 2. 使用DynamoDB Stream的注意事项
 3. 基于DynamoDB Stream的设计模式
-4. 参考
+4. 结论
+5. 参考
 
 ## DynamoDB Stream的构成以及其周边服务
 
 DynamoDB Stream是DynamoDB服务所提供的一个功能，它需要结合DynamoDB Table来使用。开启DynamoDB Stream功能的Table能集成其它服务，最终能够延伸DynamoDB的功能（比如，使用Elastic Search来检索表中的数据，并提供全文搜索功能！）。下图展示了DynamoDB Stream与其它服务的关系：
 
-![](https://2cloudlab.com/images/blog/DynamoDB-Stream.png)
+![](https://2cloudlab.com/images/blog/DynamoDB-Stream.png "图 1.1 DynamoDB Stream与Table，Lambda之间的关系")
 
 上图涉及到DynamoDB Stream的工作流程是：
 
@@ -49,7 +50,7 @@ DynamoDB Stream只允许使用者（也就是上图的Consumers）从中批量�
 
 除了使用Lambda Function，还可以使用EC2，并运行[KCL和DynamoDB Streams Kinesis Adapter](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.KCLAdapter.html)应用来读取数据，如下图所示：
 
-![](https://2cloudlab.com/images/blog/DynamoDB-stream-with-kcl.png)
+![](https://2cloudlab.com/images/blog/DynamoDB-stream-with-kcl.png "图 1.2 访问DynamoDB Stream的2种不同方式：KCL Worker和Lambda")
 
 与Lambda Function作为Consumers不同，KCL Workers需要运行在服务器上（比如EC2或Kubernetes的节点上），并且需要研发人员考虑规模化的问题，比如决定运行几个Workers等。除此之外，研发人员还要基于[KCL和DynamoDB Streams Kinesis Adapter](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.KCLAdapter.html)编写数据读取应用。
 
@@ -117,7 +118,7 @@ DynamoDB Stream非常适合于事件驱动型架构（[event-driven architecture
 
 根据以上需求，我们选择了DynamoDB，Lambda以及Elastic Search来解决提到的问题，结果如下图所示：
 
-![](https://2cloudlab.com/images/blog/event-driven-architecture-dynamodb-stream.png)
+![](https://2cloudlab.com/images/blog/event-driven-architecture-dynamodb-stream.png "图 1.3 利用DynamoDB Stream来捕获更新，并将更新写入Elastic Search")
 
 其中，DynamoDB用于存储新闻，并提供高效获取数据的能力，新闻工作者可以将编辑的新闻提交到DynamoDB，终端用户可以根据新闻的ID打开这篇新闻。
 
@@ -143,7 +144,7 @@ DynamoDB Stream非常适合于事件驱动型架构（[event-driven architecture
 
 另外一种场景是不依赖于数据的次序的，比如，统计投票数量等信息。此时，如果我们处理某一个数据出错时，则可以将这个出错的信息记录到一个队列里，并继续处理下一条记录。当这些错误的信息超过一定量时，则通知相关的研发人员。接到通知后，研发人员则需要分析Lambda函数的日志，并采取修补措施。下图为这种场景的异常处理机制：
 
-![](https://2cloudlab.com/images/blog/event-driven-architecture-dynamodb-stream-failed-handle.png)
+![](https://2cloudlab.com/images/blog/event-driven-architecture-dynamodb-stream-failed-handle.png "图 1.4 利用SQS存储异常发生时的数据上下文，以便恢复异常之后重新执行")
 
 上面的解决方案依然存在问题。如果步骤2和步骤10处理同一个Record，那么结果是Statistics中的信息将是不准确的。因此为了避免这类错误，则需要将步骤2和步骤10之前的2个Lambda函数设计成具有[idempotent](https://en.wikipedia.org/wiki/Idempotence)属性。具有该属性的函数即便是执行多次，也不会影响Statistics中的最终结果。
 
@@ -151,7 +152,7 @@ DynamoDB Stream非常适合于事件驱动型架构（[event-driven architecture
 
 为了获得变更之后的数据，你需要借助一个处理器来从DynamoDB Stream中读取数据，常见的处理器有Lambda函数。现在假设，市场部门的人找到你，让你帮忙从DynamoDB中获取新闻的点击量，以便他们能分析哪类新闻，在哪些时间段的点击量是最高的。一个较好的做法是编写另外一个Lambda函数，并将DynamoDB Stream设置成该Lambda函数的触发器。这个Lambda函数的作用是把关于新闻流行度的统计信息分发到市场部门的分析系统，以便市场人员能够使用它们的分析系统来找到最受欢迎的新闻以及人群分布情况等。加上这个新的Lambda函数之后，The New York Times报社的解决方案如下：
 
-![](https://2cloudlab.com/images/blog/event-driven-architecture-dynamodb-stream-with-marketing.png)
+![](https://2cloudlab.com/images/blog/event-driven-architecture-dynamodb-stream-with-marketing.png "图 1.5 不同的Lambda函数同时读取DynamoDB Stream中的数据")
 
 虽然，DynamoDB Stream能同时支持2个不同的Lambda函数（上图的Lambda和Transform statistics），但是这么做会导致这2个Lambda函数占用相同的资源，从而每一个Lambda函数的读取数据的效率变低。尤其是当你需要再添加一个Lambda函数，用于同步数据时，DynamoDB Stream就无法同时支持这3个Lambda函数。这个就是我们所说的规模化问题，接下来让我们看看有哪些方法能够规模化读取DynamoDB Stream。
 
@@ -159,15 +160,15 @@ DynamoDB Stream非常适合于事件驱动型架构（[event-driven architecture
 
 **不考虑数据次序来规模化**DynamoDB Stream，则可以借助SNS，SQS和Lambda服务来实现。具体思路是只允许使用一个Lambda函数从DynamoDB Stream读取数据，并将读取到的数据发送给SNS，接着SNS再以广播的方式将数据分发到不同的SQS，每个SQS均有一群Consumers，如下图所示：
 
-![](https://2cloudlab.com/images/blog/event-driven-architecture-dynamodb-stream-scale-SQS.png)
+![](https://2cloudlab.com/images/blog/event-driven-architecture-dynamodb-stream-scale-SQS.png "图 1.6 使用SQS提高DynamoDB Stream所支持的并发数，同时也丢失了原来数据的次序")
 
 **考虑数据次序来规模化**DynamoDB Stream，则可以考虑使用Kinesis Streams和Lambda。Kinesis Streams也是流服务，与DynamoDB不同的是，它可以同时支持多个不同类别的Consumers。为了使用Kinesis Streams服务，需要在Lambda函数里调用KCL SDK，该SDK专门用于操作Kinesis Streams服务。为了让数据按照DynamoDB Stream中的次序进入到Kinesis Streams，则需要设置为每一个数据设置`SequenceNumberForOrdering`和`PartitionKey`，前者用于确保数据的次序，后者则确保该数据存在于Kinesis Streams中的哪一个Shard。由于Kinesis Streams与众多AWS服务集成，因此可以轻松实现多种规模化场景，如下图所示：
 
-![](https://2cloudlab.com/images/blog/event-driven-architecture-dynamodb-stream-scale-Kinesis.png)
+![](https://2cloudlab.com/images/blog/event-driven-architecture-dynamodb-stream-scale-Kinesis.png "图 1.7 使用Kinesis Stream提高DynamoDB Stream所支持的并发数，原来数据的次序得到了保留")
 
 让我们回到The New York Times报社例子。之前提到，一共有3个不同的Lambda函数同时读取DynamoDB Stream，它们的作用分别是检索新闻，同步数据和分析数据。为了突破DynamoDB Stream的限制，则需要借助Kinesis Streams，最终我们的The New York Times报社解决方案如下所示：
 
-![](https://2cloudlab.com/images/blog/event-driven-architecture-dynamodb-stream-scale-the-demo.png)
+![](https://2cloudlab.com/images/blog/event-driven-architecture-dynamodb-stream-scale-the-demo.png "图 1.8 结合了搜索服务，数据同步服务，分析服务的DynamoDB Stream")
 
 从上图可知，我们的用户分布于全球，主要是美国和日本，因此上图的DynamoDB有2份，其中的数据是一样的（通过Sync Data函数来实现同步，当然你也可以使用Global Table来同步数据），它们分别位于美国和中国的机房。中国的用户通常优先访问中国区的数据，如果因为各种原因（比如，机房停电）导致中国区的数据无法使用，那么才会退而访问美国区的DynamoDB，然而这会导致中国区用户打开报社网站变慢。
 
@@ -178,6 +179,16 @@ API Gateway的主要作用是将DynamoDB服务和Elastic Search服务对外暴�
 S3是AWS的对象存储服务，它能存储各种对象，包括文本文件，图片，视频等，单个对象的大小最多是5GB。我们报社的例子是基于浏览器的Web应用，因此它的前端相关的代码（CSS，JS，HTML）均存放在S3中。不仅如此，每一篇新闻都会包含图片或视频，这些资源也都存放在S3中。由于每篇新闻所占存储空间无法确定（有可能超过400KB，DynamoDB中每一个数据项其大小不能超过400KB），因此为了支持字数较多的新闻，则需要将新闻内容放到S3中，并为每篇新闻生成一个S3链接存储于DynamoDB中。虽然解决了存储大对象的问题，但是却分离了数据（一部分数据在DynamoDB中，另外一部分数据在S3中），从而引发了数据一致性的问题。因此，可以考虑将字数少的新闻直接存放在DynamoDB中，而对于字数较多的新闻存放于S3中。
 
 最后，该报社有3类服务需要用到DynamoDB Stream，它们分别是检索数据，分析数据和同步数据。因此我们使用了Kinesis Stream，这个服务能够规模化DynamoDB Stream。这3类服务需要通过Lambda服务来实现，分别定义了Sync Data，Aggregate Data，Index Data函数。其中Aggregate Data将数据聚合到RedShift中，市场团队基于RedShift来分析哪类新闻是最受欢迎的，以及报社的用户群体分布等信息。
+
+虽然图 1.8能够解决报社的问题，但是也引发了更多的问题。首先，由于DynamoDB Stream集成了许多服务，比如Elastic Search，Firehose等，因此系统变得更加复杂，也更加容易出错。另外，增加了监控系统运行状态的工作量，比如，需要为每一个环节上的节点实施监控。除此之外，潜在的风险也变多了，因为需要针对每一个节点设计安全权限，以免外来入侵者攻破一个节点，便可以入侵整个系统。最后，费用上升了，因为用了更多的服务。
+
+## 结论
+
+本文介绍了DynamoDB Stream的内部结构和用途。DynamoDB Stream用于捕获DynamoDB Table中数据的变化，这些变化能够被Lambda服务检测到，并根据变化的数据来执行Lambda函数。Lambda服务是一个计算平台，它通过HTTPS协议来与DynamoDB Stream通信，并将数据读取出来，接着以同步（Sync）的方式来调用Lambda函数。DynamoDB Stream的内部由多个Shards组成，每个Shard会从对应的分区（比如图 1.1中的Partition A）读取数据，并保留24小时。Lambda服务会根据通知来启动Lambda函数实例，每一个Shard最多同时允许2个Lambda函数实例来读取数据，超过3个实例则可能会导致其中一个实例无法读取数据，这是DynamoDB Stream的限制。通过Lambda服务，DynamoDB能够与很多服务集成，比如支持搜索的Elastic Search，支持分析的QuickSight，支持同步数据的DynamoDB等。
+
+使用DynamoDB Stream需要注意很多细节。其中最为重要的是它的并发量，它最多只能支持2个Lambda函数或KCL Worker，除此之外还需要考虑它存储数据的周期（24小时），最后还需要根据下游服务的吞吐量来使用DynamoDB Stream。
+
+DynamoDB Stream能够实现事件驱动系统，这类系统是由事件驱动的。事件是指已经发生的事情，比如，新闻编辑向DynamoDB中添加一篇新闻，这就是一个事件。由于DynamoDB只适合存取数据，并不适合搜索或分析，因此为了给系统添加这些功能，则需要引入其它服务，比如Elastic Search服务用于搜索，Firehose用于分析等。因此需要使用DynamoDB Stream将这些事件散播出去，以便这些服务能够处理这些事件。基于事件驱动的系统也会带来一些挑战，比如如何处理其中发生的异常，如何确保事件的次序是正确的，如果是基于DynamoDB Stream的事件，那么如何提高它的并发量等。处理异常的方法需要考虑实际情况，比如不考虑事件次序的场景，其异常处理变得比较简单，只需要忽略异常，并将异常发生时的数据上下文存储到SQS中，再通知研发人员。要想提高DynamoDB Stream的并发量，并保持事件的原始次序，则需要借助Kinesis。
 
 ## 参考
 
