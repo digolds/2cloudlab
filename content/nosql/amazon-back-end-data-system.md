@@ -15,18 +15,15 @@ amazon.com是服务于全球的在线电商，用户在它的平台上购买一�
 
 下图是从amazon.com首页截取的部分信息，主要包括 **分类商品** 与 **推荐商品** 。
 
-![](https://2cloudlab.com/images/blog/amazon-home-page.png)
-**图 1.1** amazon.com主页中部分商品
+![](https://2cloudlab.com/images/blog/amazon-home-page.png "图 1.1 amazon.com主页中部分商品")
 
 以上信息有一个特点：**每一个大类中均包含多件商品**。比如：推荐板块中列举了多件商品；Ride electric类目下有多种商品。这些信息通常会存储在中心服务器上，由数据库系统管理。当用户访问amazon.com时，浏览器会向中心服务器获取商品数据。整个过程如下图所示：
 
-![](https://2cloudlab.com/images/blog/amzone-visit-workflow.png)
-**图 1.2** 从数据中心查询商品数据
+![](https://2cloudlab.com/images/blog/amzone-visit-workflow.png "图 1.2 从数据中心查询商品数据")
 
 通过上图可知，**数据中心**不仅需要存储这些商品信息以及每件商品所属的分类信息，还要提供获取商品信息的方法。为了使数据中心具有数据存取的能力，往往需要引入数据库系统（下图蓝色区域部分）。这些系统不仅能够存储数据，也能够查询数据，通常运行于多台服务器。而这些服务器通过网线连接在一起，作为一个整体对外提供数据存取服务。最终，数据中心的演化如下图所示：
 
-![](https://2cloudlab.com/images/blog/amzone-visit-workflow-detail.png)
-**图 1.3** 位于数据中心的数据库系统
+![](https://2cloudlab.com/images/blog/amzone-visit-workflow-detail.png "图 1.3 位于数据中心的数据库系统")
 
 **注意**：以上只是一个简化版的数据中心，现实情况是：amazon.com依赖于多个数据中心，每个国家都会有一个或多个数据中心（比如：美国，欧洲以及中国均有多个数据中心），每个数据中心都有大量的微服务支持着amazon.com。不同国家的用户会直接访问该国家的数据中心，这么做的好处是基于地理位置来降低访问延时。以上简化版的数据中心已经足够让我们讨论大多数amazon.com背后的数据服务了，对于业务遍布全球的企业，多数据中心是必须考虑的。接下来，让我们思考：使用数据库系统存取这些商品信息时会遇到的问题。
 
@@ -51,8 +48,7 @@ amazon.com是服务于全球的在线电商，用户在它的平台上购买一�
 
 通过问题的描述可知，共有4个数据实体，它们分别是：用户（User），商品（Product），推荐物（Recommend）以及商品分类（Category），以及3个关系，它们分别是：用户与推荐商品的关系，推荐物与商品的关系和商品分类与商品的关系。整个数据实体以及其之间的关系可以通过下图抽象出来：
 
-![](https://2cloudlab.com/images/blog/data-entity-and-relationship.png)
-**图 1.4** 基于SQL的Schema来数据建模
+![](https://2cloudlab.com/images/blog/data-entity-and-relationship.png "图 1.4 基于SQL的Schema来数据建模")
 
 上图实体之间的连线代表它们之间的关系，其中`1:*`的含义是只1对0或1对多。比如一个用户可以有0，1，或者多个推荐商品。
 
@@ -105,8 +101,7 @@ amazon.com是服务于全球的在线电商，用户在它的平台上购买一�
 
 为了存储用户，商品，商品分类以及推荐信息，则需要在MongoDB中创建一个collection，所有的实体信息均存储在这个collection里，这一点与SQL的做法（通过4张表来分别存储）不一样。为了让某类实体（比如用户）均匀分布在不同的服务器上，那么我们需要根据一个随机的字段（比如用户的user_id）来实现。为了让相关数据（比如某个用户的推荐列表）集中在一起，则需要使用一个字段（比如所有推荐的商品都包含了相同的user_id）来将关联的数据集中在一起。基于这些规则，我们很快能得到以下数据分布的collection。
 
-![](https://2cloudlab.com/images/blog/mongoDB-data-model.png)
-**图 1.5** MongoDB中的数据分布
+![](https://2cloudlab.com/images/blog/mongoDB-data-model.png "图 1.5 MongoDB中的数据分布")
 
 通过上图可知，每一条数据均通过一个document来记录，比如用户名为"slzheng"的用户为user document。Node1和Node2分别是2台服务器，category为book的document与product id为110和247的document连续存储于Node2的磁盘上，这是由shard_key和sort_key来决定的。为了一次性返回推荐商品列表，我们在recommend document里内置了product信息，这违背了SQL的第二范式原则，但是换来了更好的查询性能。有了这些基础，浏览器查询这些数据的具体过程如下：
 
@@ -116,8 +111,7 @@ amazon.com是服务于全球的在线电商，用户在它的平台上购买一�
 
 **注意**:分解器实际上是运行在数据中心的服务器（如下图所示），上面运行的应用主要是分解来自浏览器的请求。通过这种办法，浏览器的响应延时最终由Node1和Node2中最迟返回的节点决定（如下图所示）。
 
-![](https://2cloudlab.com/images/blog/amzone-visit-workflow-with-resolver.png)
-**图 1.6** 带有resolver的数据中心
+![](https://2cloudlab.com/images/blog/amzone-visit-workflow-with-resolver.png "图 1.6 带有resolver的数据中心")
 
 引入MongoDB能解决存取数据的性能问题，这是因为我们知道数据存取的模式，并根据这些存取模式来设计数据库的关键字以及数据的关联性。这种方式最终会将所有关联的数据集中在一起，以便一次性获取。而使用SQL数据库则不需要提前想好这些关键字，不需要知道数据的关联性，只需要定义实体，以后需要某些关联的数据时则只需要执行SQL语句来获取。
 
