@@ -66,7 +66,7 @@ DynamoDB提供2种收费模式，分别是on-demand和provisioned capacity。前
 
 在现实世界中，每一天的流量分布情况并不是均匀的，比如，微博在白天则会有大量的访问，而凌晨几乎没有人使用微博，这就导致了provisioned capacity模式下的读写单元有一半的时间是闲置的。除此之外，在provisioned capacity模式下，还需要研发人员考虑读写单元的增减，当流量高的时候，则需要自动增加读写单元，反之亦然。最后，业务的起步阶段，你无法预知有多少流量，因此你也无法计算出需要多少读写单元，因此会优先选择on-demand模式，直到对业务流量有确定的统计数据时，才会切换到provisioned capacity模式。
 
-以上2部分费用是使用DynamoDB过程中必定会产生的，如果你还使用了它的一些功能，比如Global Table或DynamoDB Stream，那么需要将这些功能所产生的费用考虑进去。
+以上2部分费用是使用DynamoDB过程中必定会产生的，如果你还使用了它的其它功能，比如Global Table或DynamoDB Stream，那么需要将这些功能所产生的费用考虑进去。
 
 ## 结论
 
