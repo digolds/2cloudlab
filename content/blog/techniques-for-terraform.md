@@ -122,6 +122,12 @@ func TestCase2(t *testing.T) {
 }
 ```
 
+在文件*intergration_test.go*中指定tag：`// +build integration`，运行以下命令将执行该文件中的所有自动化测试用例。
+
+```bash
+go test -v -run -tags=integration
+```
+
 3. Go Concurrency
 
 ```go
@@ -132,12 +138,6 @@ for {
         //
   }
 }
-```
-
-在文件*intergration_test.go*中指定tag：`// +build integration`，运行以下命令将执行该文件中的所有自动化测试用例。
-
-```bash
-go test -v -run -tags=integration
 ```
 
 ## 组合Terraform、aws-vault和Go工具的实用技巧
