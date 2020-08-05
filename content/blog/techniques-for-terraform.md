@@ -45,6 +45,39 @@ resource "aws_launch_configuration" "launch_configuration_instance" {
 }
 ```
 
+3. Terraform提供`for_each`指令来遍历一个`map`对象，并根据该对象的键值对`each.key`和`each.value`来创建资源
+
+```terraform
+locals {
+  buckets = {
+    bucket1 = "2cloudlab-your-unique-bucket-name-1"
+    bucket2 = "2cloudlab-your-unique-bucket-name-2"
+  }
+}
+
+resource "aws_s3_bucket" "b" {
+  for_each     = local.buckets
+  bucket = each.value
+}
+
+output "results" {
+  value = aws_s3_bucket.b
+}
+```
+
+以上命令将生成2个S3资源，名字分别是`2cloudlab-your-unique-bucket-name-1`和`2cloudlab-your-unique-bucket-name-2`，运行结果如下所示（为了方便显示和阅读，我已经将无关紧要的信息剔除）：
+
+```bash
+results = {
+  "bucket1" = {
+    "bucket" = "2cloudlab-your-unique-bucket-name-1"
+  }
+  "bucket2" = {
+    "bucket" = "2cloudlab-your-unique-bucket-name-2"
+  }
+}
+```
+
 ## Go实用技巧
 
 1. 如何使用Go来运行某一个测试用例（比如定义了一个TestIntegrationOrganization测试用例）？
