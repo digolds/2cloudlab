@@ -78,7 +78,7 @@ results = {
 }
 ```
 
-4. 如何再Terraform中将数组转化成字典
+4. 如何在Terraform中将数组转化成字典
 
 ```bash
 my_map = {
