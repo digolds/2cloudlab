@@ -78,6 +78,27 @@ results = {
 }
 ```
 
+4. 如何再Terraform中将数组转化成字典
+
+```bash
+my_map = {
+    for i in range(1, 11, 2):
+    format("%d", i) => format("%s-%d", "prefix", i)
+  }
+```
+
+运行以上指令将生成以下结果：
+
+```bash
+{
+  "1" = "prefix-1"
+  "3" = "prefix-3"
+  "5" = "prefix-5"
+  "7" = "prefix-7"
+  "9" = "prefix-9"
+}
+```
+
 ## Go实用技巧
 
 1. 如何使用Go来运行某一个测试用例（比如定义了一个TestIntegrationOrganization测试用例）？
