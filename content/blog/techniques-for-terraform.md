@@ -124,7 +124,7 @@ func TestCase2(t *testing.T) {
 
 3. Go Concurrency
 
-```
+```go
 for {
   select {
     case <-done:
