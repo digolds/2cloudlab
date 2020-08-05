@@ -122,6 +122,18 @@ func TestCase2(t *testing.T) {
 }
 ```
 
+3. Go Concurrency
+
+```
+for {
+  select {
+    case <-done:
+    default:
+        //
+  }
+}
+```
+
 在文件*intergration_test.go*中指定tag：`// +build integration`，运行以下命令将执行该文件中的所有自动化测试用例。
 
 ```bash
