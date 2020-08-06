@@ -156,7 +156,7 @@ func func1(done <-chan interface{}, inputStream <-chan interface{}) <-chan inter
 }
 ```
 
-4. 使用or-channel来检测多任务中某个任务的完成情况：
+4. 使用or-channel来检测多任务中某个任务是否完成：
 
 ```go
 func or(channels ...<-chan interface{}) <-chan interface{} {
