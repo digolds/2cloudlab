@@ -128,15 +128,31 @@ func TestCase2(t *testing.T) {
 go test -v -run -tags=integration
 ```
 
-3. Go Concurrency
+3. Go Concurrency: Confinement, for-select and done channel
 
 ```go
-for {
-  select {
-    case <-done:
-    default:
-        //
-  }
+//Confinement that channels done, inputStream is read only, and the return value resultsStream is also read only
+func func1(done <-chan interface{}, inputStream <-chan interface{}) <-chan interface{} {
+	//Create unbuffer channel in lexical scope
+	resultsStream := make(chan interface{})
+	// Launch another go routine to handle task and generate result which is passed to resultsStream
+	go func() {
+		defer close(resultsStream)
+		for {
+			select {
+			case <-done:
+				//Cancel by parent
+				return
+			case <-inputStream:
+				//Read from input stream
+				result := 1
+				resultsStream <- result
+			default:
+				//Continual monitoring
+			}
+		}
+	}()
+	return resultsStream
 }
 ```
 
