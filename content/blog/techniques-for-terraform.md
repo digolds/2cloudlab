@@ -188,6 +188,14 @@ func or(channels ...<-chan interface{}) <-chan interface{} {
 }
 ```
 
+5. Fan-out vs tee 模式
+
+![](https://2cloudlab.com/images/blog/tee-vs-fanout-patterns.png)
+
+6. Fan-in vs bridge 模式
+
+![](https://2cloudlab.com/images/blog/bridge-fanin-patterns.png)
+
 ## 组合Terraform、aws-vault和Go工具的实用技巧
 
 1. 如何使用aws-vault和Go工具来操作AWS服务？
