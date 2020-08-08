@@ -305,7 +305,18 @@ bridge := func(
 }
 ```
 
-7. context package
+7. 为了什么使用context package，以及它是如何帮助你解决问题的
+
+假设你启动了一个goroutine（父亲），它同时启动了多个goroutines（孩子），那么你将面临以下问题：
+
+* 如果将一些通用的信息流转于各个goroutines？
+* 如果父亲goroutine不需要其孩子goroutines的计算结果了，如何取消孩子goroutines，以便释放资源？
+* 由于业务需要，要求某个goroutine的执行时间不超过某段时间，比如2秒。如果超过这段时间，应该如何停止该goroutine的执行？
+* 由于业务需要，要求某个goroutine的执行时间不超过某个时间点，比如5:00 PM。如果超过这个时间点，应该如何停止该goroutine的执行？
+
+如果你所在的业务场景中面临以上问题，那么则需要借助Go中的标准库context。通过使用该库，你可以针对调用图来定义context tree，比如下图：
+
+![](https://2cloudlab.com/images/blog/goroutine-flow-vs-context-flow.png)
 
 [Using Context Package in GO (Golang) – Complete Guide](https://golangbyexample.com/using-context-in-golang-complete-guide/)
 
