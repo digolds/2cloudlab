@@ -305,7 +305,7 @@ bridge := func(
 }
 ```
 
-7. 为了什么使用context package，以及它是如何帮助你解决问题的
+7. 为什么使用context package，以及它是如何帮助你解决问题的
 
 假设你启动了一个goroutine（父亲），它同时启动了多个goroutines（孩子），那么你将面临以下问题：
 
