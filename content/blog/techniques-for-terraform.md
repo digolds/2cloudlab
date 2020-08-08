@@ -192,9 +192,122 @@ func or(channels ...<-chan interface{}) <-chan interface{} {
 
 ![](https://2cloudlab.com/images/blog/tee-vs-fanout-patterns.png)
 
+**fan-out**
+
+```go
+numFinders := runtime.NumCPU()
+finders := make([]<-chan int, numFinders)
+for i := 0; i < numFinders; i++ {
+    finders[i] = primeFinder(done, randIntStream)
+}
+```
+
+**tee**
+
+```go
+tee := func(
+    done <-chan interface{},
+    in <-chan interface{},
+) (_, _ <-chan interface{}) { <-chan interface{}) {
+    out1 := make(chan interface{})
+    out2 := make(chan interface{})
+    go func() {
+        defer close(out1)
+        defer close(out2)
+        for val := range orDone(done, in) {
+            var out1, out2 = out1, out2
+            for i := 0; i < 2; i++ {
+                select {
+                case <-done:
+                case out1<-val:
+                    out1 = nil
+                case out2<-val:
+                    out2 = nil
+                }
+            }
+        }
+    }()
+    return out1, out2
+}
+```
+
 6. Fan-in vs bridge 模式
 
 ![](https://2cloudlab.com/images/blog/bridge-fanin-patterns.png)
+
+**fan-in**
+
+```go
+fanIn := func(
+    done <-chan interface{},
+    channels ...<-chan interface{},
+) <-chan interface{} {
+    var wg sync.WaitGroup
+    multiplexedStream := make(chan interface{})
+
+    multiplex := func(c <-chan interface{}) {
+        defer wg.Done()
+        for i := range c {
+            select {
+            case <-done:
+                return
+            case multiplexedStream <- i:
+            }
+        }
+    }
+
+    // Select from all the channels
+    wg.Add(len(channels))
+    for _, c := range channels {
+        go multiplex(c)
+    }
+
+    // Wait for all the reads to complete
+    go func() {
+        wg.Wait()
+        close(multiplexedStream)
+    }()
+
+    return multiplexedStream
+}
+```
+
+**bridge**
+
+```go
+bridge := func(
+    done <-chan interface{},
+    chanStream <-chan <-chan interface{},
+) <-chan interface{} {
+    valStream := make(chan interface{})
+    go func() {
+        defer close(valStream)
+        for {
+            var stream <-chan interface{}
+            select {
+            case maybeStream, ok := <-chanStream:
+                if ok == false {
+                    return
+                }
+                stream = maybeStream
+            case <-done:
+                return
+            }
+            for val := range orDone(done, stream) {
+                select {
+                case valStream <- val:
+                case <-done:
+                }
+            }
+        }
+    }()
+    return valStream
+}
+```
+
+7. context package
+
+[Using Context Package in GO (Golang) – Complete Guide](https://golangbyexample.com/using-context-in-golang-complete-guide/)
 
 ## 组合Terraform、aws-vault和Go工具的实用技巧
 
