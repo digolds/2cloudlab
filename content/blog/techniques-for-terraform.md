@@ -320,6 +320,75 @@ bridge := func(
 
 [Using Context Package in GO (Golang) – Complete Guide](https://golangbyexample.com/using-context-in-golang-complete-guide/)
 
+8. value receiver 与 pointer receiver的区别
+
+* value receiver指明，调用接口过程中拷贝一份新的对象，因此对新对象进行修改，不会影响原来的对象
+* pointer receiver指明，调用接口过程中只会传递原来对象的地址，因此对该地址所指向的对象进行修改则会直接改变原对象
+
+以下例子说明了这一点：
+
+```go
+package main
+
+import (
+	"fmt"
+)
+
+type Shape interface {
+	DoubleArea() float64
+}
+
+type Rect struct {
+	Width  float64
+	Height float64
+}
+
+type Circle struct {
+	Radius float64
+}
+
+func (s *Rect) DoubleArea() float64 {
+	fmt.Println(fmt.Sprintf("Width is %f, Height is %f", s.Width, s.Height))
+	s.Width *= 1.414
+	s.Height *= 1.414
+	return s.Width * s.Height
+}
+
+func (s Circle) DoubleArea() float64 {
+	fmt.Println(fmt.Sprintf("Radius is %f", s.Radius))
+	s.Radius *= 1.414
+	return s.Radius * s.Radius * 3.14
+}
+
+func main() {
+	// pointer receiver
+	fmt.Println("[Pointer receiver]")
+	var s Shape = &Rect{Width: 1.0, Height: 1.0}
+	s.DoubleArea()
+	fmt.Println(fmt.Sprintf("After double area, the Width is %f", s.(*Rect).Width))
+
+	fmt.Println("-----------------------------")
+
+	// value receiver
+	fmt.Println("[Value receiver]")
+	var c Shape = Circle{Radius: 1.0}
+	c.DoubleArea()
+	fmt.Println(fmt.Sprintf("After double area, the Radius is %f", c.(Circle).Radius))
+}
+```
+
+运行以上程序的输出结果如下：
+
+```bash
+[Pointer receiver]
+Width is 1.000000, Height is 1.000000
+After double area, the Width is 1.414000
+-----------------------------
+[Value receiver]
+Radius is 1.000000
+After double area, the Radius is 1.000000
+```
+
 ## 组合Terraform、aws-vault和Go工具的实用技巧
 
 1. 如何使用aws-vault和Go工具来操作AWS服务？
