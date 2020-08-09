@@ -428,6 +428,8 @@ func main() {
   c.DoubleArea()
   // You can't call GetVolume, beacuse c is a Shape, which doesn't contain GetVolume
   // c.GetVolume()
+  // but you can change c to its dynamic type which is Circle by c.(Circle) and call GetVolume
+  c.(Circle).GetVolume()
 }
 ```
 
