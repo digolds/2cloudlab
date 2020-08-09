@@ -400,20 +400,24 @@ import (
 	"fmt"
 )
 
+// interface
 type Shape interface {
 	DoubleArea() float64
 }
 
+// struct
 type Circle struct {
 	Radius float64
 }
 
+// method
 func (s Circle) DoubleArea() float64 {
 	fmt.Println(fmt.Sprintf("Radius is %f", s.Radius))
 	s.Radius *= 1.414
 	return s.Radius * s.Radius * 3.14
 }
 
+// method
 func (s Circle) GetVolume() float64 {
 	return s.Radius * s.Radius * 3.14 * 2.0
 }
