@@ -420,7 +420,7 @@ func (s Circle) GetVolume() float64 {
 
 func main() {
   // We use Shape to abstract Circle to a shape
-	var c Shape = Circle{Radius: 1.0}
+  var c Shape = Circle{Radius: 1.0}
   c.DoubleArea()
   // You can't call GetVolume, beacuse c is a Shape, which doesn't contain GetVolume
   // c.GetVolume()
