@@ -389,6 +389,44 @@ Radius is 1.000000
 After double area, the Radius is 1.000000
 ```
 
+9. 将某个struct类型的部分方法抽象成一个interface类型
+
+![](https://2cloudlab.com/images/blog/golang-abstract-interface.png)
+
+```go
+package main
+
+import (
+	"fmt"
+)
+
+type Shape interface {
+	DoubleArea() float64
+}
+
+type Circle struct {
+	Radius float64
+}
+
+func (s Circle) DoubleArea() float64 {
+	fmt.Println(fmt.Sprintf("Radius is %f", s.Radius))
+	s.Radius *= 1.414
+	return s.Radius * s.Radius * 3.14
+}
+
+func (s Circle) GetVolume() float64 {
+	return s.Radius * s.Radius * 3.14 * 2.0
+}
+
+func main() {
+  // We use Shape to abstract Circle to a shape
+	var c Shape = Circle{Radius: 1.0}
+  c.DoubleArea()
+  // You can't call GetVolume, beacuse c is a Shape, which doesn't contain GetVolume
+  // c.GetVolume()
+}
+```
+
 ## 组合Terraform、aws-vault和Go工具的实用技巧
 
 1. 如何使用aws-vault和Go工具来操作AWS服务？
