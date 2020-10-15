@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<!-- saved from url=(0114)http://localhost:9000/views/catalogs/update/quickway?catalog_id=001566215657404457d6104499b4da8af31d05a8084e0b7000 -->
+<html class="js-focus-visible" data-js-focus-visible=""><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+     
+    
+    <title>markdow 编辑器 - Digolds</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Technique,Art,javascript,node,jquery,git,python,java,sql,linux,ios,android,教程,软件,编程,开发,运维,云计算,网络,互联网">
+    <meta name="description" content="Discover the coolest interests from the world on digolds.cn. Curators create or share quality interests with great style, amazing ideas and art and more.">
+    <link rel="stylesheet" href="./markdow 编辑器 - Digolds_files/uikit.min.css">
+    <script src="./markdow 编辑器 - Digolds_files/jquery.min.js.下载"></script>
+    <script src="./markdow 编辑器 - Digolds_files/md5.js.下载"></script>
+    <script src="./markdow 编辑器 - Digolds_files/uikit.min.js.下载"></script>
+    <script src="./markdow 编辑器 - Digolds_files/uikit-icons.min.js.下载"></script>
+    <script src="./markdow 编辑器 - Digolds_files/sticky.min.js.下载"></script>
+    <script src="./markdow 编辑器 - Digolds_files/vue.min.js.下载"></script>
+    <script src="./markdow 编辑器 - Digolds_files/awesome.js.下载"></script>
+    <link rel="stylesheet" href="./markdow 编辑器 - Digolds_files/simplemde.min.css">
+    <script src="./markdow 编辑器 - Digolds_files/simplemde.min.js.下载"></script>
+    <link rel="stylesheet" href="./markdow 编辑器 - Digolds_files/gruvbox-light.min.css">
+    <script src="./markdow 编辑器 - Digolds_files/highlight.min.js.下载"></script>
+    <script>
+        var simplemde;
+        catalog_id = '001566215657404457d6104499b4da8af31d05a8084e0b7000';
+        gold_id = '001514733219033693fc7e0c096447188196a7faae07517000';
+        
+        function load_data(vm)
+        {
+            getApi('/api/v1/image_resource/access?offset=' + vm.image_galleray.length, function (err, results) {
+                        if(err)
+                        {
+                            location.assign("/signin");
+                        }
+                        else{
+                            for (var i=0; i<results.image_resources.length; i++) {
+                            vm.image_galleray.push(results.image_resources[i]);
+                            }
+                        }
+                    });
+        }
+
+        function initVM(result) {
+            var vm = new Vue({
+            el: '#main',
+            data: result,
+            methods: {
+                submit: function () {
+                    postApi('/api/v1/catalogs/update', {
+                        catalog_id: catalog_id,
+                        section_name: this.section_name,
+                        name: this.name,
+                        content: simplemde.value(),
+                    },
+                    function (err, result) {
+                        if(err){
+                            UIkit.notification(err.message || err.error || err);
+                        }
+                        else{
+                            location.assign('/article/' + result.id);
+                        }
+                        });
+                },
+                cancel: function(){
+                    location.assign('/article/' + catalog_id);
+                },
+                refresh: function()
+                    {
+                        var vm = this;
+                        vm.image_galleray = [];
+                        load_data(vm);
+                    },
+                    load_more: function () {
+                        var vm = this;
+                        load_data(vm);
+                    },
+                    delete_me: function(selected_image){
+                        let url = '/api/v1/image_resource/delete';
+                        let vm =this;
+                        postApi(url, {id:selected_image.id}, function (err, result) {
+                            if (err) {
+                                UIkit.notification(err.message || err.error || err);
+                            }
+                            else {
+                                vm.image_galleray.splice(vm.image_galleray.indexOf(selected_image),1);
+                            }
+                        });
+                    },
+                    choose_me: function(selected_image){
+                            var cm = simplemde.codemirror;
+                            cm.replaceSelection("");
+                            SimpleMDE.drawImage(simplemde,selected_image.image_url);
+                            var startPoint = cm.getCursor("start");
+                            var endPoint = cm.getCursor("end");
+                            text = cm.getSelection();
+                            
+                            cm.setSelection(
+                                {
+                                    line: startPoint.line,
+                                    ch: startPoint.ch - 4
+                                }, {
+                                    line: endPoint.line,
+                                    ch: endPoint.ch + selected_image.image_url.length + 1
+                                });
+                            cm.focus();
+                        
+                    }
+            }
+        });
+        return vm;
+        }
+        $(function()
+        {
+            getApi('/api/v1/catalogs/access?catalog_id='+catalog_id, 
+                    function (err, result) {
+                        if (err) {
+                            UIkit.notification(err.message || err.error || err);
+                        }
+                        else {
+                            result.image_galleray = [];
+                           var vm = initVM(result);
+                        simplemde = new SimpleMDE({ element: document.getElementById("MyID"),
+                        placeholder:"文章内容",
+                        renderingConfig: {
+		singleLineBreaks: true,
+		codeSyntaxHighlighting: true,
+	},
+                         });
+                         if(!result.content)
+                         {
+                            var lines = function(){
+/*
+# 输入你的文章标题，该标题将显示在【搜索引擎】上
+                            
+简要的描述你的文章,请与文章标题保持一个换行符，该描述将显示在【搜索引擎】上。根据以下语法规则编写文章。
+                            
+## 如何使用文字样式
+Go ahead, play around with the editor! Be sure to check out **bold** and *italic* styling, or even [links](https://google.com). You can type the Markdown syntax, use the toolbar, or use shortcuts like `cmd-b` or `ctrl-b`.
+
+## 如何使用列表
+Unordered lists can be started using the toolbar or by typing `* `, `- `, or `+ `. Ordered lists can be started by typing `1. `.
+
+#### 无序列表
+* Lists are a piece of cake
+* They even auto continue as you type
+* A double enter will end them
+* Tabs and shift-tabs work too
+
+#### 有序列表
+1. Numbered lists...
+2. ...work too!
+
+## 如何链接互联网上的图片?
+![Yes](https://i.imgur.com/sZlktY7.png)
+*/
+};
+var lines = new String(lines);
+lines = lines.substring(lines.indexOf("/*")+3, lines.lastIndexOf("*/"));
+                            result.content = lines;
+                         }
+                           simplemde.value(result.content);
+                load_data(vm);
+                
+                var bar = document.getElementById('js-progressbar');
+                            
+                            UIkit.upload('.js-upload', {
+                            
+                                url: '/upload/page_id',
+                                multiple: false,
+                                name: 'smfile',
+                            
+                                beforeSend: function () {
+                                    console.log('beforeSend', arguments);
+                                },
+                                beforeAll: function () {
+                                    console.log('beforeAll', arguments);
+                                },
+                                load: function () {
+                                    console.log('load', arguments);
+                                },
+                                error: function () {
+                                    console.log('error', arguments);
+                                },
+                                complete: function () {
+                                    console.log('complete', arguments);
+                                },
+                            
+                                loadStart: function (e) {
+                                    console.log('loadStart', arguments);
+                            
+                                    bar.removeAttribute('hidden');
+                                    bar.max = e.total;
+                                    bar.value = e.loaded;
+                                },
+                            
+                                progress: function (e) {
+                                    console.log('progress', arguments);
+                            
+                                    bar.max = e.total;
+                                    bar.value = e.loaded;
+                                },
+                            
+                                loadEnd: function (e) {
+                                    console.log('loadEnd', arguments);
+                            
+                                    bar.max = e.total;
+                                    bar.value = e.loaded;
+                                },
+                            
+                                completeAll: function () {
+                                    console.log('completeAll', arguments);
+                            
+                                    setTimeout(function () {
+                                        bar.setAttribute('hidden', 'hidden');
+                                    }, 1000);
+                            
+                                    alert('Upload Completed');
+                                }
+                            
+                            });
+                        }
+                    });
+        });
+    </script>
+<style>
+        .uk-icon>svg:nth-child(2) {
+            display: none;
+        }
+
+        .tm-sidebar-left {
+        position: fixed;
+        top: 0px;
+        bottom: 0;
+        box-sizing: border-box;
+        width: 290px !important;
+        padding: 30px 30px 50px 30px;
+        border-right: 1px #e5e5e5 solid;
+        overflow: auto
+    }
+    @media (min-width: 1400px) {
+        .tm-sidebar-left+.tm-main {
+            padding-left: 40px;
+        }
+    }
+
+    @media (min-width: 960px) {
+        .tm-sidebar-left+.tm-main {
+            padding-left: 240px;
+        }
+    }
+    .CodeMirror {
+	height: 1000px;
+}
+    </style>
+<link rel="stylesheet" href="./markdow 编辑器 - Digolds_files/font-awesome.min.css"><style type="text/css">
+@font-face {
+  font-weight: 400;
+  font-style:  normal;
+  font-family: 'Inter-Loom';
+
+  src: url('https://cdn.loom.com/assets/fonts/inter/Inter-UI-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-weight: 400;
+  font-style:  italic;
+  font-family: 'Inter-Loom';
+
+  src: url('https://cdn.loom.com/assets/fonts/inter/Inter-UI-Italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-weight: 500;
+  font-style:  normal;
+  font-family: 'Inter-Loom';
+
+  src: url('https://cdn.loom.com/assets/fonts/inter/Inter-UI-Medium.woff2') format('woff2');
+}
+@font-face {
+  font-weight: 500;
+  font-style:  italic;
+  font-family: 'Inter-Loom';
+
+  src: url('https://cdn.loom.com/assets/fonts/inter/Inter-UI-MediumItalic.woff2') format('woff2');
+}
+
+@font-face {
+  font-weight: 700;
+  font-style:  normal;
+  font-family: 'Inter-Loom';
+
+  src: url('https://cdn.loom.com/assets/fonts/inter/Inter-UI-Bold.woff2') format('woff2');
+}
+@font-face {
+  font-weight: 700;
+  font-style:  italic;
+  font-family: 'Inter-Loom';
+
+  src: url('https://cdn.loom.com/assets/fonts/inter/Inter-UI-BoldItalic.woff2') format('woff2');
+}
+
+@font-face {
+  font-weight: 900;
+  font-style:  normal;
+  font-family: 'Inter-Loom';
+
+  src: url('https://cdn.loom.com/assets/fonts/inter/Inter-UI-Black.woff2') format('woff2');
+}
+@font-face {
+  font-weight: 900;
+  font-style:  italic;
+  font-family: 'Inter-Loom';
+
+  src: url('https://cdn.loom.com/assets/fonts/inter/Inter-UI-BlackItalic.woff2') format('woff2');
+}</style></head>
+
+<body>
+    <div id="main"><div class="tm-sidebar-left uk-visible@m"><div><ul class="uk-list"><li><div class="uk-text-center"><a uk-icon="refresh" class="uk-icon-button uk-icon"><svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="#000" stroke-width="1.1" d="M17.08,11.15 C17.09,11.31 17.1,11.47 17.1,11.64 C17.1,15.53 13.94,18.69 10.05,18.69 C6.16,18.68 3,15.53 3,11.63 C3,7.74 6.16,4.58 10.05,4.58 C10.9,4.58 11.71,4.73 12.46,5"></path> <polyline fill="none" stroke="#000" points="9.9 2 12.79 4.89 9.79 7.9"></polyline></svg><svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"> <path fill="none" stroke="#000" stroke-width="1.1" d="M17.08,11.15 C17.09,11.31 17.1,11.47 17.1,11.64 C17.1,15.53 13.94,18.69 10.05,18.69 C6.16,18.68 3,15.53 3,11.63 C3,7.74 6.16,4.58 10.05,4.58 C10.9,4.58 11.71,4.73 12.46,5"></path> <polyline fill="none" stroke="#000" points="9.9 2 12.79 4.89 9.79 7.9"></polyline></svg></a></div></li> <li class="uk-hidden"><div class="js-upload uk-placeholder uk-text-center"><span uk-icon="icon: cloud-upload" class="uk-icon"><svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="#000" stroke-width="1.1" d="M6.5,14.61 L3.75,14.61 C1.96,14.61 0.5,13.17 0.5,11.39 C0.5,9.76 1.72,8.41 3.31,8.2 C3.38,5.31 5.75,3 8.68,3 C11.19,3 13.31,4.71 13.89,7.02 C14.39,6.8 14.93,6.68 15.5,6.68 C17.71,6.68 19.5,8.45 19.5,10.64 C19.5,12.83 17.71,14.6 15.5,14.6 L12.5,14.6"></path> <polyline fill="none" stroke="#000" points="7.25 11.75 9.5 9.5 11.75 11.75"></polyline> <path fill="none" stroke="#000" d="M9.5,18 L9.5,9.5"></path></svg><svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"> <path fill="none" stroke="#000" stroke-width="1.1" d="M6.5,14.61 L3.75,14.61 C1.96,14.61 0.5,13.17 0.5,11.39 C0.5,9.76 1.72,8.41 3.31,8.2 C3.38,5.31 5.75,3 8.68,3 C11.19,3 13.31,4.71 13.89,7.02 C14.39,6.8 14.93,6.68 15.5,6.68 C17.71,6.68 19.5,8.45 19.5,10.64 C19.5,12.83 17.71,14.6 15.5,14.6 L12.5,14.6"></path> <polyline fill="none" stroke="#000" points="7.25 11.75 9.5 9.5 11.75 11.75"></polyline> <path fill="none" stroke="#000" d="M9.5,18 L9.5,9.5"></path></svg></span> <span class="uk-text-middle"></span> <div uk-form-custom="" class="uk-form-custom"><input name="pic1" type="file"> <span class="uk-link">选择或拖动</span></div></div> <progress id="js-progressbar" value="0" max="100" hidden="hidden" class="uk-progress"></progress></li>  <li><button class="uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom">更多...</button></li></ul></div></div> <div class="uk-section uk-section-default tm-main"><div class="uk-container uk-container-small uk-position-relative"><form><div><div class="uk-margin"><input placeholder="章节" class="uk-input"></div> <div class="uk-margin"><input placeholder="标题" class="uk-input"></div> <div class="uk-margin"><textarea id="MyID" rows="5" class="uk-textarea" style="display: none;"></textarea><div class="editor-toolbar"><a title="Bold (Ctrl-B)" tabindex="-1" class="fa fa-bold"></a><a title="Italic (Ctrl-I)" tabindex="-1" class="fa fa-italic"></a><a title="Heading (Ctrl-H)" tabindex="-1" class="fa fa-header"></a><i class="separator">|</i><a title="Quote (Ctrl-&#39;)" tabindex="-1" class="fa fa-quote-left"></a><a title="Generic List (Ctrl-L)" tabindex="-1" class="fa fa-list-ul"></a><a title="Numbered List (Ctrl-Alt-L)" tabindex="-1" class="fa fa-list-ol"></a><i class="separator">|</i><a title="Create Link (Ctrl-K)" tabindex="-1" class="fa fa-link"></a><a title="Insert Image (Ctrl-Alt-I)" tabindex="-1" class="fa fa-picture-o"></a><i class="separator">|</i><a title="Toggle Preview (Ctrl-P)" tabindex="-1" class="fa fa-eye no-disable"></a><a title="Toggle Side by Side (F9)" tabindex="-1" class="fa fa-columns no-disable no-mobile"></a><a title="Toggle Fullscreen (F11)" tabindex="-1" class="fa fa-arrows-alt no-disable no-mobile"></a><i class="separator">|</i><a title="Markdown Guide" tabindex="-1" class="fa fa-question-circle" href="https://simplemde.com/markdown-guide" target="_blank"></a></div><div class="CodeMirror cm-s-paper CodeMirror-wrap CodeMirror-focused"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 767px; left: 523.15px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" style="position: absolute; padding: 0px; width: 1000px; height: 1em; outline: none;" tabindex="0" class="focus-visible" data-focus-visible-added=""></textarea></div><div class="CodeMirror-vscrollbar" cm-not-content="true" style="display: block; bottom: 0px;"><div style="min-width: 1px; height: 5830px;"></div></div><div class="CodeMirror-hscrollbar" cm-not-content="true"><div style="height: 100%; min-height: 1px; width: 0px;"></div></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: -17px; border-right-width: 13px; min-height: 5810px; padding-right: 17px; padding-bottom: 0px;"><div style="position: relative; top: 4393.6px;"><div class="CodeMirror-lines"><div style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"><pre class="CodeMirror-line"><span style="padding-right: 0.1px;"><span class="cm-tag CodeMirror-selectedtext">![]</span><span class="cm-formatting cm-formatting-link-string cm-string cm-url CodeMirror-selectedtext">(</span><span class="cm-string cm-url CodeMirror-selectedtext">http://wx4.sinaimg.cn/large/c36a3dc1gy1g46buo6403j20ti0e9wff.jpg</span><span class="cm-formatting cm-formatting-link-string cm-string cm-url CodeMirror-selectedtext">)</span></span></pre></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-cursors" style="visibility: hidden;"><div class="CodeMirror-cursor" style="left: 512.15px; top: 1120.8px; height: 24px;">&nbsp;</div></div><div class="CodeMirror-code" style=""><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-comment">@current_</span><span class="cm-comment cm-spell-error">app</span><span class="cm-comment">.view(</span><span class="cm-comment cm-spell-error">'blogs</span><span class="cm-comment">.</span><span class="cm-comment cm-spell-error">html'</span><span class="cm-comment">)</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-comment">@current_</span><span class="cm-comment cm-spell-error">app</span><span class="cm-comment">.get(</span><span class="cm-comment cm-spell-error">'</span><span class="cm-comment">/views/</span><span class="cm-comment cm-spell-error">blogs'</span><span class="cm-comment">)</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-comment">def list_</span><span class="cm-comment cm-spell-error">blogs</span><span class="cm-comment">():</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-null cm-spell-error"><span class="cm-tab" role="presentation" cm-text="	">  </span></span><span class="cm-comment cm-spell-error">blogs</span><span class="cm-comment"> = []</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-null cm-spell-error"><span class="cm-tab" role="presentation" cm-text="	">  </span></span><span class="cm-comment cm-spell-error">blogs</span><span class="cm-comment">.append({</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-null cm-spell-error"><span class="cm-tab" role="presentation" cm-text="	">  </span></span><span class="cm-comment cm-spell-error">'title'</span><span class="cm-comment">:</span><span class="cm-comment cm-spell-error">'What</span><span class="cm-comment"> is </span><span class="cm-comment cm-spell-error">digwebs'</span><span class="cm-comment">,</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-null cm-spell-error"><span class="cm-tab" role="presentation" cm-text="	">  </span></span><span class="cm-comment cm-spell-error">'description'</span><span class="cm-comment">:</span><span class="cm-comment cm-spell-error">'A</span><span class="cm-comment"> tiny web framework called </span><span class="cm-comment cm-spell-error">digwebs</span><span class="cm-comment"> which is developed by Python.</span><span class="cm-comment cm-spell-error">'</span><span class="cm-comment">,</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-null cm-spell-error"><span class="cm-tab" role="presentation" cm-text="	">  </span></span><span class="cm-comment cm-spell-error">'detail</span><span class="cm-comment">_</span><span class="cm-comment cm-spell-error">link'</span><span class="cm-comment">:</span><span class="cm-comment cm-spell-error">'</span><span class="cm-comment">######</span><span class="cm-comment cm-spell-error">'</span><span class="cm-comment">})</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-null cm-spell-error"><span class="cm-tab" role="presentation" cm-text="	">  </span></span><span class="cm-comment cm-spell-error">blogs</span><span class="cm-comment">.append({</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-null cm-spell-error"><span class="cm-tab" role="presentation" cm-text="	">  </span></span><span class="cm-comment cm-spell-error">'title'</span><span class="cm-comment">:</span><span class="cm-comment cm-spell-error">'Why</span><span class="cm-comment"> you should use </span><span class="cm-comment cm-spell-error">digwebs'</span><span class="cm-comment">,</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-null cm-spell-error"><span class="cm-tab" role="presentation" cm-text="	">  </span></span><span class="cm-comment cm-spell-error">'description'</span><span class="cm-comment">:</span><span class="cm-comment cm-spell-error">'Digwebs</span><span class="cm-comment"> is a Python web framework, which you can use to accelerate the development process of building a web service.</span><span class="cm-comment cm-spell-error">'</span><span class="cm-comment">,</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-null cm-spell-error"><span class="cm-tab" role="presentation" cm-text="	">  </span></span><span class="cm-comment cm-spell-error">'detail</span><span class="cm-comment">_</span><span class="cm-comment cm-spell-error">link'</span><span class="cm-comment">:</span><span class="cm-comment cm-spell-error">'</span><span class="cm-comment">######</span><span class="cm-comment cm-spell-error">'</span><span class="cm-comment">})</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-null cm-spell-error"><span class="cm-tab" role="presentation" cm-text="	">  </span></span><span class="cm-comment cm-spell-error">blogs</span><span class="cm-comment">.append({</span><span class="cm-comment cm-spell-error">'title'</span><span class="cm-comment">:</span><span class="cm-comment cm-spell-error">'How</span><span class="cm-comment"> to use </span><span class="cm-comment cm-spell-error">digolds</span><span class="cm-comment"> web </span><span class="cm-comment cm-spell-error">framework'</span><span class="cm-comment">,</span><span class="cm-comment cm-spell-error">'description'</span><span class="cm-comment">:</span><span class="cm-comment cm-spell-error">'You</span><span class="cm-comment"> can use </span><span class="cm-comment cm-spell-error">digwebs</span><span class="cm-comment"> in a few steps. First pull the source code. Second install </span><span class="cm-comment cm-spell-error">jinja2</span><span class="cm-comment">. Finally run python .\</span><span class="cm-comment cm-spell-error">digwebs</span><span class="cm-comment">\project_generator.</span><span class="cm-comment cm-spell-error">py</span><span class="cm-comment"> to generate the project file structure.</span><span class="cm-comment cm-spell-error">'</span><span class="cm-comment">,</span><span class="cm-comment cm-spell-error">'detail</span><span class="cm-comment">_</span><span class="cm-comment cm-spell-error">link'</span><span class="cm-comment">:</span><span class="cm-comment cm-spell-error">'</span><span class="cm-comment">######</span><span class="cm-comment cm-spell-error">'</span><span class="cm-comment">})</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">  </span><span class="cm-comment">return </span><span class="cm-comment cm-spell-error">dict</span><span class="cm-comment">(template_</span><span class="cm-comment cm-spell-error">blogs</span><span class="cm-comment">=</span><span class="cm-comment cm-spell-error">blogs</span><span class="cm-comment">)</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-formatting cm-formatting-code-block cm-comment">```</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-null cm-spell-error">也就是说在函数</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-comment">list_</span><span class="cm-comment cm-spell-error">blogs</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-null cm-spell-error">中可以获得</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-comment cm-spell-error">ctx</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-null cm-spell-error">变量，根据该变量就能获得</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-comment">request</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-null cm-spell-error">参数，从而根据</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-comment">request</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-null cm-spell-error">参数生成不同的响应。</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-formatting cm-formatting-list cm-formatting-list-ul cm-variable-2">* </span><span class="cm-variable-2 cm-spell-error">处理函数生成响应结果，并返回给请求端</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-null cm-spell-error">接着看看代码1</span>-<span class="cm-null cm-spell-error">1，有以下几句指令：</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-formatting cm-formatting-code-block cm-comment">```python</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-comment">r = </span><span class="cm-comment cm-spell-error">fn</span><span class="cm-comment">_exec(</span><span class="cm-comment cm-spell-error">ctx</span><span class="cm-comment">, None)</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-comment">start_response(response.status, response.headers)</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-comment">return r</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-formatting cm-formatting-code-block cm-comment">```</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-null cm-spell-error">当函数</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-comment cm-spell-error">fn</span><span class="cm-comment">_exec</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-null cm-spell-error">执行完毕之后就会返回响应体，接着通过函数</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-comment">start_response</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-null cm-spell-error">将响应的头返回给请求端，其次再将响应体</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-comment">r</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-null cm-spell-error">返回给请求端。至此一个完整的请求</span>+<span class="cm-null cm-spell-error">响应过程已经完成了，接下来看看现实世界中的服务是如何实现的。</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-formatting cm-formatting-header cm-formatting-header-2 cm-header cm-header-2">## </span><span class="cm-header cm-header-2 cm-spell-error">基于gunicorn的单线程服务</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-null cm-spell-error">当你开始提高服务器的吞吐性能时，你会不由自主地将服务运行于一个线程，不会有多线程这一说。由于线程之间的切换会降低服务的性能，因此想要提高服务性能的一种方法就是使用单线程。</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-null cm-spell-error">问题来了，如果使用单线程，那么</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-comment">threading.local()</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-null cm-spell-error">变量就无法区别对待不同的请求响应过程了，那是不是digwebs只能用于多线程的情况？</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-null cm-spell-error">答案显然是digwebs是可以用单线程启动的，而且保留</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-comment cm-spell-error">ctx</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-null cm-spell-error">的特性。为了实现这一点，我们需要引入一个框架叫</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-comment cm-spell-error">gunicorn</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-null cm-spell-error">，其官网在</span><span class="cm-formatting cm-formatting-link cm-link">[</span><span class="cm-link cm-spell-error">这里</span><span class="cm-formatting cm-formatting-link cm-link">]</span><span class="cm-formatting cm-formatting-link-string cm-string cm-url">(</span><span class="cm-string cm-url cm-spell-error">https</span><span class="cm-string cm-url">://</span><span class="cm-string cm-url cm-spell-error">gunicorn</span><span class="cm-string cm-url">.</span><span class="cm-string cm-url cm-spell-error">org</span><span class="cm-string cm-url">/</span><span class="cm-formatting cm-formatting-link-string cm-string cm-url">)</span><span class="cm-null cm-spell-error">。</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-tag">![]</span><span class="cm-formatting cm-formatting-link-string cm-string cm-url">(</span><span class="cm-string cm-url cm-spell-error">http</span><span class="cm-string cm-url">://</span><span class="cm-string cm-url cm-spell-error">wx4</span><span class="cm-string cm-url">.</span><span class="cm-string cm-url cm-spell-error">sinaimg</span><span class="cm-string cm-url">.</span><span class="cm-string cm-url cm-spell-error">cn</span><span class="cm-string cm-url">/large/</span><span class="cm-string cm-url cm-spell-error">c36a3dc1gy1g46buo6403j20ti0e9wff</span><span class="cm-string cm-url">.</span><span class="cm-string cm-url cm-spell-error">jpg</span><span class="cm-formatting cm-formatting-link-string cm-string cm-url">)</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-null cm-spell-error">通过</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-comment cm-spell-error">gunicorn</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-null cm-spell-error">你可以以单线程的方式启动使用digwebs编写的服务，这是第一步，那如何保留</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-comment cm-spell-error">ctx</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-null cm-spell-error">的特性呢？其实当gunicorn启动的时候，它将会把python内置的threading、io等模块替换掉，并引入了协程（coroutine）的概念。coroutine类似于线程，但是当遇到io（程序读写）操作的时候，coroutine将切换到另外一个coroutine执行，所有coroutine都只运行在一个线程下，而替换之后的threading的</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-comment">threading.local()</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-null cm-spell-error">类型将针对coroutine。</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line "><span style="padding-right: 0.1px;"><span class="cm-null cm-spell-error">有了</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-comment cm-spell-error">gunicorn</span><span class="cm-formatting cm-formatting-code cm-comment">`</span><span class="cm-null cm-spell-error">的帮忙，你会发现你可以将服务以单线程的模式在1个核上运行，当1000个用户同时访问你的服务时，将产生1000个coroutine，这1000个coroutine都会有自己的请求响应，当遇到某个coroutine去执行io操作时，该coroutine将会放弃cpu，其它不需要读写io的coroutine将使用cpu，通过这种方式将大大提高单个服务的吞吐量。如果一台服务器有8核，那么可以启动在这8个核上启动该服务，假设一个服务能够支持1000的并发量，那么8个核就能够支撑8000的并发量。</span></span></pre></div></div></div></div></div><div style="position: absolute; height: 13px; width: 1px; border-bottom: 0px solid transparent; top: 5810px;"></div><div class="CodeMirror-gutters" style="display: none; height: 5823px;"></div></div></div><div class="editor-preview-side"></div><div class="editor-statusbar"><span class="autosave"></span><span class="lines">212</span><span class="words">1959</span><span class="cursor">207:69</span></div></div></div> <div class="uk-text-right"><button type="button" class="uk-button uk-button-default uk-modal-close">取消</button> <button type="submit" class="uk-button uk-button-primary">保存</button></div></form></div></div></div>
+
+    
+<div class="nsc-content-camera nsc-hide">
+    <div class="nsc-content-camera-buttons" flex="none" layout="row" layout-align="start start">
+        <button class="nsc-content-camera-button nsc-hide" type="button" id="nsc_video_camera_collapse">
+            <span class="nsc-icon nsc-icon-panel-collapse"></span>
+        </button>
+        <button class="nsc-content-camera-button" type="button" id="nsc_video_camera_expand">
+            <span class="nsc-icon nsc-icon-panel-expand"></span>
+        </button>
+        <button class="nsc-content-camera-button" type="button" id="nsc_video_camera_close">
+            <span class="nsc-icon nsc-icon-panel-close"></span>
+        </button>
+    </div>
+    <div class="nsc-content-camera-container">
+        <div class="nsc-content-camera-shadow"></div>
+    </div>
+</div>
+</body><loom-container id="lo-engage-ext-container"><div></div><loom-shadow classname="resolved"></loom-shadow></loom-container></html>
