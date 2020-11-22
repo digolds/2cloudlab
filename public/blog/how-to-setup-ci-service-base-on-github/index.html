@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <!-- Basic Page Needs -->
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  
+  <meta name="description" content="2cloudlab是云计算解决方案提供商，致力于云计算和DEVOPS。我们渴望通过云计算技术来帮助企业进行数字化转型。提高企业的研发效率、降低企业的研发成本以及加快企业的创新速度是我们成立的初衷！">
+  <meta name="author" content="2cloudlab">
+  <meta name="generator" content="Hugo 0.78.1" />
+  
+  <!-- Mobile Specific Metas -->
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>如何0成本在github上构建CI</title>
+  <link rel="icon" href="https://2cloudlab.com/images/favicon.ico">
+
+  <!-- Twitter Bootstrs CSS -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.css">
+  <!-- Ionicons Fonts Css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/ionicons/ionicons.min.css">
+  <!-- animate css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/animate-css/animate.css">
+  <!-- Hero area slider css-->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slider/slider.css">
+  <!-- slick slider -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slick/slick.css">
+  <!-- Fancybox -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.css">
+  <!-- hover -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/hover/hover-min.css">
+  <!-- template main css file -->
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/style.min.css" integrity="" media="screen">
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/syntax.min.css" integrity="" media="screen">
+</head><body><section class="top-bar animated-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <a class="navbar-brand" href="https://2cloudlab.com/">
+                        <img src="https://2cloudlab.com/images/logo.png" alt="logo">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation"
+                        aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navigation">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                    href="https://2cloudlab.com/">首页</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/about">关于</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/service">服务</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/price">价格</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/blog">博客</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/nosql">NoSQL</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/contact">联系我们</a>
+                            </li>
+                            
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="global-page-header">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2>如何0成本在github上构建CI</h2>
+                    <div class="portfolio-meta">
+                        <span>2020-03-17</span>|
+                        <span class="ion-pricetags"></span>
+                        <span>
+                            软件研发流程, 持续集成, CI/CD, 云计算, 持续部署, 软件自动化, Infrastructure as Code
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style type="text/css">
+    @media (min-width: 1200px) {
+        .post-container {
+            max-width: 800px;
+        }
+    }
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        display: block;
+        margin: auto;
+    }
+</style>
+
+<section class="single-post">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                
+                <div class="post-img">
+                    <img class="img-fluid lazy" alt="" data-src="https://2cloudlab.com/images/blog/github.jpg">
+                </div>
+                
+                <div class="post-content">
+                    <p>现代软件的研发流程基本上均会配备一定程度的CI/CD（<a href="https://2cloudlab.com/blog/devops-cicd-infrastructure-as-code/">这篇文章</a>解释了为何需要在企业里实施CI/CD），整个流程主要分为CI和CD部分，这篇文章将围绕CI部分展开，并通过一个具体的例子解释<strong>如何0成本在github上构建CI</strong>。构建CI的最佳实践离不开Trunk Based Development的分支策略，感兴趣的读者可以通过<a href="https://2cloudlab.com/blog/why-organization-should-use-trunk-based-development/">这篇文章</a>来了解什么是Trunk Based Development。在github上构建CI有2个好处：<strong>无需任何费用和有大量可以用于构建CI的模块</strong>，借助这2个好处，小规模团队可以快速地搭建还不错的CI流程。接下来，让我们结合一个使用Go编写的Hello World例子以及基于Trunk-Based Development模式来构建这个CI流程。</p>
+<p>这篇文章将分为以下几个部分来讲解：</p>
+<ol>
+<li>在github上构建CI的基本思路</li>
+<li>在github上构建CI的优势</li>
+<li>通过一个Go示例在github上构建CI</li>
+<li>总结</li>
+</ol>
+<h2 id="在github上构建ci的基本思路">在github上构建CI的基本思路</h2>
+<p>构建CI有2种方式，一种是组建团队从0开始，另外一种是借助第三方服务开始。在github上构建CI属于后者，其优势在于github提供了许多方便开发者研发的服务，其中有3种服务可用于免费构建CI，它们分别是：免费托管源码，免费存储以及免费构建服务（也就是最近推出的Actions服务）。有了这3种服务，任何一个团队均可以根据自身的情况来构建CI。接下来，我将基于Trunk-Based Development模式提出实践CI的一种方法，这种方法提出了2个独立的流程，并定义了触发这2个流程的条件。</p>
+<p>首先，我们需要定义一个流程（master_workflow），这个流程的作用是快速响应<code>master</code>分支上的每一次改动。该分支上每一次改动都会自动启动服务器或虚拟机来执行该流程，并将结果反馈（比如通过邮件通知的方式）给研发团队。这个流程的主要作用在于每天都确保<code>master</code>分支是健康的，比如语法规则是正确的，编译是成功的和单元测试能通过，因此该流程的一大特点是执行周期通常限制在10~30分钟内。这一要求使得构成该流程的步骤尽可能的少，下面是构成该流程的几个步骤：</p>
+<ul>
+<li>准备编译环境</li>
+<li>安装依赖库</li>
+<li>获取源代码</li>
+<li>检测代码的合法性</li>
+<li>编译源代码</li>
+<li>执行自动化测试（仅仅包括单元测试）</li>
+<li>生成测试报告</li>
+</ul>
+<p>为了缩短这个流程的执行周期，可以考虑这些方法：将准备编译环境和安装依赖库步骤提前合并成一个步骤（通过Docker技术），无需在运行时准备；将检测代码的合法性和编译源代码步骤分布在不同的机器上同时执行；在执行自动化测试的步骤中并发执行单元测试。缩短这个流程的执行周期是为了让整个团队更快地看到每一次修改的结果，如果这个修改阻碍了团队的工作（比如编译失败了），那么提交该修改的研发工作者能够第一时间修复。</p>
+<p>其次，我们还需要定义一个集成流程（integration_workflow），这个流程的作用是将所有组件集成在一个完整的压缩包里，并发布到一个共有的存储空间，以便测试团队和DevOps团队展开后续的测试和部署工作。这个流程不仅包括之前流程所定义的步骤，而且还新增了<strong>集成和归档</strong>步骤，如下所示：</p>
+<ul>
+<li>准备编译环境</li>
+<li>安装依赖库</li>
+<li>获取源代码</li>
+<li>检测代码的合法性</li>
+<li>编译源代码</li>
+<li>执行自动化测试（包括单元测试和集成测试）</li>
+<li>生成测试报告</li>
+<li>集成和归档</li>
+</ul>
+<p>**注：**此时，执行自动化测试包括了集成测试。因此，从总体而言，这个流程的运行周期会更长一点，通常在30~60分钟。</p>
+<p>以上就是基于Trunk-Based Development模式，在github上构建CI的基本思路。首先，我们需要为<code>master</code>分支定义一个流程，该分支上的每次修改都会触发该流程；其次，我们需要为<code>release</code>分支定义另外一个流程，该分支上的每一次修改都会触发该流程，并将集成包发布到一个共有存储空间。为何需要定义这2个流程，读者可以参考<a href="https://2cloudlab.com/blog/why-organization-should-use-trunk-based-development/">这篇文章</a>。</p>
+<h2 id="在github上构建ci的优势">在github上构建CI的优势</h2>
+<p>你可以选择组建一支团队来打造CI/CD，这种方式需要自己搭建服务器，安装软件（比如Jenkins）和配置，因此所需时间会较长。另外，你也可以选择第三方服务来搭建CI/CD（比如在github上构建CI）。在github上搭建CI有2个好处，它们分别是免费和共享其他人的成果。</p>
+<p>github向开发者提供了3种免费的服务来搭建CI，它们分别是源码托管，归档存储和Actions服务。开发者可以免费地将代码发布到github上，世界各地的开发者可以参与进来共同开发；开发者也可以免费地使用github所提供的Actions服务来构建流程；开发者可以将流程输出的集成包发布到github提供的存储服务里，供用户使用。</p>
+<p>这3种服务不仅免费，而且其中Actions服务提供了可复用的模块。这些可复用的模块是由全世界的开发者贡献的，因此可以直接将这些模块组合在一起构成适合自己的CI流程。比如这篇文章的示例使用了Go相关的Actions模块来构建上一节提到的2个流程。</p>
+<p>github平台存储了开发者的代码，提供了搭建CI的Action服务，拥有大量可复用的模块以及支持存储，此时，开发者只需要使用这些可复用的模块来定义流程，便可以将代码，Actions服务和存储服务联系在一起。而流程的定义是通过<code>yaml</code>文件来完成的，比如上一节的2个流程就分别对应着文件<code>master_workflow.yaml</code>和<code>integration_workflow.yaml</code>。</p>
+<p>组建一个团队来搭建CI，需要准备服务器，安装软件，用网线连接服务器等，而借助github，则只需要编写<code>yaml</code>文件就能快速构建出一个稳定的CI，这种转变大大地缩短了搭建CI的时间，让开发者专注于软件的功能研发！</p>
+<p>接下来让我们看一个具体的例子来实践在github上构建CI</p>
+<h2 id="通过一个go示例在github上构建ci">通过一个Go示例在github上构建CI</h2>
+<p>这个例子是由Go语言来编写的，完整的源码可以到<a href="https://github.com/2cloudlab/demo_for_ci">这里</a>获取，其目录结构如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="p">.</span>
+<span class="p">|</span><span class="nx">____</span><span class="p">.</span><span class="nx">github</span>
+<span class="p">|</span> <span class="p">|</span><span class="nx">____workflows</span>
+<span class="p">|</span> <span class="p">|</span> <span class="p">|</span><span class="nx">____integration_workflow</span><span class="p">.</span><span class="nx">yaml</span>
+<span class="p">|</span> <span class="p">|</span> <span class="p">|</span><span class="nx">____master_workflow</span><span class="p">.</span><span class="nx">yaml</span>
+<span class="p">|</span><span class="nx">____go</span><span class="p">.</span><span class="nx">mod</span>
+<span class="p">|</span><span class="nx">____main</span><span class="p">.</span><span class="k">go</span>
+<span class="p">|</span><span class="nx">____main_integration_test</span><span class="p">.</span><span class="k">go</span>
+<span class="p">|</span><span class="nx">____main_test</span><span class="p">.</span><span class="k">go</span>
+<span class="p">|</span><span class="nx">____Makefile</span>
+<span class="p">|</span><span class="nx">____mylib</span>
+<span class="p">|</span> <span class="p">|</span><span class="nx">____external_lib</span><span class="p">.</span><span class="k">go</span>
+<span class="p">|</span> <span class="p">|</span><span class="nx">____external_lib_test</span><span class="p">.</span><span class="k">go</span>
+</code></pre></div><p>其中<code>.github/workflows</code>目录下有2个文件<code>master_workflow.yaml</code>和<code>integration_workflow.yaml</code>，由它们构成这个示例的CI，其余部分是Go相关的源码。github的Actions服务会根据这2个文件中的内容来启动虚拟机并执行其中定义的步骤。接下来让我们看看这2个文件的区别。</p>
+<p>首先，让我们看看<code>master_workflow.yaml</code>中的内容:</p>
+<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Daily routines</span><span class="w">
+</span><span class="w"></span><span class="nt">on</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">push</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">branches</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="l">master</span><span class="w">
+</span><span class="w">  </span><span class="nt">pull_request</span><span class="p">:</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="nt">jobs</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">lint</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Lint</span><span class="w">
+</span><span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l">ubuntu-latest</span><span class="w">
+</span><span class="w">    </span><span class="nt">steps</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Set up Go</span><span class="w">
+</span><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">actions/setup-go@v1</span><span class="w">
+</span><span class="w">        </span><span class="nt">with</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">go-version</span><span class="p">:</span><span class="w"> </span><span class="m">1.13</span><span class="w">
+</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Check out code</span><span class="w">
+</span><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">actions/checkout@v1</span><span class="w">
+</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Lint Go Code</span><span class="w">
+</span><span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span><span class="sd">          export PATH=$PATH:$(go env GOPATH)/bin # temporary fix. See https://github.com/actions/setup-go/issues/14
+</span><span class="sd">          go get -u golang.org/x/lint/golint 
+</span><span class="sd">          make lint</span><span class="w">          
+</span><span class="w">
+</span><span class="w">  </span><span class="nt">test</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Test</span><span class="w">
+</span><span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l">ubuntu-latest</span><span class="w">
+</span><span class="w">    </span><span class="nt">steps</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Set up Go</span><span class="w">
+</span><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">actions/setup-go@v1</span><span class="w">
+</span><span class="w">        </span><span class="nt">with</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">go-version</span><span class="p">:</span><span class="w"> </span><span class="m">1.13</span><span class="w">
+</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Check out code</span><span class="w">
+</span><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">actions/checkout@v1</span><span class="w">
+</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Run Unit tests.</span><span class="w">
+</span><span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l">make test-coverage</span><span class="w">
+</span></code></pre></div><p>以上内容主要分为以下2部分：</p>
+<ul>
+<li><code>on</code>定义了触发条件</li>
+</ul>
+<p>这部分的含义是如果有修改推送或者PR到<code>master</code>分支，那么Actions服务将会根据<code>jobs</code>中定义的内容来启动虚拟机并执行相关的步骤</p>
+<ul>
+<li><code>jobs</code>定义了执行步骤</li>
+</ul>
+<p>这部分定义了2个job，它们分别是<code>lint</code>和<code>test</code>。每一个job运行在一台虚拟机或者容器里，上面运行着Ubuntu操作系统，job之间是相互独立同时运行的。这些job可以引用一些可复用的Actions模块（比如<code>lint</code>中的<code>actions/setup-go@v1</code>和<code>actions/checkout@v1</code>），每个模块定义了一些执行步骤（比如准备Go环境和拉取该Go示例的源码)。</p>
+<p>当研发人员向<code>master</code>分支提交代码，Actions就会根据该<code>yaml</code>文件，创建2台虚拟机或者容器，同时执行<code>lint</code>和<code>test</code>。<code>lint</code>的作用是检查Go的语法问题，而<code>test</code>的作用是运行单元测试并生成测试报告。如果其中有一个job失败了，那么整个流程是失败的，研发工作者可以及时看到整个流程的结果，如下图所示：</p>
+<p>
+<img class="lazy" data-src="https://2cloudlab.com/images/blog/master-workflow-partial-fail.png" alt=""  />
+</p>
+<p>其次，让我们看看<code>integration_workflow.yaml</code>中的内容：</p>
+<div class="highlight"><pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Package routines</span><span class="w">
+</span><span class="w"></span><span class="nt">on</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">create</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="l">v*</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="nt">jobs</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">lint</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Lint</span><span class="w">
+</span><span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l">ubuntu-latest</span><span class="w">
+</span><span class="w">    </span><span class="nt">steps</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Set up Go</span><span class="w">
+</span><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">actions/setup-go@v1</span><span class="w">
+</span><span class="w">        </span><span class="nt">with</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">go-version</span><span class="p">:</span><span class="w"> </span><span class="m">1.13</span><span class="w">
+</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Check out code</span><span class="w">
+</span><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">actions/checkout@v1</span><span class="w">
+</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Lint Go Code</span><span class="w">
+</span><span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span><span class="sd">          export PATH=$PATH:$(go env GOPATH)/bin # temporary fix. See https://github.com/actions/setup-go/issues/14
+</span><span class="sd">          go get -u golang.org/x/lint/golint 
+</span><span class="sd">          make lint</span><span class="w">          
+</span><span class="w">
+</span><span class="w">  </span><span class="nt">test</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Test</span><span class="w">
+</span><span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l">ubuntu-latest</span><span class="w">
+</span><span class="w">    </span><span class="nt">steps</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Set up Go</span><span class="w">
+</span><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">actions/setup-go@v1</span><span class="w">
+</span><span class="w">        </span><span class="nt">with</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">go-version</span><span class="p">:</span><span class="w"> </span><span class="m">1.13</span><span class="w">
+</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Check out code</span><span class="w">
+</span><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">actions/checkout@v1</span><span class="w">
+</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Run all tests.</span><span class="w">
+</span><span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l">make all-tests-coverage</span><span class="w">
+</span><span class="w">
+</span><span class="w">  </span><span class="nt">build</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Integration</span><span class="w">
+</span><span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l">ubuntu-latest</span><span class="w">
+</span><span class="w">    </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="l">lint, test]</span><span class="w">
+</span><span class="w">    </span><span class="nt">steps</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Check out code</span><span class="w">
+</span><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">actions/checkout@v1</span><span class="w">
+</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Validates GO releaser config</span><span class="w">
+</span><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">docker://goreleaser/goreleaser:latest</span><span class="w">
+</span><span class="w">        </span><span class="nt">with</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="l">check</span><span class="w">
+</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Create package on GitHub</span><span class="w">
+</span><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">docker://goreleaser/goreleaser:latest</span><span class="w">
+</span><span class="w">        </span><span class="nt">with</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="l">release</span><span class="w">
+</span><span class="w">        </span><span class="nt">env</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">GITHUB_TOKEN</span><span class="p">:</span><span class="w"> </span><span class="l">${{secrets.GITHUB_TOKEN}}</span><span class="w">
+</span></code></pre></div><p>以上内容新增了<code>build</code>任务，这个任务需要等待<code>lint</code>和<code>test</code>任务成功之后才会执行。它使用了<code>docker://goreleaser/goreleaser:latest</code>来制作集成包，并发布到github的存储服务（如下图所示）。除此之外，这个workflow的<code>test</code>任务执行了单元测试和集成测试，之所以执行集成测试，是因为在这个阶段需要将各个模块集成到一起测试，确保软件整体是正常工作的，同时也确保了下游团队拿到的集成包是可信的。由于添加了集成测试，因此执行该过程所需的时间会比前面另外一个过程所需的时间长，从而使得团队无法及时看到结果。这也就是为什么我们不希望将集成测试放在<code>master_workflow.yaml</code>中执行。</p>
+<p>
+<img class="lazy" data-src="https://2cloudlab.com/images/blog/integration-workflow-success.png" alt=""  />
+</p>
+<p>有了以上2个文件，研发工作者只需要专注于软件功能的研发。在新功能的研发阶段，研发工作者只需要修改<code>master</code>分支，其对应的master_workflow流程会及时响应每一次修改。在准备发布新功能的阶段，发布工作者只需要拉取新的分支（比如<code>integration</code>）并为其打上类似<code>v0.0.2</code>的tag，对应的integration_workflow流程将生成打包结果并归档到github的免费存储服务，供其他团队使用。</p>
+<h2 id="总结">总结</h2>
+<p>构建现代CI的方式有很多种，其中github提供了一些免费的服务来解决这个问题，这些服务分别是源码托管服务、Actions服务和存储服务。开发者只需要定义<code>yaml</code>文件就可以将这3个服务串联在一起创建出一个可靠的CI。在github上构建CI的优势有2个：<strong>免费</strong>和<strong>共享其他开发者的成果</strong>。任何团队都可以免费地使用这3种服务，除此之外，CI的构建者可以使用其他人制作好的可复用模块来快速搭建CI。</p>
+<p>本文通过一个Go示例来解释了基于Trunk-Based Development，在github上构建CI。这个示例定义了2个<code>yaml</code>文件，它们分别是：<code>master_workflow.yaml</code>和<code>integration_workflow.yaml</code>。每个文件对应一个分支，并作用于不同的研发阶段，比如master_worflow流程的主要作用在于确保<code>master</code>分支一直处于健康状态，而integration_workflow流程则确保对外发布一个可信度较高的集成包。</p>
+<p>虽然通过github能够轻松地构建CI，但是它也是有局限的。首先，它的Actions服务的免费套餐是有时间限制的（2,000 minutes/month），超出了这个限制则需要升级为付费用户。其次，通过中国区访问它的存储服务的延时较大，从而导致用户下载集成包的过程变慢了。最后，如果要集成CD，那么需要设置访问凭证，从而暴露了风险。</p>
+<p>关于Actions服务的了解，读者可以参考以下文章</p>
+<ul>
+<li><a href="https://brunopaz.dev/blog/building-a-basic-ci-cd-pipeline-for-a-golang-application-using-github-actions">Building a basic CI/CD pipeline for a Golang application using GitHub Actions</a></li>
+<li><a href="https://medium.com/@michaelekpang/creating-a-ci-cd-pipeline-using-github-actions-b65bb248edfe">Creating a CI/CD pipeline using Github Actions</a></li>
+</ul>
+<p><em><a href="https://2cloudlab.com/">2cloudlab.com</a>为企业准备产品的运行环境，只需要1天！</em></p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://utteranc.es/client.js" repo="2cloudlab/comments" issue-term="pathname" theme="github-light"
+        crossorigin="anonymous" async>
+</script>
+
+
+<!-- Call To Action Section Start -->
+<section id="call-to-action">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2 class="title wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">听起来还不错 ？</h1>
+                    <p class="wow fadeInDown" data-wow-delay=".5s" data-wow-duration="500ms">如果你所在的企业遇到了以下问题：<br> 研发流程混乱不堪或者效率低下、经历了持续上升的运维成本、无法及时向用户发布新的服务或产品以及想使用云计算技术但缺乏经验！<br>那么，请毫不犹疑地</p>
+                    <a href="/contact" class="btn btn-default btn-contact wow fadeInDown" data-wow-delay=".7s" data-wow-duration="500ms">联系我们</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-- Call To Action Section End -->
+
+
+<!-- Footer Section Start -->
+<footer id="footer">
+    <div class="container">
+        <div class="row content-justify-between">
+            <div class="col-md-8 col-12 text-center text-lg-left text-md-left">
+                <p class="copyright">版权所有©:
+                    <span>
+                        <script>document.write(new Date().getFullYear())</script>
+                    </span> 上海漫步云端科技有限公司
+                    <a href="https://2cloudlab.com/" target="_blank">2cloudlab.com</a>.
+                    <br> 地址：上海市浦东区浦东南路 999 号新梅联合广场 1 期 32 层
+                    <br>
+                    邮箱：<a href="mailto:support@2cloudlab.com">support@2cloudlab.com</a>
+                </p>
+            </div>
+            <div class="col-md-4 col-12">
+                <!-- Social Media -->
+                <ul class="social text-center text-md-right text-lg-right">
+                    
+                    <li><a href="https://github.com/2cloudlab"><i class="ion-social-github"></i></a></li>
+                    
+                    <li><a href="https://www.linkedin.com/company/2cloudlab-com"><i class="ion-social-linkedin"></i></a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- footer section end -->
+
+<!-- jquery -->
+<script src="https://2cloudlab.com/plugins/jQurey/jquery.min.js"></script>
+<!-- Form Validation -->
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.form.js"></script>
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.validate.min.js"></script>
+<!-- slick slider -->
+<script src="https://2cloudlab.com/plugins/slick/slick.min.js"></script>
+<!-- bootstrap js -->
+<script src="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.js"></script>
+<!-- wow js -->
+<script src="https://2cloudlab.com/plugins/wow-js/wow.min.js"></script>
+<!-- slider js -->
+<script src="https://2cloudlab.com/plugins/slider/slider.js"></script>
+<!-- Fancybox -->
+<script src="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.js"></script>
+<!-- template main js -->
+
+<script src="https://2cloudlab.com/js/script.min.js"></script>
+<!-- google analitycs -->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-171018621-1', 'auto');
+    ga('send', 'pageview');
+</script></body>
+</html>

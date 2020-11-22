@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <!-- Basic Page Needs -->
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  
+  <meta name="description" content="本文是关于DynamoDB的表达式。表达式是DynamoDB的内置功能，它又细分为以下几类表达式：">
+  <meta name="author" content="2cloudlab">
+  <meta name="generator" content="Hugo 0.78.1" />
+  
+  <!-- Mobile Specific Metas -->
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DynamoDB的基础表达式</title>
+  <link rel="icon" href="https://2cloudlab.com/images/favicon.ico">
+
+  <!-- Twitter Bootstrs CSS -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.css">
+  <!-- Ionicons Fonts Css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/ionicons/ionicons.min.css">
+  <!-- animate css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/animate-css/animate.css">
+  <!-- Hero area slider css-->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slider/slider.css">
+  <!-- slick slider -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slick/slick.css">
+  <!-- Fancybox -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.css">
+  <!-- hover -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/hover/hover-min.css">
+  <!-- template main css file -->
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/style.min.css" integrity="" media="screen">
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/syntax.min.css" integrity="" media="screen">
+</head><body><section class="top-bar animated-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <a class="navbar-brand" href="https://2cloudlab.com/">
+                        <img src="https://2cloudlab.com/images/logo.png" alt="logo">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation"
+                        aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navigation">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                    href="https://2cloudlab.com/">首页</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/about">关于</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/service">服务</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/price">价格</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/blog">博客</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/nosql">NoSQL</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/contact">联系我们</a>
+                            </li>
+                            
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="global-page-header">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2>DynamoDB的基础表达式</h2>
+                    <div class="portfolio-meta">
+                        <span>2020-02-24</span>|
+                        <span class="ion-pricetags"></span>
+                        <span>
+                            NoSQL, DynamoDB, Data-Intensive
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style type="text/css">
+    @media (min-width: 1200px) {
+        .post-container {
+            max-width: 800px;
+        }
+    }
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        display: block;
+        margin: auto;
+    }
+</style>
+
+<section class="single-post">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                
+                <div class="post-img">
+                    <img class="img-fluid lazy" alt="" data-src="https://2cloudlab.com/images/blog/expression-basics.png">
+                </div>
+                
+                <div class="post-content">
+                    <p>本文是关于DynamoDB的表达式。表达式是DynamoDB的内置功能，它又细分为以下几类表达式：</p>
+<ul>
+<li><strong>条件表达式</strong>只能与单项数据的操作配合起来使用，这些操作有PutItem，UpdateItem和DeleteItem。当你为单项数据的操作指定条件表达式时，只有当该表达式的验证结果为<code>true</code>时，该操作才能执行，对应的指令选项是<code>--condition-expression</code></li>
+<li><strong>属性映射表达式</strong>通常会与读取数据项的操作配合起来使用，比如<a href="https://2cloudlab.com/nosql/inserting-retrieving-items/">之前的GetItem例子</a>就使用了属性映射表达式，它的作用在于仅返回该项数据的部分属性，对应的指令选项是<code>--projection-expression</code></li>
+<li><strong>更新表达式</strong>用于更新已经存在的数据项上的某些属性，对应的指令选项是<code>--update-expression</code></li>
+<li><strong>主键条件表达式</strong>通常会与查询操作（比如Query）一起使用，这类表达式的条件只能是与主键相关，对应的指令选项是<code>--key-condition-expression</code></li>
+<li><strong>过滤表达式</strong>通常会与查询操作或遍历操作一起使用，它将作用于查询结果之上，对应的指令选项是<code>--filter-expression</code></li>
+</ul>
+<p>只有充分理解了这些表达式，才能更好地使用DynamoDB，进而享受DynamoDB给我们带来的好处。在这篇文章，我们将学习表达式的基础知识，包括使用表达式的属性名和属性值。紧接着，我们将基于上一章关于PutItem的例子来学习如何使用<strong>条件表达式</strong>。</p>
+<h2 id="表达式的基础知识">表达式的基础知识</h2>
+<p>DynamoDB中的表达式只是一串字符串，它的内容是特定的逻辑表达式，而这个表达式将用来验证数据是否满足该条件。在这些表达式中，你可以应用一些比较操作符，比如&quot;=&quot;（相等），&quot;&gt;&quot;（大于）或者&quot;&gt;=&quot;（大于等于）。例如，以下表达式应用了&quot;&gt;=&quot;：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="s2">&#34;Age &gt;= 21&#34;</span>
+</code></pre></div><p>该表达式的作用在于：该操作只能作用于年龄在21岁及以上的用户，否则操作结果会出错。</p>
+<blockquote>
+<p>注意：以上表达式还无法生效，原因在于该表达式没有指定&quot;21&quot;的类型。为了使以上表达式生效，你需要指定expression attribute values，也就是使用指令属性<code>--expression-attribute-values</code>，这一点将在后面提到。</p>
+</blockquote>
+<p>除了可以在表达式中使用比较操作符，还可以在表达式中使用函数。这些函数是DynamoDB提供的，它们有：attribute_exists()，判断某项数据其属性是存在的；attribute_not_exists()，判断某项数据其属性是不存在的；begins_with()，判断某项数据其属性值是以某个子字符串开始的。</p>
+<p>我们可以在表达式中使用attribute_not_exists()函数来判断某个订单是否已经发货了，其用法如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="s2">&#34;attribute_not_exists(DateShipped)&#34;</span>
+</code></pre></div><p>如果该订单有DateShipped属性，那么表明它已经发货了，否则表明它还在仓库中。DynamoDB提供的函数不多，所有的函数如下所示：</p>
+<ul>
+<li>attribute_exists(): 判断某项数据其属性是存在的</li>
+<li>attribute_not_exists(): 判断某项数据其属性是不存在的</li>
+<li>attribute_type(): 判断某项数据其属性的类型是指定的类型</li>
+<li>begins_with(): 判断某项数据其属性值是以某个子字符串开始的</li>
+<li>contains(): 如果该属性是字符串类型，则判断某项数据其属性值是包含某个子字符串的；如果该属性是集合类型（比如List或Map），则判断该属性是包含指定元素的</li>
+<li>size(): 返回属性的大小，不同类型的属性，其大小的计算规则是不一样的。</li>
+</ul>
+<p>关于表达式中的比较操作符和函数，读者可以参考<a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.OperatorsAndFunctions.html">官方文档</a>。</p>
+<h2 id="表达式的占位符">表达式的占位符</h2>
+<p>之前的内容表明，表达式是一个具有逻辑运算的字符串，DynamoDB通过执行这个表达式来得到一个是或否的结果。然而，有的时候你需要一种更加清晰的方式来编写表达式，比如在表达式中使用变量，然后在其它地方提供变量值。</p>
+<p>DynamoDB允许你使用<code>--expression-attribute-names</code>和<code>--expression-attribute-values</code>选项来编写更加清晰的表达式。通过这种做法，你可以在表达式中指定变量，然后分别使用以上选项来指定变量值，DynamoDB会将这些变量值自动替换掉表达式中的变量。接下来，让我们看看这2个选项的含义。</p>
+<ul>
+<li><code>--expression-attribute-names</code></li>
+</ul>
+<p>有时，你希望针对一个属性编写表达式，但是由于DynamoDB的限制，你无法直接在表达式中使用该属性名，比如：</p>
+<ul>
+<li>你的属性名称刚好是DynamoDB中预留的关键字。DynamoDB预先保留了大量的关键字，其中包括了：&ldquo;Date&rdquo;，&ldquo;Year&quot;和&quot;Name&quot;等。如果你的属性名称恰巧在这些预留的关键字里，那么你需要借助这个选项来提供属性名称的占位符</li>
+<li>你的属性名称中包含&rdquo;.&quot;。DynamoDB使用&quot;.&ldquo;来获取嵌套类型（比如Map类型）中的子项。如果你的属性名中包含了&rdquo;.&quot;，那么你需要借助这个选项来提供属性名称的占位符</li>
+<li>你的属性名称开头包含数字。DynamoDB不允许表达式中的属性名称以数字开头，因此如果你的属性名称以数字开头，那么你需要借助这个选项来提供属性名称的占位符</li>
+</ul>
+<p>在使用这个选项时，你只需要提供一个Map格式的属性名称集合。这个Map中的key是表达式中的占位符，而value是属性名称。例如，你可以为&quot;Age&quot;属性定义占位符&quot;#a&quot;，而这个占位符可用于表达式，具体示例如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">  --expression-attribute-names <span class="s1">&#39;{
+</span><span class="s1">    &#34;#a&#34;: &#34;Age&#34;
+</span><span class="s1">  }&#39;</span>
+</code></pre></div><blockquote>
+<p>当使用<code>--expression-attribute-names</code>时，占位符必须以&quot;<strong>#</strong>&ldquo;开头。</p>
+</blockquote>
+<p>在之前的<a href="https://2cloudlab.com/nosql/inserting-retrieving-items/">GetItem</a>的例子中，我们使用了<code>--projection-expression</code>选项来返回某项数据的部分属性。为了能够在该选项中使用占位符，我们需要将之前的例子改如下：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ aws dynamodb get-item <span class="se">\
+</span><span class="se"></span>    --table-name Users <span class="se">\
+</span><span class="se"></span>    --projection-expression <span class="s2">&#34;#a, #u&#34;</span> <span class="se">\
+</span><span class="se"></span>    --expression-attribute-names <span class="s1">&#39;{
+</span><span class="s1">      &#34;#a&#34;: &#34;Age&#34;,
+</span><span class="s1">      &#34;#u&#34;: &#34;Username&#34;
+</span><span class="s1">    }&#39;</span> <span class="se">\
+</span><span class="se"></span>    --key <span class="s1">&#39;{
+</span><span class="s1">      &#34;Username&#34;: {&#34;S&#34;: &#34;daffyduck&#34;}
+</span><span class="s1">    }&#39;</span> <span class="se">\
+</span><span class="se"></span>    <span class="nv">$LOCAL</span>
+
+<span class="o">{</span>
+    <span class="s2">&#34;Item&#34;</span>: <span class="o">{</span>
+        <span class="s2">&#34;Username&#34;</span>: <span class="o">{</span>
+            <span class="s2">&#34;S&#34;</span>: <span class="s2">&#34;daffyduck&#34;</span>
+        <span class="o">}</span>,
+        <span class="s2">&#34;Age&#34;</span>: <span class="o">{</span>
+            <span class="s2">&#34;N&#34;</span>: <span class="s2">&#34;81&#34;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><p>注意，在以上例子中，我们在<code>--projection-expression</code>中使用了2个占位符，分别是&rdquo;#a&quot;和&quot;#u&quot;。而这2个占位符定义在<code>--expression-attribute-names</code>选项中，分别对应&quot;Age&quot;和&quot;Username&quot;属性。</p>
+<p>最后需要注意的是：如果表达式中的属性是Map类型中的某个键（比如&quot;Address.State&quot;），那么你需要定义对应的占位符。比如，你的数据项中有一个类型为Map的属性&quot;Address&quot;，这个属性包含了3个键，它们分别是：&ldquo;Street&rdquo;，&ldquo;City&quot;和&quot;State&rdquo;。如果你想判断&quot;State&quot;是否是指定的一个值时，你需要在表达式中使用&quot;Address.State&quot;，但是这种表达方式只能通过<code>--expression-attribute-names</code>来完成，如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">--condition-expression <span class="s2">&#34;#a.#st = &#39;Nebraska&#39; &#34;</span> <span class="se">\
+</span><span class="se"></span>    --expression-attribute-names <span class="s1">&#39;{
+</span><span class="s1">      &#34;#a&#34;: &#34;Address&#34;,
+</span><span class="s1">      &#34;#st&#34;: &#34;State&#34;
+</span><span class="s1">    }&#39;</span>
+</code></pre></div><p>注意，在以上例子中，&quot;#a.#st&quot;会被替换成&quot;Address.State&quot;。</p>
+<ul>
+<li><code>--expression-attribute-values</code></li>
+</ul>
+<p><code>--expression-attribute-values</code>选项的作用与<code>--expression-attribute-names</code>不同，跟在它后面的参数将作用于表达式中的属性值，比如可以定义一个占位符&quot;:stn&quot;来替代&quot;#a.#st = &lsquo;Nebraska&rsquo; &ldquo;中的&rsquo;Nebraska'。除此之外，在格式上也有些不一样：</p>
+<ul>
+<li>占位符必须是以&rdquo;:&ldquo;作为开头，比如上面的&rdquo;:stn&quot;，而不是&quot;#&quot;</li>
+<li>在设置值的时候，必须提供该值的类型，比如：{&quot;:agelimit&quot;: {&ldquo;N&rdquo;: 21} }</li>
+</ul>
+<p>关于其用法的例子，可以参考使用<a href="https://2cloudlab.com/nosql/updating-deleting-items/">UpdateItem API的文章</a></p>
+<h2 id="条件表达式">条件表达式</h2>
+<p>这一节将通过一个使用条件表达式的例子结束本章的内容。还记得<a href="https://2cloudlab.com/nosql/inserting-retrieving-items/">我们之前使用PutItem</a>来向&quot;User&quot;表中插入数据的例子吗！这个例子有一个问题：如果&quot;Users&quot;表中已经包含了正在插入的数据项，那么这个操作将覆盖已存在的数据项，这种操作将破坏老的数据项，这也许不是我们想要的结果。</p>
+<p>好在，我们可以使用条件表达式来避免这种毁灭性操作。下面的示例给出了一种解决方法：我们可以添加&ndash;condition-expression &ldquo;attribute_not_exists(#u)&ldquo;选项，这个选项的作用在于确保插入的User是不存在的，如果存在，那么这次插入将会失败。</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ aws dynamodb put-item <span class="se">\
+</span><span class="se"></span>    --table-name Users <span class="se">\
+</span><span class="se"></span>    --item <span class="s1">&#39;{
+</span><span class="s1">      &#34;Username&#34;: {&#34;S&#34;: &#34;yosemitesam&#34;},
+</span><span class="s1">      &#34;Name&#34;: {&#34;S&#34;: &#34;Yosemite Sam&#34;},
+</span><span class="s1">      &#34;Age&#34;: {&#34;N&#34;: &#34;73&#34;}
+</span><span class="s1">    }&#39;</span> <span class="se">\
+</span><span class="se"></span>    --condition-expression <span class="s2">&#34;attribute_not_exists(#u)&#34;</span> <span class="se">\
+</span><span class="se"></span>    --expression-attribute-names <span class="s1">&#39;{
+</span><span class="s1">      &#34;#u&#34;: &#34;Username&#34;
+</span><span class="s1">    }&#39;</span> <span class="se">\
+</span><span class="se"></span>    <span class="nv">$LOCAL</span>
+</code></pre></div><p>需要注意的是，我们在条件表达式中使用了函数attribute_not_exists()来判断给定的&quot;Username&quot;属性是否存在，并期望它是不存在的，然后期望这次插入操作将会成功。如果你再一次运行以上指令，那么你将得到以下错误：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">An error occurred <span class="o">(</span>ConditionalCheckFailedException<span class="o">)</span> when calling the PutItem operation: The conditional request failed
+</code></pre></div><p>以上错误表明，&ldquo;Username&quot;为&quot;yosemitesam&quot;的User已经存在，attribute_not_exists(#u)的执行过程是这样的：根据&quot;yosemitesam&quot;获取该User，如果获取成功，那么再判断&quot;Username&quot;属性是否存在于User，如果存在，那么该函数返回的结果是false，如果不存在，该函数返回的结果是true。</p>
+<p>本章内容介绍了DynamoDB中表达式的基础知识。表达式是用好DynamoDB的前提，表达式又分为以上5类，而文章的最后通过一个示例来揭示条件表达式的用途，其它表达式的用法将在<a href="https://2cloudlab.com/nosql/updating-deleting-items/">后续章节</a>中使用到。</p>
+<ul>
+<li><a href="https://www.dynamodbguide.com/expression-basics">原文链接</a></li>
+</ul>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://utteranc.es/client.js" repo="2cloudlab/comments" issue-term="pathname" theme="github-light"
+        crossorigin="anonymous" async>
+</script>
+
+
+<!-- Call To Action Section Start -->
+<section id="call-to-action">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2 class="title wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">听起来还不错 ？</h1>
+                    <p class="wow fadeInDown" data-wow-delay=".5s" data-wow-duration="500ms">如果你所在的企业遇到了以下问题：<br> 研发流程混乱不堪或者效率低下、经历了持续上升的运维成本、无法及时向用户发布新的服务或产品以及想使用云计算技术但缺乏经验！<br>那么，请毫不犹疑地</p>
+                    <a href="/contact" class="btn btn-default btn-contact wow fadeInDown" data-wow-delay=".7s" data-wow-duration="500ms">联系我们</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-- Call To Action Section End -->
+
+
+<!-- Footer Section Start -->
+<footer id="footer">
+    <div class="container">
+        <div class="row content-justify-between">
+            <div class="col-md-8 col-12 text-center text-lg-left text-md-left">
+                <p class="copyright">版权所有©:
+                    <span>
+                        <script>document.write(new Date().getFullYear())</script>
+                    </span> 上海漫步云端科技有限公司
+                    <a href="https://2cloudlab.com/" target="_blank">2cloudlab.com</a>.
+                    <br> 地址：上海市浦东区浦东南路 999 号新梅联合广场 1 期 32 层
+                    <br>
+                    邮箱：<a href="mailto:support@2cloudlab.com">support@2cloudlab.com</a>
+                </p>
+            </div>
+            <div class="col-md-4 col-12">
+                <!-- Social Media -->
+                <ul class="social text-center text-md-right text-lg-right">
+                    
+                    <li><a href="https://github.com/2cloudlab"><i class="ion-social-github"></i></a></li>
+                    
+                    <li><a href="https://www.linkedin.com/company/2cloudlab-com"><i class="ion-social-linkedin"></i></a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- footer section end -->
+
+<!-- jquery -->
+<script src="https://2cloudlab.com/plugins/jQurey/jquery.min.js"></script>
+<!-- Form Validation -->
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.form.js"></script>
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.validate.min.js"></script>
+<!-- slick slider -->
+<script src="https://2cloudlab.com/plugins/slick/slick.min.js"></script>
+<!-- bootstrap js -->
+<script src="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.js"></script>
+<!-- wow js -->
+<script src="https://2cloudlab.com/plugins/wow-js/wow.min.js"></script>
+<!-- slider js -->
+<script src="https://2cloudlab.com/plugins/slider/slider.js"></script>
+<!-- Fancybox -->
+<script src="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.js"></script>
+<!-- template main js -->
+
+<script src="https://2cloudlab.com/js/script.min.js"></script>
+<!-- google analitycs -->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-171018621-1', 'auto');
+    ga('send', 'pageview');
+</script></body>
+</html>

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <!-- Basic Page Needs -->
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  
+  <meta name="description" content="在之前的[文章](https://2cloudlab.com/nosql/secondary-indexes/)中，我们学习了附加索引的基础知识。在本文中，我们将深入到本地附加索引。首先，我们将涉及本地附加索引的基础，紧接着通过一个例子来使用本地附加索引。Let&#39;s Go!">
+  <meta name="author" content="2cloudlab">
+  <meta name="generator" content="Hugo 0.78.1" />
+  
+  <!-- Mobile Specific Metas -->
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DynamoDB的本地附加索引</title>
+  <link rel="icon" href="https://2cloudlab.com/images/favicon.ico">
+
+  <!-- Twitter Bootstrs CSS -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.css">
+  <!-- Ionicons Fonts Css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/ionicons/ionicons.min.css">
+  <!-- animate css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/animate-css/animate.css">
+  <!-- Hero area slider css-->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slider/slider.css">
+  <!-- slick slider -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slick/slick.css">
+  <!-- Fancybox -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.css">
+  <!-- hover -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/hover/hover-min.css">
+  <!-- template main css file -->
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/style.min.css" integrity="" media="screen">
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/syntax.min.css" integrity="" media="screen">
+</head><body><section class="top-bar animated-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <a class="navbar-brand" href="https://2cloudlab.com/">
+                        <img src="https://2cloudlab.com/images/logo.png" alt="logo">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation"
+                        aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navigation">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                    href="https://2cloudlab.com/">首页</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/about">关于</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/service">服务</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/price">价格</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/blog">博客</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/nosql">NoSQL</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/contact">联系我们</a>
+                            </li>
+                            
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="global-page-header">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2>DynamoDB的本地附加索引</h2>
+                    <div class="portfolio-meta">
+                        <span>2020-03-03</span>|
+                        <span class="ion-pricetags"></span>
+                        <span>
+                            NoSQL, DynamoDB, Data-Intensive
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style type="text/css">
+    @media (min-width: 1200px) {
+        .post-container {
+            max-width: 800px;
+        }
+    }
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        display: block;
+        margin: auto;
+    }
+</style>
+
+<section class="single-post">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                
+                <div class="post-img">
+                    <img class="img-fluid lazy" alt="" data-src="https://2cloudlab.com/images/blog/local-secondary-indexes.png">
+                </div>
+                
+                <div class="post-content">
+                    <p>在之前的<a href="https://2cloudlab.com/nosql/secondary-indexes/">文章</a>中，我们学习了附加索引的基础知识。在本文中，我们将深入到本地附加索引。首先，我们将涉及本地附加索引的基础，紧接着通过一个例子来使用本地附加索引。Let&rsquo;s Go!</p>
+<h2 id="本地附加索引的基础知识">本地附加索引的基础知识</h2>
+<p>请注意：你只能在具有<a href="https://2cloudlab.com/nosql/key-concepts/"><strong>复合主键的表</strong></a>中添加本地附加索引。本地附加索引的分区键必须和复合主键的分区键一样，然而允许指定不同的排序键。</p>
+<p>一些关于本地附加索引的注意事项：</p>
+<ul>
+<li><strong>本地附加索引的创建必须在创建表的时候添加</strong>。也就是说你无法在已经创建好的表上添加附加索引，而是在创建表的时候添加。这一点与<a href="https://2cloudlab.com/nosql/global-secondary-indexes/">全局附加索引</a>不一样</li>
+<li><strong>拥有相同分区键，但不同排序键的数据量不允许超过10GB</strong>。注意这10GB数据包括表中的数据量加上本地附加索引中的数据量。如果你使用了本地附加索引，那么你得认真考虑使用<a href="https://2cloudlab.com/nosql/expression-basics/">映射表达式</a></li>
+<li><strong>Consistency选项</strong>。对于本地附加索引，你可以像表一样选择strong consistency或者eventual consistency。Strong consistency将占用更多的读单元，但是适用于某些场景</li>
+<li><strong>附加索引与表中的读写单元是共享的</strong>。也就是说向本地索引读写数据时，会占用表中的读写单元</li>
+</ul>
+<h2 id="创建本地附加索引">创建本地附加索引</h2>
+<p>现在，让我们动手来实践本地附加索引。还记得创建本地附加索引需要在创建表的时候完成吗！因此之前创建的&quot;Users&quot;表不能使用本地附加索引，所以我们只能考虑在&quot;UserOrdersTable&quot;表中添加附加索引。</p>
+<p>还记得之前那个根据订单额度来过滤某个用户订单的例子吗？由于订单额度不是主键的一部分，因此我们不得不先根据主键获取该用户的订单，然后再使用过滤表达式来过滤出超过某个额度的订单。</p>
+<p>这种需要根据订单额度来过滤数据的模式对于数据量大的场景显然是不适用的&ndash;原因在于，某个用户的订单有很多，比如上万条，而你只需要在这上万条数据中查找几条数据。为了解决这类问题，我们需要建立本地附加索引，并把订单额度作为该索引的排序键。这么一来，根据订单额度来查询订单数据就变快了许多。</p>
+<p>虽然本地附加索引能解决以上问题，但不幸的是，创建附加索引必须在创建表的时候指定。不管如何，首先，让我们运行以下指令删除之前的表：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ aws dynamodb delete-table <span class="se">\
+</span><span class="se"></span>    --table-name UserOrdersTable <span class="se">\
+</span><span class="se"></span>    <span class="nv">$LOCAL</span>
+</code></pre></div><p>紧接着在创建带有本地附加索引的表：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ aws dynamodb create-table <span class="se">\
+</span><span class="se"></span>    --table-name UserOrdersTable <span class="se">\
+</span><span class="se"></span>    --attribute-definitions <span class="s1">&#39;[
+</span><span class="s1">      {
+</span><span class="s1">          &#34;AttributeName&#34;: &#34;Username&#34;,
+</span><span class="s1">          &#34;AttributeType&#34;: &#34;S&#34;
+</span><span class="s1">      },
+</span><span class="s1">      {
+</span><span class="s1">          &#34;AttributeName&#34;: &#34;OrderId&#34;,
+</span><span class="s1">          &#34;AttributeType&#34;: &#34;S&#34;
+</span><span class="s1">      },
+</span><span class="s1">      {
+</span><span class="s1">          &#34;AttributeName&#34;: &#34;Amount&#34;,
+</span><span class="s1">          &#34;AttributeType&#34;: &#34;N&#34;
+</span><span class="s1">      }
+</span><span class="s1">    ]&#39;</span> <span class="se">\
+</span><span class="se"></span>    --key-schema <span class="s1">&#39;[
+</span><span class="s1">      {
+</span><span class="s1">          &#34;AttributeName&#34;: &#34;Username&#34;,
+</span><span class="s1">          &#34;KeyType&#34;: &#34;HASH&#34;
+</span><span class="s1">      },
+</span><span class="s1">      {
+</span><span class="s1">          &#34;AttributeName&#34;: &#34;OrderId&#34;,
+</span><span class="s1">          &#34;KeyType&#34;: &#34;RANGE&#34;
+</span><span class="s1">      }
+</span><span class="s1">    ]&#39;</span> <span class="se">\
+</span><span class="se"></span>    --local-secondary-indexes <span class="s1">&#39;[
+</span><span class="s1">      {
+</span><span class="s1">          &#34;IndexName&#34;: &#34;UserAmountIndex&#34;,
+</span><span class="s1">          &#34;KeySchema&#34;: [
+</span><span class="s1">              {
+</span><span class="s1">                  &#34;AttributeName&#34;: &#34;Username&#34;,
+</span><span class="s1">                  &#34;KeyType&#34;: &#34;HASH&#34;
+</span><span class="s1">              },
+</span><span class="s1">              {
+</span><span class="s1">                  &#34;AttributeName&#34;: &#34;Amount&#34;,
+</span><span class="s1">                  &#34;KeyType&#34;: &#34;RANGE&#34;
+</span><span class="s1">              }
+</span><span class="s1">          ],
+</span><span class="s1">          &#34;Projection&#34;: {
+</span><span class="s1">              &#34;ProjectionType&#34;: &#34;KEYS_ONLY&#34;
+</span><span class="s1">          }
+</span><span class="s1">      }
+</span><span class="s1">    ]&#39;</span> <span class="se">\
+</span><span class="se"></span>    --provisioned-throughput <span class="s1">&#39;{
+</span><span class="s1">      &#34;ReadCapacityUnits&#34;: 1,
+</span><span class="s1">      &#34;WriteCapacityUnits&#34;: 1
+</span><span class="s1">    }&#39;</span> <span class="se">\
+</span><span class="se"></span>    <span class="nv">$LOCAL</span>
+</code></pre></div><p>以上示例与CreateTable的命令一样。一开始，我们指定了表名，然后增加了2点：(1) 使&quot;Amount&quot;属性作为本地附加索引的排序键；(2) 使用<code>--local-secondary-indexes</code>选项。</p>
+<p>最后，根据<a href="https://2cloudlab.com/nosql/working-with-multiple-items/">之前的示例</a>，将25个用户订单插入到刚才创建的表中。这一步留给读者自行完成。</p>
+<p>到目前为止，表&quot;UserOrdersTable&quot;将包含25项订单数据。你可以执行以下命令来检验数据的个数：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ aws dynamodb scan <span class="se">\
+</span><span class="se"></span>    --table-name UserOrdersTable <span class="se">\
+</span><span class="se"></span>    --select COUNT <span class="se">\
+</span><span class="se"></span>    <span class="nv">$LOCAL</span>
+</code></pre></div><p>返回的结果如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">{</span>
+    <span class="s2">&#34;Count&#34;</span>: 25,
+    <span class="s2">&#34;ScannedCount&#34;</span>: 25,
+    <span class="s2">&#34;ConsumedCapacity&#34;</span>: null
+<span class="o">}</span>
+</code></pre></div><h2 id="基于本地附加索引来查询数据">基于本地附加索引来查询数据</h2>
+<p>到目前为止，我们已经建立了本地附加索引，让我们通过一个具体的例子来使用它。在之前<a href="https://2cloudlab.com/nosql/filtering/">过滤表达式的例子</a>中，我们查找了客户&quot;daffyduck&quot;订单额度在100美元的所有订单。现在，我们可以直接使用本地附加索引来查询符合以上条件的订单，如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ aws dynamodb query <span class="se">\
+</span><span class="se"></span>    --table-name UserOrdersTable <span class="se">\
+</span><span class="se"></span>    --index-name UserAmountIndex <span class="se">\
+</span><span class="se"></span>    --key-condition-expression <span class="s2">&#34;Username = :username AND Amount &gt; :amount&#34;</span> <span class="se">\
+</span><span class="se"></span>    --expression-attribute-values <span class="s1">&#39;{
+</span><span class="s1">        &#34;:username&#34;: { &#34;S&#34;: &#34;daffyduck&#34; },
+</span><span class="s1">        &#34;:amount&#34;: { &#34;N&#34;: &#34;100&#34; }
+</span><span class="s1">    }&#39;</span> <span class="se">\
+</span><span class="se"></span>    <span class="nv">$LOCAL</span>
+</code></pre></div><p>注意，在以上示例中，我们移除了<code>--filter-expression</code>选项，然后将其中的逻辑表达式移到了<code>--key-condition-expression</code>选项。我们还使用了<code>--index-name</code>来直接从索引中获取订单数据，而不是从表中。</p>
+<p>返回结果如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">{</span>
+    <span class="s2">&#34;Count&#34;</span>: 1,
+    <span class="s2">&#34;Items&#34;</span>: <span class="o">[</span>
+        <span class="o">{</span>
+            <span class="s2">&#34;OrderId&#34;</span>: <span class="o">{</span>
+                <span class="s2">&#34;S&#34;</span>: <span class="s2">&#34;20170609-25875&#34;</span>
+            <span class="o">}</span>,
+            <span class="s2">&#34;Username&#34;</span>: <span class="o">{</span>
+                <span class="s2">&#34;S&#34;</span>: <span class="s2">&#34;daffyduck&#34;</span>
+            <span class="o">}</span>,
+            <span class="s2">&#34;Amount&#34;</span>: <span class="o">{</span>
+                <span class="s2">&#34;N&#34;</span>: <span class="s2">&#34;116.86&#34;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">]</span>,
+    <span class="s2">&#34;ScannedCount&#34;</span>: 1,
+    <span class="s2">&#34;ConsumedCapacity&#34;</span>: null
+<span class="o">}</span>
+</code></pre></div><p>如同使用过滤条件的例子，以上返回结果正是我们想要的。然而，注意看ScannedCount和Count的返回值。在使用过滤条件的例子里，我们查到了4个属于&quot;daffyduck&quot;的订单，然而满足过滤条件的只有一个并返回给客户端。</p>
+<p>当我们使用本地附加索引时ScannedCount的数值是1。这表明DynamoDB只查询到了1项订单额度在100美元以上的订单，而不是4个。这种查询方法与使用使用过滤表达式的方法相比，只作用于一小部分数据，从而最终导致更快的查询速度。如果数据量多的时候，这种速度的提升是非常巨大的。</p>
+<p>现在，我们对本地附加索引有了一些了解。接下的一章将介绍<a href="https://2cloudlab.com/nosql/global-secondary-indexes/">全局附加索引</a>。</p>
+<ul>
+<li><a href="https://www.dynamodbguide.com/local-secondary-indexes">原文链接</a></li>
+</ul>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://utteranc.es/client.js" repo="2cloudlab/comments" issue-term="pathname" theme="github-light"
+        crossorigin="anonymous" async>
+</script>
+
+
+<!-- Call To Action Section Start -->
+<section id="call-to-action">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2 class="title wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">听起来还不错 ？</h1>
+                    <p class="wow fadeInDown" data-wow-delay=".5s" data-wow-duration="500ms">如果你所在的企业遇到了以下问题：<br> 研发流程混乱不堪或者效率低下、经历了持续上升的运维成本、无法及时向用户发布新的服务或产品以及想使用云计算技术但缺乏经验！<br>那么，请毫不犹疑地</p>
+                    <a href="/contact" class="btn btn-default btn-contact wow fadeInDown" data-wow-delay=".7s" data-wow-duration="500ms">联系我们</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-- Call To Action Section End -->
+
+
+<!-- Footer Section Start -->
+<footer id="footer">
+    <div class="container">
+        <div class="row content-justify-between">
+            <div class="col-md-8 col-12 text-center text-lg-left text-md-left">
+                <p class="copyright">版权所有©:
+                    <span>
+                        <script>document.write(new Date().getFullYear())</script>
+                    </span> 上海漫步云端科技有限公司
+                    <a href="https://2cloudlab.com/" target="_blank">2cloudlab.com</a>.
+                    <br> 地址：上海市浦东区浦东南路 999 号新梅联合广场 1 期 32 层
+                    <br>
+                    邮箱：<a href="mailto:support@2cloudlab.com">support@2cloudlab.com</a>
+                </p>
+            </div>
+            <div class="col-md-4 col-12">
+                <!-- Social Media -->
+                <ul class="social text-center text-md-right text-lg-right">
+                    
+                    <li><a href="https://github.com/2cloudlab"><i class="ion-social-github"></i></a></li>
+                    
+                    <li><a href="https://www.linkedin.com/company/2cloudlab-com"><i class="ion-social-linkedin"></i></a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- footer section end -->
+
+<!-- jquery -->
+<script src="https://2cloudlab.com/plugins/jQurey/jquery.min.js"></script>
+<!-- Form Validation -->
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.form.js"></script>
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.validate.min.js"></script>
+<!-- slick slider -->
+<script src="https://2cloudlab.com/plugins/slick/slick.min.js"></script>
+<!-- bootstrap js -->
+<script src="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.js"></script>
+<!-- wow js -->
+<script src="https://2cloudlab.com/plugins/wow-js/wow.min.js"></script>
+<!-- slider js -->
+<script src="https://2cloudlab.com/plugins/slider/slider.js"></script>
+<!-- Fancybox -->
+<script src="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.js"></script>
+<!-- template main js -->
+
+<script src="https://2cloudlab.com/js/script.min.js"></script>
+<!-- google analitycs -->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-171018621-1', 'auto');
+    ga('send', 'pageview');
+</script></body>
+</html>

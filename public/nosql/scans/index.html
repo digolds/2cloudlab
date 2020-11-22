@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <!-- Basic Page Needs -->
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  
+  <meta name="description" content="本文将介绍DynamoDB的Scans操作。该操作是DynamoDB的重型武器。做一个相似的对比: GetItem操作就是是一对镊子，可以夹出某个特定的物件。Query操作像把铁铲，能挖出一大堆物件，但是其作用的范围依旧很小。然而，Scan操作就像一辆拖拉机，把整个修整区域翻个底朝天。">
+  <meta name="author" content="2cloudlab">
+  <meta name="generator" content="Hugo 0.78.1" />
+  
+  <!-- Mobile Specific Metas -->
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>在DynamoDB中，谨慎使用Scans操作</title>
+  <link rel="icon" href="https://2cloudlab.com/images/favicon.ico">
+
+  <!-- Twitter Bootstrs CSS -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.css">
+  <!-- Ionicons Fonts Css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/ionicons/ionicons.min.css">
+  <!-- animate css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/animate-css/animate.css">
+  <!-- Hero area slider css-->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slider/slider.css">
+  <!-- slick slider -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slick/slick.css">
+  <!-- Fancybox -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.css">
+  <!-- hover -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/hover/hover-min.css">
+  <!-- template main css file -->
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/style.min.css" integrity="" media="screen">
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/syntax.min.css" integrity="" media="screen">
+</head><body><section class="top-bar animated-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <a class="navbar-brand" href="https://2cloudlab.com/">
+                        <img src="https://2cloudlab.com/images/logo.png" alt="logo">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation"
+                        aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navigation">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                    href="https://2cloudlab.com/">首页</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/about">关于</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/service">服务</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/price">价格</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/blog">博客</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/nosql">NoSQL</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/contact">联系我们</a>
+                            </li>
+                            
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="global-page-header">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2>在DynamoDB中，谨慎使用Scans操作</h2>
+                    <div class="portfolio-meta">
+                        <span>2020-02-28</span>|
+                        <span class="ion-pricetags"></span>
+                        <span>
+                            NoSQL, DynamoDB, Data-Intensive
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style type="text/css">
+    @media (min-width: 1200px) {
+        .post-container {
+            max-width: 800px;
+        }
+    }
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        display: block;
+        margin: auto;
+    }
+</style>
+
+<section class="single-post">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                
+                <div class="post-img">
+                    <img class="img-fluid lazy" alt="" data-src="https://2cloudlab.com/images/blog/scans.png">
+                </div>
+                
+                <div class="post-content">
+                    <p>本文将介绍DynamoDB的Scans操作。该操作是DynamoDB的重型武器。做一个相似的对比: <a href="https://2cloudlab.com/nosql/inserting-retrieving-items/">GetItem</a>操作就是是一对镊子，可以夹出某个特定的物件。<a href="https://2cloudlab.com/nosql/querying/">Query</a>操作像把铁铲，能挖出一大堆物件，但是其作用的范围依旧很小。然而，Scan操作就像一辆拖拉机，把整个修整区域翻个底朝天。</p>
+<p>
+<img class="lazy" data-src="https://user-images.githubusercontent.com/6509926/34457385-d95c9ff2-ed74-11e7-86e0-bbf191325502.jpg" alt=""  />
+</p>
+<p>在我们深入到Scan操作之前，请记住以下这句话:</p>
+<blockquote>
+<p>不要使用Scan操作，除非你知道自己在做什么。</p>
+</blockquote>
+<p>Scan操作作用于整张表。对数据量庞大的表，该操作将耗尽整张表的读取单元。如果你在应用程序里的关键路径里使用它，那么它会增加响应延时。</p>
+<p>只有在以下情况下，才会考虑使用Scan操作:</p>
+<ul>
+<li>表的数据量不大</li>
+<li>将数据迁移到另外一个数据库系统</li>
+<li>you use global secondary indexes in a special way to set up a work queue (very advanced).</li>
+</ul>
+<p>带着以上告诫，让我们来探索Scan操作的使用方式。</p>
+<h2 id="scan操作的基础知识">Scan操作的基础知识</h2>
+<p>Scan操作是DynamoDB中最容易使用的功能。开发者只需要在执行该操作时提供表的名字，它就能帮你返回表格中所有数据项（返回的数据量不超过1MB）：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ aws dynamodb scan <span class="se">\
+</span><span class="se"></span>    --table-name UserOrdersTable <span class="se">\
+</span><span class="se"></span>    <span class="nv">$LOCAL</span>
+</code></pre></div><p>以下是返回结果（为了方便阅读，其中省略了中间部分）：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">{</span>
+    <span class="s2">&#34;Count&#34;</span>: 25,
+    <span class="s2">&#34;Items&#34;</span>: <span class="o">[</span>
+        <span class="o">{</span>
+            <span class="s2">&#34;OrderId&#34;</span>: <span class="o">{</span>
+                <span class="s2">&#34;S&#34;</span>: <span class="s2">&#34;20160630-28176&#34;</span>
+            <span class="o">}</span>,
+            <span class="s2">&#34;Username&#34;</span>: <span class="o">{</span>
+                <span class="s2">&#34;S&#34;</span>: <span class="s2">&#34;daffyduck&#34;</span>
+            <span class="o">}</span>,
+            <span class="s2">&#34;Amount&#34;</span>: <span class="o">{</span>
+                <span class="s2">&#34;N&#34;</span>: <span class="s2">&#34;88.3&#34;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>,
+        ...
+        <span class="o">{</span>
+            <span class="s2">&#34;OrderId&#34;</span>: <span class="o">{</span>
+                <span class="s2">&#34;S&#34;</span>: <span class="s2">&#34;20171129-28042&#34;</span>
+            <span class="o">}</span>,
+            <span class="s2">&#34;Username&#34;</span>: <span class="o">{</span>
+                <span class="s2">&#34;S&#34;</span>: <span class="s2">&#34;alexdebrie&#34;</span>
+            <span class="o">}</span>,
+            <span class="s2">&#34;Amount&#34;</span>: <span class="o">{</span>
+                <span class="s2">&#34;N&#34;</span>: <span class="s2">&#34;83.12&#34;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">]</span>,
+    <span class="s2">&#34;ScannedCount&#34;</span>: 25,
+    <span class="s2">&#34;ConsumedCapacity&#34;</span>: null
+<span class="o">}</span>
+</code></pre></div><p>正如你期待的那样，以上结果显示了表中所有数据项。</p>
+<p>与<a href="https://2cloudlab.com/nosql/inserting-retrieving-items/">GetItem</a>和<a href="https://2cloudlab.com/nosql/querying/">Query</a>操作类似，你可以在Scan操作时添加<code>--projection-expression</code>选项来指定返回特定的属性集。这里将不做演示，留给读者自行完成。</p>
+<p>DynamoDB对一次请求所返回的数据量有最多1MB的限制。Scans操作经常会导致返回的数据量超过1MB，这就意味着需要通过分页机制来获取表中所有数据项。而这种分页机制是通过返回结果中&quot;NextToken&quot;来完成的。你只需要在调用Scans操作时添加<code>--starting-token</code>选项和&quot;NextToken&quot;来获取下一页的数据。</p>
+<p>当然，在试验DynamoDB的Scans操作时，由于数据量并不会很大，因此为了测试这种行为，你可以使用<code>--max-items</code>选项来限制其返回数量。例如我们将该选项的值设置为1，如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ aws dynamodb scan <span class="se">\
+</span><span class="se"></span>    --table-name UserOrdersTable <span class="se">\
+</span><span class="se"></span>    --max-items <span class="m">1</span> <span class="se">\
+</span><span class="se"></span>    <span class="nv">$LOCAL</span>
+</code></pre></div><p>返回的结果只包含了一项数据，除此之外还包含了&quot;NextToken&quot;:</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">{</span>
+    <span class="s2">&#34;Count&#34;</span>: 25,
+    <span class="s2">&#34;Items&#34;</span>: <span class="o">[</span>
+        <span class="o">{</span>
+            <span class="s2">&#34;OrderId&#34;</span>: <span class="o">{</span>
+                <span class="s2">&#34;S&#34;</span>: <span class="s2">&#34;20160630-28176&#34;</span>
+            <span class="o">}</span>,
+            <span class="s2">&#34;Username&#34;</span>: <span class="o">{</span>
+                <span class="s2">&#34;S&#34;</span>: <span class="s2">&#34;daffyduck&#34;</span>
+            <span class="o">}</span>,
+            <span class="s2">&#34;Amount&#34;</span>: <span class="o">{</span>
+                <span class="s2">&#34;N&#34;</span>: <span class="s2">&#34;88.3&#34;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">]</span>,
+    <span class="s2">&#34;NextToken&#34;</span>: <span class="s2">&#34;eyJFeGNsdXNpdmVTdGFydEtleSI6IG51bGwsICJib3RvX3RydW5jYXRlX2Ftb3VudCI6IDF9&#34;</span>,
+    <span class="s2">&#34;ScannedCount&#34;</span>: 25,
+    <span class="s2">&#34;ConsumedCapacity&#34;</span>: null
+<span class="o">}</span>
+</code></pre></div><h2 id="并发执行scans">并发执行Scans</h2>
+<p>Scan的一种使用场景是将数据导出到冷数据存储系统（冷数据系统是指读操作特别频繁但是写入操作很少的数据库系统）以便分析。然而，如果表中有大量数据（比如超过100TBs），那么执行Scan操作来读取表中的所有数据所需的时间会较长。为了缩短导出时间，DynamoDB的Scan操作有一种Segments的概念，它允许并发执行Scans操作。当你想让Scan操作并发执行，那么你需要指定需要将表分成几段，这个Scan操作作用在哪段。Segments的索引是从0开始的，比如你将表分成了3端，那么0，1，2分别是这3端的编号。开发者可以启动多个线程或进程来并发导出数据。</p>
+<p>即便是我们练习的表中数据量不大，但是我们依然可以测试这种行为。例如：我们可以将表分成3段，并启动一个进程来Scan分段编号为1的数据，如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ aws dynamodb scan <span class="se">\
+</span><span class="se"></span>    --table-name UserOrdersTable <span class="se">\
+</span><span class="se"></span>    --total-segments <span class="m">3</span> <span class="se">\
+</span><span class="se"></span>    --segment <span class="m">1</span> <span class="se">\
+</span><span class="se"></span>    <span class="nv">$LOCAL</span>
+</code></pre></div><p>从以下的结果可知，其返回了11项数据，而不是25项：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">{</span>
+    <span class="s2">&#34;Count&#34;</span>: 11,
+    <span class="s2">&#34;Items&#34;</span>: <span class="o">[</span>
+        <span class="o">{</span>
+            <span class="s2">&#34;OrderId&#34;</span>: <span class="o">{</span>
+                <span class="s2">&#34;S&#34;</span>: <span class="s2">&#34;20160630-28176&#34;</span>
+            <span class="o">}</span>,
+            <span class="s2">&#34;Username&#34;</span>: <span class="o">{</span>
+                <span class="s2">&#34;S&#34;</span>: <span class="s2">&#34;daffyduck&#34;</span>
+            <span class="o">}</span>,
+            <span class="s2">&#34;Amount&#34;</span>: <span class="o">{</span>
+                <span class="s2">&#34;N&#34;</span>: <span class="s2">&#34;88.3&#34;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>,
+        ...
+        <span class="o">{</span>
+            <span class="s2">&#34;OrderId&#34;</span>: <span class="o">{</span>
+                <span class="s2">&#34;S&#34;</span>: <span class="s2">&#34;20170609-9476&#34;</span>
+            <span class="o">}</span>,
+            <span class="s2">&#34;Username&#34;</span>: <span class="o">{</span>
+                <span class="s2">&#34;S&#34;</span>: <span class="s2">&#34;yosemitesam&#34;</span>
+            <span class="o">}</span>,
+            <span class="s2">&#34;Amount&#34;</span>: <span class="o">{</span>
+                <span class="s2">&#34;N&#34;</span>: <span class="s2">&#34;19.41&#34;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">]</span>,
+    <span class="s2">&#34;ScannedCount&#34;</span>: 11,
+    <span class="s2">&#34;ConsumedCapacity&#34;</span>: null
+<span class="o">}</span>
+</code></pre></div><p>在下一篇文章里，我们将学习DynamoDB的<a href="https://2cloudlab.com/nosql/filtering/">Filter</a>功能，以及将其与Query和Scan操作结合在一起使用。</p>
+<ul>
+<li><a href="https://www.dynamodbguide.com/scans">原文链接</a></li>
+</ul>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://utteranc.es/client.js" repo="2cloudlab/comments" issue-term="pathname" theme="github-light"
+        crossorigin="anonymous" async>
+</script>
+
+
+<!-- Call To Action Section Start -->
+<section id="call-to-action">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2 class="title wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">听起来还不错 ？</h1>
+                    <p class="wow fadeInDown" data-wow-delay=".5s" data-wow-duration="500ms">如果你所在的企业遇到了以下问题：<br> 研发流程混乱不堪或者效率低下、经历了持续上升的运维成本、无法及时向用户发布新的服务或产品以及想使用云计算技术但缺乏经验！<br>那么，请毫不犹疑地</p>
+                    <a href="/contact" class="btn btn-default btn-contact wow fadeInDown" data-wow-delay=".7s" data-wow-duration="500ms">联系我们</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-- Call To Action Section End -->
+
+
+<!-- Footer Section Start -->
+<footer id="footer">
+    <div class="container">
+        <div class="row content-justify-between">
+            <div class="col-md-8 col-12 text-center text-lg-left text-md-left">
+                <p class="copyright">版权所有©:
+                    <span>
+                        <script>document.write(new Date().getFullYear())</script>
+                    </span> 上海漫步云端科技有限公司
+                    <a href="https://2cloudlab.com/" target="_blank">2cloudlab.com</a>.
+                    <br> 地址：上海市浦东区浦东南路 999 号新梅联合广场 1 期 32 层
+                    <br>
+                    邮箱：<a href="mailto:support@2cloudlab.com">support@2cloudlab.com</a>
+                </p>
+            </div>
+            <div class="col-md-4 col-12">
+                <!-- Social Media -->
+                <ul class="social text-center text-md-right text-lg-right">
+                    
+                    <li><a href="https://github.com/2cloudlab"><i class="ion-social-github"></i></a></li>
+                    
+                    <li><a href="https://www.linkedin.com/company/2cloudlab-com"><i class="ion-social-linkedin"></i></a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- footer section end -->
+
+<!-- jquery -->
+<script src="https://2cloudlab.com/plugins/jQurey/jquery.min.js"></script>
+<!-- Form Validation -->
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.form.js"></script>
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.validate.min.js"></script>
+<!-- slick slider -->
+<script src="https://2cloudlab.com/plugins/slick/slick.min.js"></script>
+<!-- bootstrap js -->
+<script src="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.js"></script>
+<!-- wow js -->
+<script src="https://2cloudlab.com/plugins/wow-js/wow.min.js"></script>
+<!-- slider js -->
+<script src="https://2cloudlab.com/plugins/slider/slider.js"></script>
+<!-- Fancybox -->
+<script src="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.js"></script>
+<!-- template main js -->
+
+<script src="https://2cloudlab.com/js/script.min.js"></script>
+<!-- google analitycs -->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-171018621-1', 'auto');
+    ga('send', 'pageview');
+</script></body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <!-- Basic Page Needs -->
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  
+  <meta name="description" content="DynamoDB是一个完全托管于AWS的NoSQL解决方案。开发者可以选择直接在AWS上创建一个DynamoDB的表或者将DynamoDB安装到本地。后续的内容将涉及DynamoDB的API，比如通过AWS CLI来操作DynamoDB。为了操作DynamoDB，我们需要搭建DynamoDB的环境。">
+  <meta name="author" content="2cloudlab">
+  <meta name="generator" content="Hugo 0.78.1" />
+  
+  <!-- Mobile Specific Metas -->
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DynamoDB的环境搭建</title>
+  <link rel="icon" href="https://2cloudlab.com/images/favicon.ico">
+
+  <!-- Twitter Bootstrs CSS -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.css">
+  <!-- Ionicons Fonts Css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/ionicons/ionicons.min.css">
+  <!-- animate css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/animate-css/animate.css">
+  <!-- Hero area slider css-->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slider/slider.css">
+  <!-- slick slider -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slick/slick.css">
+  <!-- Fancybox -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.css">
+  <!-- hover -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/hover/hover-min.css">
+  <!-- template main css file -->
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/style.min.css" integrity="" media="screen">
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/syntax.min.css" integrity="" media="screen">
+</head><body><section class="top-bar animated-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <a class="navbar-brand" href="https://2cloudlab.com/">
+                        <img src="https://2cloudlab.com/images/logo.png" alt="logo">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation"
+                        aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navigation">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                    href="https://2cloudlab.com/">首页</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/about">关于</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/service">服务</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/price">价格</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/blog">博客</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/nosql">NoSQL</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/contact">联系我们</a>
+                            </li>
+                            
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="global-page-header">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2>DynamoDB的环境搭建</h2>
+                    <div class="portfolio-meta">
+                        <span>2019-02-13</span>|
+                        <span class="ion-pricetags"></span>
+                        <span>
+                            NoSQL, DynamoDB, Data-Intensive
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style type="text/css">
+    @media (min-width: 1200px) {
+        .post-container {
+            max-width: 800px;
+        }
+    }
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        display: block;
+        margin: auto;
+    }
+</style>
+
+<section class="single-post">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                
+                <div class="post-img">
+                    <img class="img-fluid lazy" alt="" data-src="https://2cloudlab.com/images/blog/environment-setup.png">
+                </div>
+                
+                <div class="post-content">
+                    <p>DynamoDB是一个完全托管于AWS的NoSQL解决方案。开发者可以选择直接在AWS上创建一个DynamoDB的表或者将DynamoDB安装到本地。后续的内容将涉及DynamoDB的API，比如通过AWS CLI来操作DynamoDB。为了操作DynamoDB，我们需要搭建DynamoDB的环境。</p>
+<h2 id="安装-aws-cli">安装 AWS CLI</h2>
+<p><a href="https://aws.amazon.com/cli/">AWS CLI</a>是AWS提供的命令行工具，开发者通过使用这个工具能够方便地使用AWS所提供的云服务，包括DynamoDB服务。运行以下命令来安装AWS CLI：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ pip install awscli
+</code></pre></div><p>如果在安装过程种遇到困难，可以参考这里<a href="http://docs.aws.amazon.com/cli/latest/userguide/installing.html">进行</a>安装。</p>
+<h2 id="获取认证和授权">获取认证和授权</h2>
+<p>如果你打算使用AWS提供的DynamoDB服务，那么你需要正确地设置认证和授权的权限，具体需要参考<a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html#cli-quick-configuration">官方文档</a>。</p>
+<p>比较简单的一种方式是授予开发者所有关于DynamoDB操作的权限，其策略定义如下：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">{</span>
+  <span class="s2">&#34;Version&#34;</span>: <span class="s2">&#34;2012-10-17&#34;</span>,
+  <span class="s2">&#34;Statement&#34;</span>: <span class="o">[</span>
+    <span class="o">{</span>
+      <span class="s2">&#34;Effect&#34;</span>: <span class="s2">&#34;Allow&#34;</span>,
+      <span class="s2">&#34;Action&#34;</span>: <span class="o">[</span>
+        <span class="s2">&#34;dynamodb:*&#34;</span>
+      <span class="o">]</span>,
+      <span class="s2">&#34;Resource&#34;</span>: <span class="s2">&#34;*&#34;</span>
+    <span class="o">}</span>
+  <span class="o">]</span>
+<span class="o">}</span>
+</code></pre></div><p>一旦你在AWS上申请了一个账号并得到了能够操作DynamoDB的凭证，那么你还需要将这个凭证通过以下方式设置到本地电脑</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ aws configure
+AWS Access Key ID <span class="o">[</span>None<span class="o">]</span>: AKIAIOSFODNN7EXAMPLE
+AWS Secret Access Key <span class="o">[</span>None<span class="o">]</span>: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+Default region name <span class="o">[</span>None<span class="o">]</span>: us-west-2
+Default output format <span class="o">[</span>None<span class="o">]</span>: json
+</code></pre></div><h2 id="在本地搭建dynamodb服务">在本地搭建DynamoDB服务</h2>
+<p>AWS提供了可在本地运行的DynamoDB，它可以在本地运行，免除了凭证的设置和避免了使用云端DynamoDB所产生的费用。</p>
+<p>想要在本地使用DynamoDB，那么根据以下指令下载和安装DynamoDB：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ curl -O https://s3-us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.zip
+$ unzip dynamodb_local_latest.zip
+$ rm dynamodb_local_latest.zip
+</code></pre></div><p>下载好之后，通过以下命令在本地启动DynamoDB实例：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ java -Djava.library.path<span class="o">=</span>./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb
+
+Initializing DynamoDB Local with the following configuration:
+Port:	<span class="m">8000</span>
+InMemory:	<span class="nb">false</span>
+DbPath:	null
+SharedDb:	<span class="nb">true</span>
+shouldDelayTransientStatuses:	<span class="nb">false</span>
+CorsParams:	*
+</code></pre></div><p>如果你看到以上信息，那么说明，DynamoDB已经成功在本地上运行了。接下来便可以操作DynamoDB了。</p>
+<h2 id="本地-local-变量">本地 $LOCAL 变量</h2>
+<p>如果你使用本地的DynamoDB来练习，那么你需要在每一个指令后面追加以下参数：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">--endpoint-url http://localhost:8000
+</code></pre></div><p>当然以上参数可以设置成环境变量，并用较短的环境变量来替代，如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ <span class="nb">export</span> <span class="nv">LOCAL</span><span class="o">=</span><span class="s2">&#34;--endpoint-url http://localhost:8000&#34;</span>
+
+$ aws dynamodb list-tables <span class="nv">$LOCAL</span>
+</code></pre></div><p>如果使用操作本地DynamoDB，那么需要在每一个操作指令后面追加<code>$LOCAL</code>，如上所示。如果操作的是云端的DynamoDB，那么无需在每一个指令后面追加<code>$LOCAL</code>。</p>
+<ul>
+<li><a href="https://www.dynamodbguide.com/environment-setup">原文链接</a></li>
+</ul>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://utteranc.es/client.js" repo="2cloudlab/comments" issue-term="pathname" theme="github-light"
+        crossorigin="anonymous" async>
+</script>
+
+
+<!-- Call To Action Section Start -->
+<section id="call-to-action">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2 class="title wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">听起来还不错 ？</h1>
+                    <p class="wow fadeInDown" data-wow-delay=".5s" data-wow-duration="500ms">如果你所在的企业遇到了以下问题：<br> 研发流程混乱不堪或者效率低下、经历了持续上升的运维成本、无法及时向用户发布新的服务或产品以及想使用云计算技术但缺乏经验！<br>那么，请毫不犹疑地</p>
+                    <a href="/contact" class="btn btn-default btn-contact wow fadeInDown" data-wow-delay=".7s" data-wow-duration="500ms">联系我们</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-- Call To Action Section End -->
+
+
+<!-- Footer Section Start -->
+<footer id="footer">
+    <div class="container">
+        <div class="row content-justify-between">
+            <div class="col-md-8 col-12 text-center text-lg-left text-md-left">
+                <p class="copyright">版权所有©:
+                    <span>
+                        <script>document.write(new Date().getFullYear())</script>
+                    </span> 上海漫步云端科技有限公司
+                    <a href="https://2cloudlab.com/" target="_blank">2cloudlab.com</a>.
+                    <br> 地址：上海市浦东区浦东南路 999 号新梅联合广场 1 期 32 层
+                    <br>
+                    邮箱：<a href="mailto:support@2cloudlab.com">support@2cloudlab.com</a>
+                </p>
+            </div>
+            <div class="col-md-4 col-12">
+                <!-- Social Media -->
+                <ul class="social text-center text-md-right text-lg-right">
+                    
+                    <li><a href="https://github.com/2cloudlab"><i class="ion-social-github"></i></a></li>
+                    
+                    <li><a href="https://www.linkedin.com/company/2cloudlab-com"><i class="ion-social-linkedin"></i></a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- footer section end -->
+
+<!-- jquery -->
+<script src="https://2cloudlab.com/plugins/jQurey/jquery.min.js"></script>
+<!-- Form Validation -->
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.form.js"></script>
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.validate.min.js"></script>
+<!-- slick slider -->
+<script src="https://2cloudlab.com/plugins/slick/slick.min.js"></script>
+<!-- bootstrap js -->
+<script src="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.js"></script>
+<!-- wow js -->
+<script src="https://2cloudlab.com/plugins/wow-js/wow.min.js"></script>
+<!-- slider js -->
+<script src="https://2cloudlab.com/plugins/slider/slider.js"></script>
+<!-- Fancybox -->
+<script src="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.js"></script>
+<!-- template main js -->
+
+<script src="https://2cloudlab.com/js/script.min.js"></script>
+<!-- google analitycs -->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-171018621-1', 'auto');
+    ga('send', 'pageview');
+</script></body>
+</html>

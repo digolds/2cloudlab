@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <!-- Basic Page Needs -->
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  
+  <meta name="description" content="本文记录了2cloudlab.com在使用Terraform、aws-vault和Go工具所积累的知识和经验。这些知识和经验是在解决某些问题的时候发现的，如果能够将这些知识和经验汇总，也许能够帮助到其他团队。">
+  <meta name="author" content="2cloudlab">
+  <meta name="generator" content="Hugo 0.78.1" />
+  
+  <!-- Mobile Specific Metas -->
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Terraform、aws-vault和Go实用技巧指南</title>
+  <link rel="icon" href="https://2cloudlab.com/images/favicon.ico">
+
+  <!-- Twitter Bootstrs CSS -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.css">
+  <!-- Ionicons Fonts Css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/ionicons/ionicons.min.css">
+  <!-- animate css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/animate-css/animate.css">
+  <!-- Hero area slider css-->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slider/slider.css">
+  <!-- slick slider -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slick/slick.css">
+  <!-- Fancybox -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.css">
+  <!-- hover -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/hover/hover-min.css">
+  <!-- template main css file -->
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/style.min.css" integrity="" media="screen">
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/syntax.min.css" integrity="" media="screen">
+</head><body><section class="top-bar animated-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <a class="navbar-brand" href="https://2cloudlab.com/">
+                        <img src="https://2cloudlab.com/images/logo.png" alt="logo">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation"
+                        aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navigation">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                    href="https://2cloudlab.com/">首页</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/about">关于</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/service">服务</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/price">价格</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/blog">博客</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/nosql">NoSQL</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/contact">联系我们</a>
+                            </li>
+                            
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="global-page-header">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2>Terraform、aws-vault和Go实用技巧指南</h2>
+                    <div class="portfolio-meta">
+                        <span>2020-03-15</span>|
+                        <span class="ion-pricetags"></span>
+                        <span>
+                            Terraform, 自动化经验, 云计算, Go
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style type="text/css">
+    @media (min-width: 1200px) {
+        .post-container {
+            max-width: 800px;
+        }
+    }
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        display: block;
+        margin: auto;
+    }
+</style>
+
+<section class="single-post">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                
+                <div class="post-img">
+                    <img class="img-fluid lazy" alt="" data-src="https://2cloudlab.com/images/blog/terraform-tactics.png">
+                </div>
+                
+                <div class="post-content">
+                    <ol>
+<li>Terraform实用技巧</li>
+<li>aws-vault实用技巧</li>
+<li>Go实用技巧</li>
+<li>组合Terraform、aws-vault和Go工具的实用技巧</li>
+</ol>
+<p>本文记录了2cloudlab.com在使用Terraform、aws-vault和Go工具所积累的知识和经验。这些知识和经验是在解决某些问题的时候发现的，如果能够将这些知识和经验汇总，也许能够帮助到其他团队。</p>
+<h2 id="terraform实用技巧">Terraform实用技巧</h2>
+<ol>
+<li><em>aws_launch_configuration</em>资源是无法通过API来修改的</li>
+</ol>
+<p>一个<em>aws_launch_configuration</em>实例创建之后，要想修改该实例的属性，则需要重新创建一个新的<em>aws_launch_configuration</em>实例，原因在于<em>aws_launch_configuration</em>类型的实例是无法通过AWS所提供的API来修改的。</p>
+<ol start="2">
+<li>Terraform所提供的所有类别的资源都有一个<em>lifecycle</em>的设置</li>
+</ol>
+<p>Terraform工具通过这个设置来决定创建资源的行为。比如以下代码通过设置<code>create_before_destroy = true</code>，最终能够使得Terraform先创建一个<em>aws_launch_configuration</em>新的实例，再将新实例替换掉旧实例，替换成功后再销毁旧实例。<em>lifecycle</em>中的设置只能是常量，因此这种方式：<code>create_before_destroy = var.flag</code>来设置<em>create_before_destroy</em>是不允许的。</p>
+<div class="highlight"><pre class="chroma"><code class="language-terraform" data-lang="terraform"><span class="kr">resource</span> <span class="s2">&#34;aws_launch_configuration&#34;</span> <span class="s2">&#34;launch_configuration_instance&#34;</span> <span class="p">{</span>
+  <span class="na">image_id</span>        = <span class="s2">&#34;ami-0fc20dd1da406780b&#34;</span><span class="c1"> #ubuntu 18.4
+</span><span class="c1"></span>  <span class="na">instance_type</span>   = <span class="s2">&#34;t2.micro&#34;</span>
+  <span class="na">security_groups</span> = <span class="p">[</span><span class="nx">aws_security_group</span><span class="p">.</span><span class="nx">instance</span><span class="p">.</span><span class="nx">id</span><span class="p">]</span>
+
+  <span class="na">user_data</span> = <span class="o">&lt;&lt;-EOF</span><span class="s">
+</span><span class="s">              #!/bin/bash
+</span><span class="s">              echo &#34;Hello, 2cloudlab.com&#34; &gt; index.html
+</span><span class="s">              nohup busybox httpd -f -p ${var.server_port} &amp;
+</span><span class="s">              </span><span class="o">EOF</span><span class="c1">
+</span><span class="c1">
+</span><span class="c1">  # Required when using a launch configuration with an auto scaling group.
+</span><span class="c1">  # https://www.terraform.io/docs/providers/aws/r/launch_configuration.html
+</span><span class="c1"></span>  <span class="nx">lifecycle</span> <span class="p">{</span>
+    <span class="na">create_before_destroy</span> = <span class="kc">true</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div><ol start="3">
+<li>Terraform提供<code>for_each</code>指令来遍历一个<code>map</code>对象，并根据该对象的键值对<code>each.key</code>和<code>each.value</code>来创建资源</li>
+</ol>
+<div class="highlight"><pre class="chroma"><code class="language-terraform" data-lang="terraform"><span class="nx">locals</span> <span class="p">{</span>
+  <span class="na">buckets</span> = <span class="p">{</span>
+    <span class="na">bucket1</span> = <span class="s2">&#34;2cloudlab-your-unique-bucket-name-1&#34;</span>
+    <span class="na">bucket2</span> = <span class="s2">&#34;2cloudlab-your-unique-bucket-name-2&#34;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="kr">
+</span><span class="kr">resource</span> <span class="s2">&#34;aws_s3_bucket&#34;</span> <span class="s2">&#34;b&#34;</span> <span class="p">{</span>
+  <span class="na">for_each</span>     = <span class="nx">local</span><span class="p">.</span><span class="nx">buckets</span>
+  <span class="na">bucket</span> = <span class="nb">each</span><span class="p">.</span><span class="nx">value</span>
+<span class="p">}</span>
+<span class="kr">
+</span><span class="kr">output</span> <span class="s2">&#34;results&#34;</span> <span class="p">{</span>
+  <span class="na">value</span> = <span class="nx">aws_s3_bucket</span><span class="p">.</span><span class="nx">b</span>
+<span class="p">}</span>
+</code></pre></div><p>以上命令将生成2个S3资源，名字分别是<code>2cloudlab-your-unique-bucket-name-1</code>和<code>2cloudlab-your-unique-bucket-name-2</code>，运行结果如下所示（为了方便显示和阅读，我已经将无关紧要的信息剔除）：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">results</span> <span class="o">=</span> <span class="o">{</span>
+  <span class="s2">&#34;bucket1&#34;</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="s2">&#34;bucket&#34;</span> <span class="o">=</span> <span class="s2">&#34;2cloudlab-your-unique-bucket-name-1&#34;</span>
+  <span class="o">}</span>
+  <span class="s2">&#34;bucket2&#34;</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="s2">&#34;bucket&#34;</span> <span class="o">=</span> <span class="s2">&#34;2cloudlab-your-unique-bucket-name-2&#34;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><ol start="4">
+<li>如何在Terraform中将数组转化成字典</li>
+</ol>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">my_map</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">for</span> i in range<span class="o">(</span>1, 11, 2<span class="o">)</span>:
+    format<span class="o">(</span><span class="s2">&#34;%d&#34;</span>, i<span class="o">)</span> <span class="o">=</span>&gt; format<span class="o">(</span><span class="s2">&#34;%s-%d&#34;</span>, <span class="s2">&#34;prefix&#34;</span>, i<span class="o">)</span>
+  <span class="o">}</span>
+</code></pre></div><p><code>range(1, 11, 2)</code>将生成数组[1,3,5,7,9]，运行以上指令将得到以下结果：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">{</span>
+  <span class="s2">&#34;1&#34;</span> <span class="o">=</span> <span class="s2">&#34;prefix-1&#34;</span>
+  <span class="s2">&#34;3&#34;</span> <span class="o">=</span> <span class="s2">&#34;prefix-3&#34;</span>
+  <span class="s2">&#34;5&#34;</span> <span class="o">=</span> <span class="s2">&#34;prefix-5&#34;</span>
+  <span class="s2">&#34;7&#34;</span> <span class="o">=</span> <span class="s2">&#34;prefix-7&#34;</span>
+  <span class="s2">&#34;9&#34;</span> <span class="o">=</span> <span class="s2">&#34;prefix-9&#34;</span>
+<span class="o">}</span>
+</code></pre></div><h2 id="go实用技巧">Go实用技巧</h2>
+<ol>
+<li>如何使用Go来运行某一个测试用例（比如定义了一个TestIntegrationOrganization测试用例）？</li>
+</ol>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="k">go</span> <span class="nx">test</span> <span class="o">-</span><span class="nx">v</span> <span class="o">-</span><span class="nx">run</span> <span class="nx">TestIntegrationOrganization</span>
+</code></pre></div><ol start="2">
+<li>如何根据tag(<code>+build integration</code>)来执行一组测试用例？</li>
+</ol>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// intergration_test.go
+</span><span class="c1">// +build integration
+</span><span class="c1"></span>
+<span class="kd">func</span> <span class="nf">TestCase1</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// ...
+</span><span class="c1"></span><span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">TestCase2</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// ...
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></div><p>在文件<em>intergration_test.go</em>中指定tag：<code>// +build integration</code>，运行以下命令将执行该文件中的所有自动化测试用例。</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">go <span class="nb">test</span> -v -run -tags<span class="o">=</span>integration
+</code></pre></div><ol start="3">
+<li>Go Concurrency: Confinement, for-select and done channel</li>
+</ol>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">//Confinement that channels done, inputStream is read only, and the return value resultsStream is also read only
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">func1</span><span class="p">(</span><span class="nx">done</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{},</span> <span class="nx">inputStream</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{})</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{}</span> <span class="p">{</span>
+	<span class="c1">//Create unbuffer channel in lexical scope
+</span><span class="c1"></span>	<span class="nx">resultsStream</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{})</span>
+	<span class="c1">// Launch another go routine to handle task and generate result which is passed to resultsStream
+</span><span class="c1"></span>	<span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">defer</span> <span class="nb">close</span><span class="p">(</span><span class="nx">resultsStream</span><span class="p">)</span>
+		<span class="k">for</span> <span class="p">{</span>
+			<span class="k">select</span> <span class="p">{</span>
+			<span class="k">case</span> <span class="o">&lt;-</span><span class="nx">done</span><span class="p">:</span>
+				<span class="c1">//Cancel by parent
+</span><span class="c1"></span>				<span class="k">return</span>
+			<span class="k">case</span> <span class="o">&lt;-</span><span class="nx">inputStream</span><span class="p">:</span>
+				<span class="c1">//Read from input stream
+</span><span class="c1"></span>				<span class="nx">result</span> <span class="o">:=</span> <span class="mi">1</span>
+				<span class="nx">resultsStream</span> <span class="o">&lt;-</span> <span class="nx">result</span>
+			<span class="k">default</span><span class="p">:</span>
+				<span class="c1">//Continual monitoring
+</span><span class="c1"></span>			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}()</span>
+	<span class="k">return</span> <span class="nx">resultsStream</span>
+<span class="p">}</span>
+</code></pre></div><ol start="4">
+<li>使用or-channel来检测多任务中某个任务是否完成：</li>
+</ol>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">or</span><span class="p">(</span><span class="nx">channels</span> <span class="o">...&lt;-</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{})</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{}</span> <span class="p">{</span>
+	<span class="k">switch</span> <span class="nb">len</span><span class="p">(</span><span class="nx">channels</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">case</span> <span class="mi">0</span><span class="p">:</span>
+		<span class="k">return</span> <span class="kc">nil</span>
+	<span class="k">case</span> <span class="mi">1</span><span class="p">:</span>
+		<span class="k">return</span> <span class="nx">channels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+	<span class="p">}</span>
+	<span class="nx">orDone</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{})</span>
+	<span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">defer</span> <span class="nb">close</span><span class="p">(</span><span class="nx">orDone</span><span class="p">)</span>
+		<span class="k">switch</span> <span class="nb">len</span><span class="p">(</span><span class="nx">channels</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">case</span> <span class="mi">2</span><span class="p">:</span>
+			<span class="k">select</span> <span class="p">{</span>
+			<span class="k">case</span> <span class="o">&lt;-</span><span class="nx">channels</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+			<span class="k">case</span> <span class="o">&lt;-</span><span class="nx">channels</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+			<span class="p">}</span>
+		<span class="k">default</span><span class="p">:</span>
+			<span class="k">select</span> <span class="p">{</span>
+			<span class="k">case</span> <span class="o">&lt;-</span><span class="nx">channels</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+			<span class="k">case</span> <span class="o">&lt;-</span><span class="nx">channels</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+			<span class="k">case</span> <span class="o">&lt;-</span><span class="nx">channels</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+			<span class="k">case</span> <span class="o">&lt;-</span><span class="nf">or</span><span class="p">(</span><span class="nb">append</span><span class="p">(</span><span class="nx">channels</span><span class="p">[</span><span class="mi">3</span><span class="p">:],</span> <span class="nx">orDone</span><span class="p">)</span><span class="o">...</span><span class="p">):</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}()</span>
+	<span class="k">return</span> <span class="nx">orDone</span>
+<span class="p">}</span>
+</code></pre></div><ol start="5">
+<li>Fan-out vs tee 模式</li>
+</ol>
+<p>
+<img class="lazy" data-src="https://2cloudlab.com/images/blog/tee-vs-fanout-patterns.png" alt=""  />
+</p>
+<p><strong>fan-out</strong></p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">numFinders</span> <span class="o">:=</span> <span class="nx">runtime</span><span class="p">.</span><span class="nf">NumCPU</span><span class="p">()</span>
+<span class="nx">finders</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="o">&lt;-</span><span class="kd">chan</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">numFinders</span><span class="p">)</span>
+<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">numFinders</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+    <span class="nx">finders</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">=</span> <span class="nf">primeFinder</span><span class="p">(</span><span class="nx">done</span><span class="p">,</span> <span class="nx">randIntStream</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><p><strong>tee</strong></p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">tee</span> <span class="o">:=</span> <span class="kd">func</span><span class="p">(</span>
+    <span class="nx">done</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{},</span>
+    <span class="nx">in</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{},</span>
+<span class="p">)</span> <span class="p">(</span><span class="nx">_</span><span class="p">,</span> <span class="nx">_</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{})</span> <span class="p">{</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{})</span> <span class="p">{</span>
+    <span class="nx">out1</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{})</span>
+    <span class="nx">out2</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{})</span>
+    <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">defer</span> <span class="nb">close</span><span class="p">(</span><span class="nx">out1</span><span class="p">)</span>
+        <span class="k">defer</span> <span class="nb">close</span><span class="p">(</span><span class="nx">out2</span><span class="p">)</span>
+        <span class="k">for</span> <span class="nx">val</span> <span class="o">:=</span> <span class="k">range</span> <span class="nf">orDone</span><span class="p">(</span><span class="nx">done</span><span class="p">,</span> <span class="nx">in</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">out1</span><span class="p">,</span> <span class="nx">out2</span> <span class="p">=</span> <span class="nx">out1</span><span class="p">,</span> <span class="nx">out2</span>
+            <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">2</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+                <span class="k">select</span> <span class="p">{</span>
+                <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">done</span><span class="p">:</span>
+                <span class="k">case</span> <span class="nx">out1</span><span class="o">&lt;-</span><span class="nx">val</span><span class="p">:</span>
+                    <span class="nx">out1</span> <span class="p">=</span> <span class="kc">nil</span>
+                <span class="k">case</span> <span class="nx">out2</span><span class="o">&lt;-</span><span class="nx">val</span><span class="p">:</span>
+                    <span class="nx">out2</span> <span class="p">=</span> <span class="kc">nil</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}()</span>
+    <span class="k">return</span> <span class="nx">out1</span><span class="p">,</span> <span class="nx">out2</span>
+<span class="p">}</span>
+</code></pre></div><ol start="6">
+<li>Fan-in vs bridge 模式</li>
+</ol>
+<p>
+<img class="lazy" data-src="https://2cloudlab.com/images/blog/bridge-fanin-patterns.png" alt=""  />
+</p>
+<p><strong>fan-in</strong></p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">fanIn</span> <span class="o">:=</span> <span class="kd">func</span><span class="p">(</span>
+    <span class="nx">done</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{},</span>
+    <span class="nx">channels</span> <span class="o">...&lt;-</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{},</span>
+<span class="p">)</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{}</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">wg</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">WaitGroup</span>
+    <span class="nx">multiplexedStream</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{})</span>
+
+    <span class="nx">multiplex</span> <span class="o">:=</span> <span class="kd">func</span><span class="p">(</span><span class="nx">c</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{})</span> <span class="p">{</span>
+        <span class="k">defer</span> <span class="nx">wg</span><span class="p">.</span><span class="nf">Done</span><span class="p">()</span>
+        <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">c</span> <span class="p">{</span>
+            <span class="k">select</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">done</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="k">case</span> <span class="nx">multiplexedStream</span> <span class="o">&lt;-</span> <span class="nx">i</span><span class="p">:</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="c1">// Select from all the channels
+</span><span class="c1"></span>    <span class="nx">wg</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nx">channels</span><span class="p">))</span>
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">c</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">channels</span> <span class="p">{</span>
+        <span class="k">go</span> <span class="nf">multiplex</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c1">// Wait for all the reads to complete
+</span><span class="c1"></span>    <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">wg</span><span class="p">.</span><span class="nf">Wait</span><span class="p">()</span>
+        <span class="nb">close</span><span class="p">(</span><span class="nx">multiplexedStream</span><span class="p">)</span>
+    <span class="p">}()</span>
+
+    <span class="k">return</span> <span class="nx">multiplexedStream</span>
+<span class="p">}</span>
+</code></pre></div><p><strong>bridge</strong></p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">bridge</span> <span class="o">:=</span> <span class="kd">func</span><span class="p">(</span>
+    <span class="nx">done</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{},</span>
+    <span class="nx">chanStream</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{},</span>
+<span class="p">)</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{}</span> <span class="p">{</span>
+    <span class="nx">valStream</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{})</span>
+    <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">defer</span> <span class="nb">close</span><span class="p">(</span><span class="nx">valStream</span><span class="p">)</span>
+        <span class="k">for</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">stream</span> <span class="o">&lt;-</span><span class="kd">chan</span> <span class="kd">interface</span><span class="p">{}</span>
+            <span class="k">select</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="nx">maybeStream</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">chanStream</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nx">ok</span> <span class="o">==</span> <span class="kc">false</span> <span class="p">{</span>
+                    <span class="k">return</span>
+                <span class="p">}</span>
+                <span class="nx">stream</span> <span class="p">=</span> <span class="nx">maybeStream</span>
+            <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">done</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="nx">val</span> <span class="o">:=</span> <span class="k">range</span> <span class="nf">orDone</span><span class="p">(</span><span class="nx">done</span><span class="p">,</span> <span class="nx">stream</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">select</span> <span class="p">{</span>
+                <span class="k">case</span> <span class="nx">valStream</span> <span class="o">&lt;-</span> <span class="nx">val</span><span class="p">:</span>
+                <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">done</span><span class="p">:</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}()</span>
+    <span class="k">return</span> <span class="nx">valStream</span>
+<span class="p">}</span>
+</code></pre></div><ol start="7">
+<li>为什么使用context package，以及它是如何帮助你解决问题的</li>
+</ol>
+<p>假设你启动了一个goroutine（父亲），它同时启动了多个goroutines（孩子），那么你将面临以下问题：</p>
+<ul>
+<li>如果将一些通用的信息流转于各个goroutines？</li>
+<li>如果父亲goroutine不需要其孩子goroutines的计算结果了，如何取消孩子goroutines，以便释放资源？</li>
+<li>由于业务需要，要求某个goroutine的执行时间不超过某段时间，比如2秒。如果超过这段时间，应该如何停止该goroutine的执行？</li>
+<li>由于业务需要，要求某个goroutine的执行时间不超过某个时间点，比如5:00 PM。如果超过这个时间点，应该如何停止该goroutine的执行？</li>
+</ul>
+<p>如果你所在的业务场景中面临以上问题，那么则需要借助Go中的标准库context。通过使用该库，你可以针对调用图来定义context tree，比如下图：</p>
+<p>
+<img class="lazy" data-src="https://2cloudlab.com/images/blog/goroutine-flow-vs-context-flow.png" alt=""  />
+</p>
+<p><a href="https://golangbyexample.com/using-context-in-golang-complete-guide/">Using Context Package in GO (Golang) – Complete Guide</a></p>
+<ol start="8">
+<li>value receiver 与 pointer receiver的区别</li>
+</ol>
+<ul>
+<li>value receiver指明，调用接口过程中拷贝一份新的对象，因此对新对象进行修改，不会影响原来的对象</li>
+<li>pointer receiver指明，调用接口过程中只会传递原来对象的地址，因此对该地址所指向的对象进行修改则会直接改变原对象</li>
+</ul>
+<p>以下例子说明了这一点：</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;fmt&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">type</span> <span class="nx">Shape</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">DoubleArea</span><span class="p">()</span> <span class="kt">float64</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">Rect</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Width</span>  <span class="kt">float64</span>
+	<span class="nx">Height</span> <span class="kt">float64</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">Circle</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Radius</span> <span class="kt">float64</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Rect</span><span class="p">)</span> <span class="nf">DoubleArea</span><span class="p">()</span> <span class="kt">float64</span> <span class="p">{</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;Width is %f, Height is %f&#34;</span><span class="p">,</span> <span class="nx">s</span><span class="p">.</span><span class="nx">Width</span><span class="p">,</span> <span class="nx">s</span><span class="p">.</span><span class="nx">Height</span><span class="p">))</span>
+	<span class="nx">s</span><span class="p">.</span><span class="nx">Width</span> <span class="o">*=</span> <span class="mf">1.414</span>
+	<span class="nx">s</span><span class="p">.</span><span class="nx">Height</span> <span class="o">*=</span> <span class="mf">1.414</span>
+	<span class="k">return</span> <span class="nx">s</span><span class="p">.</span><span class="nx">Width</span> <span class="o">*</span> <span class="nx">s</span><span class="p">.</span><span class="nx">Height</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="nx">Circle</span><span class="p">)</span> <span class="nf">DoubleArea</span><span class="p">()</span> <span class="kt">float64</span> <span class="p">{</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;Radius is %f&#34;</span><span class="p">,</span> <span class="nx">s</span><span class="p">.</span><span class="nx">Radius</span><span class="p">))</span>
+	<span class="nx">s</span><span class="p">.</span><span class="nx">Radius</span> <span class="o">*=</span> <span class="mf">1.414</span>
+	<span class="k">return</span> <span class="nx">s</span><span class="p">.</span><span class="nx">Radius</span> <span class="o">*</span> <span class="nx">s</span><span class="p">.</span><span class="nx">Radius</span> <span class="o">*</span> <span class="mf">3.14</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c1">// pointer receiver
+</span><span class="c1"></span>	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;[Pointer receiver]&#34;</span><span class="p">)</span>
+	<span class="kd">var</span> <span class="nx">s</span> <span class="nx">Shape</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">Rect</span><span class="p">{</span><span class="nx">Width</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="nx">Height</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}</span>
+	<span class="nx">s</span><span class="p">.</span><span class="nf">DoubleArea</span><span class="p">()</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;After double area, the Width is %f&#34;</span><span class="p">,</span> <span class="nx">s</span><span class="p">.(</span><span class="o">*</span><span class="nx">Rect</span><span class="p">).</span><span class="nx">Width</span><span class="p">))</span>
+
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;-----------------------------&#34;</span><span class="p">)</span>
+
+	<span class="c1">// value receiver
+</span><span class="c1"></span>	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;[Value receiver]&#34;</span><span class="p">)</span>
+	<span class="kd">var</span> <span class="nx">c</span> <span class="nx">Shape</span> <span class="p">=</span> <span class="nx">Circle</span><span class="p">{</span><span class="nx">Radius</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}</span>
+	<span class="nx">c</span><span class="p">.</span><span class="nf">DoubleArea</span><span class="p">()</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;After double area, the Radius is %f&#34;</span><span class="p">,</span> <span class="nx">c</span><span class="p">.(</span><span class="nx">Circle</span><span class="p">).</span><span class="nx">Radius</span><span class="p">))</span>
+<span class="p">}</span>
+</code></pre></div><p>运行以上程序的输出结果如下：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">[</span>Pointer receiver<span class="o">]</span>
+Width is 1.000000, Height is 1.000000
+After double area, the Width is 1.414000
+-----------------------------
+<span class="o">[</span>Value receiver<span class="o">]</span>
+Radius is 1.000000
+After double area, the Radius is 1.000000
+</code></pre></div><ol start="9">
+<li>将某个struct类型的部分方法抽象成一个interface类型</li>
+</ol>
+<p>
+<img class="lazy" data-src="https://2cloudlab.com/images/blog/golang-abstract-interface.png" alt=""  />
+</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;fmt&#34;</span>
+<span class="p">)</span>
+
+<span class="c1">// interface
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">Shape</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">DoubleArea</span><span class="p">()</span> <span class="kt">float64</span>
+<span class="p">}</span>
+
+<span class="c1">// struct
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">Circle</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Radius</span> <span class="kt">float64</span>
+<span class="p">}</span>
+
+<span class="c1">// method
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="nx">Circle</span><span class="p">)</span> <span class="nf">DoubleArea</span><span class="p">()</span> <span class="kt">float64</span> <span class="p">{</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;Radius is %f&#34;</span><span class="p">,</span> <span class="nx">s</span><span class="p">.</span><span class="nx">Radius</span><span class="p">))</span>
+	<span class="nx">s</span><span class="p">.</span><span class="nx">Radius</span> <span class="o">*=</span> <span class="mf">1.414</span>
+	<span class="k">return</span> <span class="nx">s</span><span class="p">.</span><span class="nx">Radius</span> <span class="o">*</span> <span class="nx">s</span><span class="p">.</span><span class="nx">Radius</span> <span class="o">*</span> <span class="mf">3.14</span>
+<span class="p">}</span>
+
+<span class="c1">// method
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="nx">Circle</span><span class="p">)</span> <span class="nf">GetVolume</span><span class="p">()</span> <span class="kt">float64</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nx">s</span><span class="p">.</span><span class="nx">Radius</span> <span class="o">*</span> <span class="nx">s</span><span class="p">.</span><span class="nx">Radius</span> <span class="o">*</span> <span class="mf">3.14</span> <span class="o">*</span> <span class="mf">2.0</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1">// We use Shape to abstract Circle to a shape
+</span><span class="c1"></span>  <span class="kd">var</span> <span class="nx">c</span> <span class="nx">Shape</span> <span class="p">=</span> <span class="nx">Circle</span><span class="p">{</span><span class="nx">Radius</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}</span>
+  <span class="nx">c</span><span class="p">.</span><span class="nf">DoubleArea</span><span class="p">()</span>
+  <span class="c1">// You can&#39;t call GetVolume, beacuse c is a Shape, which doesn&#39;t contain GetVolume
+</span><span class="c1"></span>  <span class="c1">// c.GetVolume()
+</span><span class="c1"></span>  <span class="c1">// but you can change c to its dynamic type which is Circle by c.(Circle) and call GetVolume
+</span><span class="c1"></span>  <span class="nx">c</span><span class="p">.(</span><span class="nx">Circle</span><span class="p">).</span><span class="nf">GetVolume</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div><h2 id="组合terraformaws-vault和go工具的实用技巧">组合Terraform、aws-vault和Go工具的实用技巧</h2>
+<ol>
+<li>如何使用aws-vault和Go工具来操作AWS服务？</li>
+</ol>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">aws</span><span class="o">-</span><span class="nx">vault</span> <span class="nx">exec</span> <span class="nx">fans55</span> <span class="o">--</span><span class="nx">no</span><span class="o">-</span><span class="nx">session</span> <span class="o">--</span> <span class="k">go</span> <span class="nx">test</span> <span class="o">-</span><span class="nx">v</span> <span class="o">-</span><span class="nx">run</span> <span class="nx">TestIntegrationOrganization</span>
+</code></pre></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://utteranc.es/client.js" repo="2cloudlab/comments" issue-term="pathname" theme="github-light"
+        crossorigin="anonymous" async>
+</script>
+
+
+<!-- Call To Action Section Start -->
+<section id="call-to-action">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2 class="title wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">听起来还不错 ？</h1>
+                    <p class="wow fadeInDown" data-wow-delay=".5s" data-wow-duration="500ms">如果你所在的企业遇到了以下问题：<br> 研发流程混乱不堪或者效率低下、经历了持续上升的运维成本、无法及时向用户发布新的服务或产品以及想使用云计算技术但缺乏经验！<br>那么，请毫不犹疑地</p>
+                    <a href="/contact" class="btn btn-default btn-contact wow fadeInDown" data-wow-delay=".7s" data-wow-duration="500ms">联系我们</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-- Call To Action Section End -->
+
+
+<!-- Footer Section Start -->
+<footer id="footer">
+    <div class="container">
+        <div class="row content-justify-between">
+            <div class="col-md-8 col-12 text-center text-lg-left text-md-left">
+                <p class="copyright">版权所有©:
+                    <span>
+                        <script>document.write(new Date().getFullYear())</script>
+                    </span> 上海漫步云端科技有限公司
+                    <a href="https://2cloudlab.com/" target="_blank">2cloudlab.com</a>.
+                    <br> 地址：上海市浦东区浦东南路 999 号新梅联合广场 1 期 32 层
+                    <br>
+                    邮箱：<a href="mailto:support@2cloudlab.com">support@2cloudlab.com</a>
+                </p>
+            </div>
+            <div class="col-md-4 col-12">
+                <!-- Social Media -->
+                <ul class="social text-center text-md-right text-lg-right">
+                    
+                    <li><a href="https://github.com/2cloudlab"><i class="ion-social-github"></i></a></li>
+                    
+                    <li><a href="https://www.linkedin.com/company/2cloudlab-com"><i class="ion-social-linkedin"></i></a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- footer section end -->
+
+<!-- jquery -->
+<script src="https://2cloudlab.com/plugins/jQurey/jquery.min.js"></script>
+<!-- Form Validation -->
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.form.js"></script>
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.validate.min.js"></script>
+<!-- slick slider -->
+<script src="https://2cloudlab.com/plugins/slick/slick.min.js"></script>
+<!-- bootstrap js -->
+<script src="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.js"></script>
+<!-- wow js -->
+<script src="https://2cloudlab.com/plugins/wow-js/wow.min.js"></script>
+<!-- slider js -->
+<script src="https://2cloudlab.com/plugins/slider/slider.js"></script>
+<!-- Fancybox -->
+<script src="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.js"></script>
+<!-- template main js -->
+
+<script src="https://2cloudlab.com/js/script.min.js"></script>
+<!-- google analitycs -->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-171018621-1', 'auto');
+    ga('send', 'pageview');
+</script></body>
+</html>

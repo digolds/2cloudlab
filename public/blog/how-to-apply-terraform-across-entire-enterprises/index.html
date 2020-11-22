@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <!-- Basic Page Needs -->
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  
+  <meta name="description" content="terraform是一个用go语言编写的跨平台、开源、只有单个运行文件的命令行程序。terraform通过解析和执行terraform configuration文件集合，最终会在短时间内生成分布式软件所运行的环境，避免了手动配置环境，减少出错的可能性。在企业里，要想高效地使用terraform来正确且快速地生成分布式软件所运行的环境，不仅需要掌握terraform知识，还需要结合软件工程方面的实践经验和借助多种工具。">
+  <meta name="author" content="2cloudlab">
+  <meta name="generator" content="Hugo 0.78.1" />
+  
+  <!-- Mobile Specific Metas -->
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>企业如何在一天之内部署线上服务--高效使用terraform</title>
+  <link rel="icon" href="https://2cloudlab.com/images/favicon.ico">
+
+  <!-- Twitter Bootstrs CSS -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.css">
+  <!-- Ionicons Fonts Css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/ionicons/ionicons.min.css">
+  <!-- animate css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/animate-css/animate.css">
+  <!-- Hero area slider css-->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slider/slider.css">
+  <!-- slick slider -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slick/slick.css">
+  <!-- Fancybox -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.css">
+  <!-- hover -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/hover/hover-min.css">
+  <!-- template main css file -->
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/style.min.css" integrity="" media="screen">
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/syntax.min.css" integrity="" media="screen">
+</head><body><section class="top-bar animated-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <a class="navbar-brand" href="https://2cloudlab.com/">
+                        <img src="https://2cloudlab.com/images/logo.png" alt="logo">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation"
+                        aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navigation">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                    href="https://2cloudlab.com/">首页</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/about">关于</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/service">服务</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/price">价格</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/blog">博客</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/nosql">NoSQL</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/contact">联系我们</a>
+                            </li>
+                            
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="global-page-header">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2>企业如何在一天之内部署线上服务--高效使用terraform</h2>
+                    <div class="portfolio-meta">
+                        <span>2019-07-15</span>|
+                        <span class="ion-pricetags"></span>
+                        <span>
+                            terraform工具, 企业的数字化转型, devops, cicd, 云计算, cloudcomputing
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style type="text/css">
+    @media (min-width: 1200px) {
+        .post-container {
+            max-width: 800px;
+        }
+    }
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        display: block;
+        margin: auto;
+    }
+</style>
+
+<section class="single-post">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                
+                <div class="post-img">
+                    <img class="img-fluid lazy" alt="" data-src="https://2cloudlab.com/images/blog/terraform-hashicorp.png">
+                </div>
+                
+                <div class="post-content">
+                    <p>terraform是一个用go语言编写的跨平台、开源、只有单个运行文件的命令行程序。terraform通过解析和执行terraform configuration文件集合，最终会在短时间内生成分布式软件所运行的环境，避免了手动配置环境，减少出错的可能性。在企业里，要想高效地使用terraform来正确且快速地生成分布式软件所运行的环境，不仅需要掌握terraform知识，还需要结合工程方面的实践经验（比如版本控制，模块划分，测试）以及其它工具（比如Packer、Docker、Kubernetes）来共同实现。</p>
+<p>这篇文章将通过以下话题来说明<strong>如何在企业中高效使用terraform</strong>：</p>
+<ol>
+<li>企业为何使用Terraform？</li>
+<li>Terraform的运行机制</li>
+<li>如何解决多人同时使用Terraform的问题</li>
+<li>在企业中建立Devops团队以及Terraform规范</li>
+<li>现实世界中DevOps团队的工作内容</li>
+<li>总结</li>
+</ol>
+<h2 id="企业为何使用terraform">企业为何使用Terraform？</h2>
+<p>Terraform的主要作用在于基于云服务提供商创建资源和准备运行环境。企业内部需要借助不同工具推行<a href="https://2cloudlab.com/blog/devops-cicd-infrastructure-as-code/">DevOps</a>，Terraform就是其中之一。软件产品或服务都需要运行在一个特定的环境上，因此企业需要为软件准备这些运行环境，而这些运行环境的准备就是需要工具：Terraform。除此之外还有其它工具（比如CloudFormation），企业之所以使用Terraform工具的原因在于：</p>
+<ol>
+<li>拥有强大而且活跃的社区支持、免费和开源</li>
+<li>支持大部分云服务提供者（AWS、Azure、GCP以及其它云服务）</li>
+<li>只需要一个terraform运行文件和云服务厂商的账号就能在自己的电脑上使用</li>
+<li>terraform是基于描述型语言（declarative language）来定义资源的最终状态</li>
+<li>terraform支持一致性部署（immutable infrastructure）,每次更新均是可重现且一致的</li>
+</ol>
+<p>随着云计算的普及，企业应该使用云计算带来的好处&ndash;降低成本和应用更加先进的技术&ndash;来使自己处于行业领先位置。使用Terraform可以以Infrastructure as Code的方式使用云服务，DevOps人员只需要编写脚本、安装Terraform可执行文件、一个云服务商账号以及执行脚本的一台电脑就能远程为软件创建资源和准备环境。这些脚本文件由版本控制系统进行管理，这样一来软件工程方面的经验便可应用在这些脚本文件上。要想高效使用Terraform，除了要学习Terraform知识，还要解决多人使用的情况。在这之前，以一个简单的示例来了解Terraform的运行机制是一个良好的开端。</p>
+<h2 id="terraform的运行机制">Terraform的运行机制</h2>
+<p>terraform是单文件命令行程序，它基于infrastructure as code方式来运行的，因此需要给terraform提供脚本文件让其运行。脚本文件的后缀是<code>.tf</code>，其中的内容涉及选择云服务提供商、创建何种类型的资源以及定义输入输出变量等等。</p>
+<p>在开始运行terraform之前，需要准备以下条件:</p>
+<ol>
+<li>一台笔记本电脑</li>
+<li>根据操作系统下载对应的terraform可执行性文件，并把该文件所在位置添加到系统的环境变量中</li>
+<li>到AWS注册一个根账号，并用根账号创建一个子账号，这个子账号会被terraform使用</li>
+<li>将子账号生成的ID和Key提供给terraform</li>
+</ol>
+<p>以上步骤准备好之后，接下来编写以下terraform脚本文件:</p>
+<div class="highlight"><pre class="chroma"><code class="language-terraform" data-lang="terraform"><span class="c1"># main.tf
+</span><span class="c1"></span>
+<span class="nx">terraform</span> <span class="p">{</span>
+    <span class="na">required_version</span> = <span class="s2">&#34;&gt;= 0.12, &lt; 0.13&#34;</span>
+<span class="p">}</span>
+<span class="kr">
+</span><span class="kr">provider</span> <span class="s2">&#34;aws&#34;</span> <span class="p">{</span>
+  <span class="na">region</span> = <span class="s2">&#34;us-east-2&#34;</span><span class="c1">
+</span><span class="c1">
+</span><span class="c1">  # Allow any 2.x version of the AWS provider
+</span><span class="c1"></span>  <span class="na">version</span> = <span class="s2">&#34;~&gt; 2.0&#34;</span>
+<span class="p">}</span>
+<span class="kr">
+</span><span class="kr">resource</span> <span class="s2">&#34;aws_instance&#34;</span> <span class="s2">&#34;example&#34;</span> <span class="p">{</span>
+  <span class="na">ami</span>           = <span class="s2">&#34;ami-0d5d9d301c853a04a&#34;</span>
+  <span class="na">instance_type</span> = <span class="s2">&#34;t2.micro&#34;</span>
+
+  <span class="na">tags</span> = <span class="p">{</span>
+    <span class="na">Name</span> = <span class="s2">&#34;2cloudlab-example&#34;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div><p>以上例子表明:它期望在AWS上创建一个EC2实例，因此使用terraform运行该脚本文件的最终结果是AWS EC2 Dashboard中启动了一个EC2实例,如下图所示：</p>
+<p>
+<img class="lazy" data-src="https://2cloudlab.com/images/blog/ec2-dashboard.png" alt=""  />
+</p>
+<p>这个简单的例子解释了terraform运行过程中所涉及的步骤。企业里也是基于以上过程来使用terraform，但是区别在于:企业内部是由多人同时编写并执行terraform文件。这就引发另外一个问题：如何协调不同人员使用terraform所完成的工作成果以及如何避免文件冲突？解决这个问题最好办法是引入软件工程管理方面的经验。</p>
+<h2 id="如何解决多人同时使用terraform的问题">如何解决多人同时使用Terraform的问题</h2>
+<p>通过以上简单的示例可知，Terraform的使用过程如下：</p>
+<ol>
+<li>为每名研发人员配置一个云服务账号，该账号的权限应该根据这名研发人员的角色而设置</li>
+<li>DevOps工程师编写<code>.tf</code>脚本，并在本地运行和测试，通过测试之后，为这些<code>.tf</code>脚本打上版本号，最终上传到版本控制系统(比如git)</li>
+<li>使用Terraform执行<code>.tf</code>脚本并在生产环境中生成基础资源</li>
+<li>Terraform会生成state文件，该文件记录了生产环境中资源的最终状态。也就是说这些<code>.tf</code>脚本在现实世界中生成的资源状态与state文件中记录的状态是一一对应的</li>
+</ol>
+<p>如果只有一名DevOps工程师使用Terraform工具，那么就不会存在分享<code>.tf</code>文件和state文件的问题，但是如果有多名DevOps工程师共同编写<code>.tf</code>脚本并且这些脚本是需要组合使用的，那么就需要引入一套多人协作的机制。这套机制需要解决的问题有：1.分配不同的云服务账号；2.如何对<code>.tf</code>文件进行版本管理；3.共享state文件。</p>
+<ol>
+<li>分配不同的云服务账号</li>
+</ol>
+<p>为不同研发人员分配不同云服务账号的原因在于：同一管理所有研发人员，减少研发人员因权限的问题破坏生产环境或者其它重要的环境。在云计算的世界里，有太多的因素需要考虑，其中安全因素尤其重要。如果没有合理地分配云服务账号，那么就无法有效地追踪每一名研发人员的操作记录。如果外来入侵者登录了你的云服务账号，那么这些混乱的操作记录将难以提供入侵者的行踪，从而管理人员将无法及时修复安全漏洞。因此在使用云服务之前，需要建立起多账号方案，<a href="https://2cloudlab.com/portfolio/how-to-construct-enterprise-accounts/">这篇文章</a>介绍了一种企业级多账号管理方案，通过实践这个方案将方便企业管理多人同时使用云服务进行研发的问题。</p>
+<ol start="2">
+<li>如何对<code>.tf</code>文件进行版本管理</li>
+</ol>
+<p>软件产品在每一个阶段都有其对应的功能，这些功能是通过每一次的迭代而添加的。要想在旧功能的基础上添加新的功能就需要引入版本控制系统。DevOps工程师会划分模块来编写<code>.tf</code>脚本，这些脚本每隔一段时间会引入新的功能或者修复漏洞，那么就需要类似于git一样的工具来记录每一次改动。除此之外，为了不影响外部使用这些模块，那么需要为这些模块打上版本号，使用者根据版本号来使用这些模块，编写这些模块的工程师则可以大胆更新模块。有了记录和版本的模块，接下来就是要发布给外部使用者，通过源码托管服务（比如github），这些模块能够方便地被其他人使用。引入源码托管服务也能够方便Code Review。</p>
+<ol start="3">
+<li>使用S3和DynamoDB服务存储与共享Terraform状态</li>
+</ol>
+<p>运行Terraform之后，将会生成一个state文件，这个文件记录了现实世界云服务资源的最终状态。没有这个state文件，那么terraform将认为云服务资源没有创建出来。因此如果这个state文件生成在本地，那么将引发一个问题：2名DevOps工程师执行同一个<code>.tf</code>脚本。工程师A生成了云计算资源R，紧接着工程师B再次运行该脚本，Terraform提示工程师B资源R将被创建。这个问题引发的原因在于工程师B没法获取工程师A的state文件，从而导致Terraform误认为资源R没有被创建出来（实际已经被工程师A创建了）。因此需要通过将state文件共享才能解决这个问题。</p>
+<p>共享的方法有很多种，其中一种是利用AWS S3和DynamoDb服务来实现共享。这种方法的好处是容易实现而且方便加密。使用AWS服务来实现state文件共享的第一步是：在AWS上创建S3对象存储和DynamoDb Key-Value存储（它们的名称分别是：terraform-remote-state-storage-s3和terraform-state-lock-dynamo）。接下来只要在<code>.tf</code>文件中配置以下信息就能实现state文件共享。</p>
+<div class="highlight"><pre class="chroma"><code class="language-terraform" data-lang="terraform"><span class="c1"># main.tf
+</span><span class="c1"></span><span class="nx">terraform</span> <span class="p">{</span>
+  <span class="nx">backend</span> <span class="s2">&#34;s3&#34;</span> <span class="p">{</span>
+    <span class="na">encrypt</span>        = <span class="kc">true</span>
+    <span class="na">bucket</span>         = <span class="s2">&#34;terraform-remote-state-storage-s3&#34;</span>
+    <span class="na">dynamodb_table</span> = <span class="s2">&#34;terraform-state-lock-dynamo&#34;</span>
+    <span class="na">region</span>         = <span class="s2">&#34;us-west-2&#34;</span>
+    <span class="na">key</span>            = <span class="s2">&#34;path/to/state/file&#34;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div><p>通过以上配置，每次运行<code>terraform apply</code>都会先执行加锁操作（作用到terraform-state-lock-dynamo）；接着生成state文件，并将其存储到指定的S3对象存储（由terraform-remote-state-storage-s3指定），S3自动对state文件加密；最后再执行解锁操作（作用到terraform-state-lock-dynamo）。解锁和加锁的作用在于保证存储state文件时只有一个人在操作。</p>
+<h2 id="在企业中建立devops团队以及terraform规范">在企业中建立Devops团队以及Terraform规范</h2>
+<p><strong>企业需要组建一支DevOps团队来打造CICD</strong>。在企业内部，一般是由devops工程师来使用terraform工具，编写terraform脚本，除此之外devops工程师还需要使用其它工具比如Python、Go、Bash、Packer、Git、Docker、Kubernetes来配合。除了掌握这些工具之外，还需要具备软件工程方面的经验和devops方面的经验。拥有这些经验和工具是打造一条<strong>高效CICD流水线</strong>的基本条件。<strong>CICD</strong>分为2个阶段：<strong>持续集成（CI）和持续发布（CD）</strong>，每个阶段都有相对应的任务清单，比如：CI阶段需要解决研发、版本控制、测试等问题，而CD阶段需要解决基础资源创建、部署、配置、监控、安全、规范、优化等问题。根据企业自身情况，每个任务都能细分出更多的小任务。</p>
+<p>面对如此多的任务，企业需要组建一个DevOps团队来专门处理这些任务。团队成员由DevOps工程师组成，每位工程师处理不同的任务，有的处理CI部分，有的处理CD部分。DevOps经常需要服务于企业内部(比如根据法规部门的要求引入隐私条款，以便符合当地法律要求)、各部门以及企业外部的客户(比如对外界发布产品)。结合之前多人同时使用terraform的经验，devops工程师便可以通过git来贡献自己的成果，但是如何确保每一次输出的成果是高质量的，那就需要通过规范来约束。这些规范的建立一般是由经验丰富的系统管理员来负责，这个管理员其实就是管理devops团队的leader。接下让我们把注意力集中在如何建立规范，以便devops的输出成果能够方便地应用于各个团队。</p>
+<p><strong>建立适用于企业的DevOps规范是打造高效CICD的基础</strong>。有了规范，DevOps团队的输出得到了保障，其他团队也可以顺利地使用DevOps团队的输出，最终确保了DevOps运动中各工作事项都得以顺利展开。规范分为2个部分：对外的规范和对内的规范。</p>
+<p>对外的规范主要针对公司内部其他团队，其约定了外部团队如何使用DevOps团队的成果、如何向DevOps团队提出需求以及如何及时向DevOps团队反馈结果。内部团队主要分为2类:使用DevOps团队的输出成果以及间接使用DevOps团队的输出成果。前者包含的团队有:研发团队、测试团队、安全团队、网络团队等，这些团队的特征是拥有某项技术能力;后者包含的团队有:法务团队、市场团队、销售团队等，这些团队一般脱离了技术。以上所有团队都会向DevOps团队提出需求，并由DevOps团队实现，而拥有技术特征的团队会亲自使用DevOps团队的输出成果，其它团队则需要DevOps团队协助。因此需要建立一套高效的沟通机制、任务管理体系以及详细的使用说明，其中详细的使用说明格式需要统一，以便全公司都能达成共识。</p>
+<p>对内的规范则是针对DevOps内部的成员，其约定了如何组织脚本模块、编写使用说明文档、对脚本模块进行测试、如何进行Code Review以及如何使用版本控制系统。对内的规范内容有:</p>
+<ol>
+<li><a href="https://2cloudlab.com/portfolio/how-to-construct-enterprise-accounts/">为每个成员分配一个独立的云服务账号</a></li>
+<li>对于生产环境的操作只能由少数成员管理</li>
+<li>使用版本控制系统来跟踪脚本文件</li>
+<li>脚本文件分成2类，一类是通用模块，另外一类是应用模块，分别由不同的repository来存放</li>
+<li>为脚本文件添加手动测试和自动化测试</li>
+<li>添加使用说明文档</li>
+<li>禁止使用除了脚本以外的其它方式操作基础设施</li>
+<li>建立code review机制</li>
+<li>为稳定的脚步文件打上版本号</li>
+<li>使用任务管理系统</li>
+</ol>
+<p>接下来让我们以一个具体的例子来展开以上规范。</p>
+<h2 id="现实世界中devops团队的工作内容">现实世界中DevOps团队的工作内容</h2>
+<p>假设公司成立了一个DevOps团队，由三名成员组成，他们分别是：Tony（Team Leader），Jack（DevOps Engineer）和Jane（DevOps Engineer）。他们的工作任务是为公司搭建高效的CICD，以下是他们使用Terraform的规划。</p>
+<p>Tony作为DevOps的TeamLeader，他的主要任务是定义规范。首先，针对所有团队成员约定一套规则，并形成文档，分享给每个成员。每个成员按照这套规则进行每日的工作。下面定义了一套规则，这套规则适用大部分公司，另外公司也可以根据自己的情况来更改。</p>
+<ol>
+<li>任何团队成员都应该使用git以及对应托管服务来提交Terraform源码</li>
+<li>Terraform的源码分为2个类，分别是通用模块和应用模块，其中通用模块可以组合使用，并由应用模块调用</li>
+<li>为每个模块编写自动化测试脚本、可执行示例和说明文档</li>
+<li>如果使用云服务商的云服务，那么应该为每名成员分配不同的云服务账号，这些账号的作用是让每个成员都能独立测试</li>
+<li>进行CodeReview</li>
+<li>为稳定的模块打上版本号，版本规则按照<code>MAJOR.MINOR.PATCH (例如：1.0.4)</code>的方式来维护</li>
+<li>定制一些具体的Terraform语法规则，以便使用者和编写者能够轻松对接</li>
+<li>定义产品运行环境（比如Dev，Test，Stage和Prod）</li>
+<li>定义自动化测试脚本的执行流程，如果使用云服务商的云服务，那么也应该单独为执行测试的机器分配一个账号</li>
+<li>选择合适的任务管理工具来进行团队的任务跟踪（比如使用jira）</li>
+<li>如果使用云服务商的云服务，制定定期清除资源的策略，以便减少成本</li>
+</ol>
+<p>接下来看看他们3人是如何满足以上规则的。假设目前公司要上线一个网站服务，现在要为这个网站准备环境并将其部署，他们是这么协作的：</p>
+<p>Tony</p>
+<p>这个网站部署在AWS上，支持弹性伸缩、高可用、负载均衡和数据库，因此Tony将运行该网站的环境设计出来，如下图所示：</p>
+<p>
+<img class="lazy" data-src="https://2cloudlab.com/images/blog/Web-App-Reference-Architecture.png" alt=""  />
+</p>
+<p>紧接着，他根据上图列出一些工作任务，这些任务由在线项目协作工具(比如Jira)记录和跟踪。随后将任务按照优先级分别指派给不同的成员并开会讨论实施细节。以下是实施细节:</p>
+<ol>
+<li>准备3个不同的环境Test、Stage和Product来验证网站运行环境</li>
+<li>任何一名成员只能使用Terraform工具来操作以上3个环境的资源，其中Product环境只能由经验丰富的少数几个人操作</li>
+<li>团队内常用的工具有:Git、VS Code、Jira、Python、Go和Terraform</li>
+<li>依赖的服务有:AWS和Github</li>
+<li>项目的结构和文件命名方式如下(其中package_aws_web_service是通用模块，live是不同环境)</li>
+<li>在编写模块的过程中，需要考虑单元测试(Unit Test)、集成测试(Integration Test)和端对端测试（End-to-End Test），其数量占比情况如下图所示：</li>
+</ol>
+<p>
+<img class="lazy" data-src="https://2cloudlab.com/images/blog/number-of-different-test-types.png" alt=""  />
+</p>
+<ol start="7">
+<li>为每个模块编写手动示例和说明文档</li>
+<li>遵守Terraform规范，并用代码检测工具来做静态检查</li>
+<li>每次提交都应该进行Code Review</li>
+<li>每名成员都拥有不同的AWS账号，不同环境也需要有不同的AWS账号。AWS账号的分配原则应该根据不同目的来划分，原因在于保持相互独立性</li>
+<li>输出具有可实施的结果（包括文档、图片和代码等）。比如Tony为这次实施细节输出了如下结果：</li>
+</ol>
+<p>
+<img class="lazy" data-src="https://2cloudlab.com/images/blog/file-layout-and-github-repository.png" alt=""  />
+</p>
+<p>Tony要确保以上实施细节都能够被大家理解，并且需要不断地优化。接下来就是分工合作，Tony、Jack和Jane的分工如下：</p>
+<ol>
+<li>Tony负责live repositoy的研发</li>
+<li>Jack负责web_cluser的研发</li>
+<li>Jane负责mysql_database的研发</li>
+</ol>
+<p>当任务分配到每位成员之后，Tony要做的是准备2个repository，分别为:live和package_aws_web_service，它们托管在github上，目录结构按照以上方式排布。除此之外，<a href="https://github.com/2cloudlab/live">live</a>中的文件会调用package_aws_web_service中的模块，这种可复用的方式不仅适合内部团队，也适用于其它团队，比如测试和研发团队。</p>
+<p>Jack</p>
+<p>Jack根据实施细节编写了模块<code>web_cluster</code>(<a href="https://github.com/2cloudlab/package_aws_web_service">完整源码</a>)，结果如下：</p>
+<div class="highlight"><pre class="chroma"><code class="language-terraform" data-lang="terraform"><span class="c1"># main.tf
+</span><span class="c1"></span><span class="kr">
+</span><span class="kr">module</span> <span class="s2">&#34;asg&#34;</span> <span class="p">{</span>
+  <span class="na">source</span> = <span class="s2">&#34;../../cluster/asg-rolling-deploy&#34;</span>
+
+  <span class="na">cluster_name</span>  = <span class="s2">&#34;hello-world-</span><span class="si">${</span><span class="nb">var</span><span class="p">.</span><span class="nx">environment</span><span class="si">}</span><span class="s2">&#34;</span>
+  <span class="na">ami</span>           = <span class="nb">var</span><span class="p">.</span><span class="nx">ami</span>
+  <span class="na">user_data</span>     = <span class="nb">data</span><span class="p">.</span><span class="nx">template_file</span><span class="p">.</span><span class="nx">user_data</span><span class="p">.</span><span class="nx">rendered</span>
+  <span class="na">instance_type</span> = <span class="nb">var</span><span class="p">.</span><span class="nx">instance_type</span>
+
+  <span class="na">min_size</span>           = <span class="nb">var</span><span class="p">.</span><span class="nx">min_size</span>
+  <span class="na">max_size</span>           = <span class="nb">var</span><span class="p">.</span><span class="nx">max_size</span>
+  <span class="na">enable_autoscaling</span> = <span class="nb">var</span><span class="p">.</span><span class="nx">enable_autoscaling</span>
+
+  <span class="na">subnet_ids</span>        = <span class="nx">local</span><span class="p">.</span><span class="nx">subnet_ids</span>
+  <span class="na">target_group_arns</span> = <span class="p">[</span><span class="nx">aws_lb_target_group</span><span class="p">.</span><span class="nx">asg</span><span class="p">.</span><span class="nx">arn</span><span class="p">]</span>
+  <span class="na">health_check_type</span> = <span class="s2">&#34;ELB&#34;</span>
+  
+  <span class="na">custom_tags</span> = <span class="nb">var</span><span class="p">.</span><span class="nx">custom_tags</span>
+<span class="p">}</span>
+<span class="kr">
+</span><span class="kr">module</span> <span class="s2">&#34;alb&#34;</span> <span class="p">{</span>
+  <span class="na">source</span> = <span class="s2">&#34;../../networking/alb&#34;</span>
+
+  <span class="na">alb_name</span>   = <span class="s2">&#34;hello-world-</span><span class="si">${</span><span class="nb">var</span><span class="p">.</span><span class="nx">environment</span><span class="si">}</span><span class="s2">&#34;</span>
+  <span class="na">subnet_ids</span> = <span class="nx">local</span><span class="p">.</span><span class="nx">subnet_ids</span>
+<span class="p">}</span>
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-terraform" data-lang="terraform"><span class="c1"># variables.tf
+</span><span class="c1">
+</span><span class="c1"># ---------------------------------------------------------------------------------------------------------------------
+</span><span class="c1"># REQUIRED PARAMETERS
+</span><span class="c1"># You must provide a value for each of these parameters.
+</span><span class="c1"># ---------------------------------------------------------------------------------------------------------------------
+</span><span class="c1"></span><span class="kr">
+</span><span class="kr">variable</span> <span class="s2">&#34;environment&#34;</span> <span class="p">{</span>
+  <span class="na">description</span> = <span class="s2">&#34;The name of the environment we&#39;re deploying to&#34;</span>
+  <span class="na">type</span>        = <span class="nx">string</span>
+<span class="p">}</span>
+<span class="kr">
+</span><span class="kr">variable</span> <span class="s2">&#34;min_size&#34;</span> <span class="p">{</span>
+  <span class="na">description</span> = <span class="s2">&#34;The minimum number of EC2 Instances in the ASG&#34;</span>
+  <span class="na">type</span>        = <span class="nx">number</span>
+<span class="p">}</span>
+<span class="kr">
+</span><span class="kr">variable</span> <span class="s2">&#34;max_size&#34;</span> <span class="p">{</span>
+  <span class="na">description</span> = <span class="s2">&#34;The maximum number of EC2 Instances in the ASG&#34;</span>
+  <span class="na">type</span>        = <span class="nx">number</span>
+<span class="p">}</span><span class="c1">
+</span><span class="c1">
+</span><span class="c1"># ---------------------------------------------------------------------------------------------------------------------
+</span><span class="c1"># OPTIONAL PARAMETERS
+</span><span class="c1"># These parameters have reasonable defaults.
+</span><span class="c1"># ---------------------------------------------------------------------------------------------------------------------
+</span><span class="c1"></span><span class="kr">
+</span><span class="kr">variable</span> <span class="s2">&#34;ami&#34;</span> <span class="p">{</span>
+  <span class="na">description</span> = <span class="s2">&#34;The AMI to run in the cluster&#34;</span>
+  <span class="na">type</span>        = <span class="nx">string</span>
+  <span class="na">default</span>     = <span class="s2">&#34;ami-0c55b159cbfafe1f0&#34;</span>
+<span class="p">}</span>
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-terraform" data-lang="terraform"><span class="c1"># outputs.tf
+</span><span class="c1"></span><span class="kr">
+</span><span class="kr">output</span> <span class="s2">&#34;alb_dns_name&#34;</span> <span class="p">{</span>
+  <span class="na">value</span>       = <span class="nb">module</span><span class="p">.</span><span class="nx">alb</span><span class="p">.</span><span class="nx">alb_dns_name</span>
+  <span class="na">description</span> = <span class="s2">&#34;The domain name of the load balancer&#34;</span>
+<span class="p">}</span>
+</code></pre></div><p>jack编写了一个通用模块：<code>web_cluster</code>（为了阅读方便省去了细节部分），其他团队可以调用这一模块。这个模块的作用是生成Load Balance和一族EC2实例（如下图所示）。这个模块像一个函数一样有输入参数和输出参数。<code>variables.tf</code>文件中定义了该模块的输入参数，它们分别是：<code>environment</code>、<code>min_size</code>和<code>max_size</code>。<code>outputs.tf</code>文件中定义了该模块的输出参数：<code>alb_dns_name</code>。<code>main.tf</code>文件中定义了具体的逻辑部分：<code>alb</code>和<code>asg</code>。也就是说使用模块<code>web_cluster</code>之后，会生成一个域名地址，用户可以通过该域名地址，访问网站服务。</p>
+<p>
+<img class="lazy" data-src="https://2cloudlab.com/images/blog/only-web-cluster.png" alt=""  />
+</p>
+<p>Jane</p>
+<p>Jane根据实施细节编写了模块<code>mysql_database</code>(<a href="https://github.com/2cloudlab/package_aws_web_service">完整源码</a>)，结果如下：</p>
+<div class="highlight"><pre class="chroma"><code class="language-terraform" data-lang="terraform"><span class="c1"># main.tf
+</span><span class="c1"></span><span class="kr">
+</span><span class="kr">resource</span> <span class="s2">&#34;aws_db_instance&#34;</span> <span class="s2">&#34;example&#34;</span> <span class="p">{</span>
+  <span class="na">identifier_prefix</span>   = <span class="s2">&#34;terraform-up-and-running&#34;</span>
+  <span class="na">engine</span>              = <span class="s2">&#34;mysql&#34;</span>
+  <span class="na">allocated_storage</span>   = <span class="m">10</span>
+  <span class="na">instance_class</span>      = <span class="s2">&#34;db.t2.micro&#34;</span>
+  <span class="na">name</span>                = <span class="nb">var</span><span class="p">.</span><span class="nx">db_name</span>
+  <span class="na">username</span>            = <span class="nb">var</span><span class="p">.</span><span class="nx">db_username</span>
+  <span class="na">password</span>            = <span class="nb">var</span><span class="p">.</span><span class="nx">db_password</span>
+  <span class="na">skip_final_snapshot</span> = <span class="kc">true</span>
+<span class="p">}</span>
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-terraform" data-lang="terraform"><span class="c1"># variables.tf
+</span><span class="c1">
+</span><span class="c1"># ---------------------------------------------------------------------------------------------------------------------
+</span><span class="c1"># REQUIRED PARAMETERS
+</span><span class="c1"># You must provide a value for each of these parameters.
+</span><span class="c1"># ---------------------------------------------------------------------------------------------------------------------
+</span><span class="c1"></span><span class="kr">
+</span><span class="kr">variable</span> <span class="s2">&#34;db_name&#34;</span> <span class="p">{</span>
+  <span class="na">description</span> = <span class="s2">&#34;The name to use for the database&#34;</span>
+  <span class="na">type</span>        = <span class="nx">string</span>
+<span class="p">}</span>
+<span class="kr">
+</span><span class="kr">variable</span> <span class="s2">&#34;db_username&#34;</span> <span class="p">{</span>
+  <span class="na">description</span> = <span class="s2">&#34;The username for the database&#34;</span>
+  <span class="na">type</span>        = <span class="nx">string</span>
+<span class="p">}</span>
+<span class="kr">
+</span><span class="kr">variable</span> <span class="s2">&#34;db_password&#34;</span> <span class="p">{</span>
+  <span class="na">description</span> = <span class="s2">&#34;The password for the database&#34;</span>
+  <span class="na">type</span>        = <span class="nx">string</span>
+<span class="p">}</span>
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-terraform" data-lang="terraform"><span class="c1"># outputs.tf
+</span><span class="c1"></span><span class="kr">
+</span><span class="kr">output</span> <span class="s2">&#34;address&#34;</span> <span class="p">{</span>
+  <span class="na">value</span>       = <span class="nx">aws_db_instance</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">address</span>
+  <span class="na">description</span> = <span class="s2">&#34;Connect to the database at this endpoint&#34;</span>
+<span class="p">}</span>
+<span class="kr">
+</span><span class="kr">output</span> <span class="s2">&#34;port&#34;</span> <span class="p">{</span>
+  <span class="na">value</span>       = <span class="nx">aws_db_instance</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">port</span>
+  <span class="na">description</span> = <span class="s2">&#34;The port the database is listening on&#34;</span>
+<span class="p">}</span>
+</code></pre></div><p>像Jack一样，Jane编写了一个通用模块：<code>mysql_database</code>（为了阅读方便省去了细节部分），其他团队可以调用这一模块。Jane和Jack根据规范，编写了统一格式的模块。格式统一的模块能够减少团队之间的障碍，促进工作顺利进行下去。调用Jane编写的模块会生成一个由AWS完全托管的MySQL数据库服务（如下图所示）。DevOps中的团队成员各司其职，都输出了相对独立的模块，因此，需要Tony将Jane和Jack的成果集成在一起才能部署网站应用并对外发布。</p>
+<p>
+<img class="lazy" data-src="https://2cloudlab.com/images/blog/only-mysql-database.png" alt=""  />
+</p>
+<h2 id="总结">总结</h2>
+<p>Terraform工具主要解决了创建资源和管理资源的问题，随着云计算的普及以及Terraform支持大多数云服务商，包括AWS、GCP、Azure Cloud和阿里云等，使得Terraform工具的使用场景更加丰富！使用Terraform工具的好处是：以统一的方式创建和管理资源，并引入了软件工程管理经验。DevOps工程师只需要编写脚本文件并使用Terraform执行它们，就可以创建和管理基础资源，这些资源构成了产品或服务所需的运行环境。将资源代码化(也就是Infrastructure as code)的好处是可以引入软件工程管理实践经验来更好地发布软件。这些经验包括版本控制、自动化测试、模块复用、Code Review和编写文档等。</p>
+<p>为了帮助企业打造世界级CICD，除了需要熟练掌握Terraform知识以外，还需要结合软件工程实践经验。因此，企业需要专门成立一个DevOps团队来服务于企业内部不同团队以及对外发布产品。当引入一个团队的时候，就需要考虑多人协作和规范的问题。使用Terraform工具所生成的真实环境有各种各样的依赖关系，任何一次局部修改，都有可能导致整个运行环境瘫痪，因此要严格隔离不同环境，比如使test、stage和prod环境相互独立，使每一位研发人员都拥有独立的云服务账号。除此之外DevOps要定义一些规范，这些规范不仅能够使团队内部达成共识，而且能够更加有效地使外部团队消化DevOps的输出成果，最终使得DevOps运动能够在企业内部顺利运转起来。</p>
+<p>在企业中实施DevOps是一个漫长的过程，这个过程涉及了多方面的内容。千里之行始于足下，建立统一的<a href="https://2cloudlab.com/portfolio/how-to-construct-enterprise-accounts/">用户管理体系</a>是打造世界级DevOps的良好开端。<a href="https://2cloudlab.com/blog/how-to-test-terraform-code/">&lt;让产品7*24小时持续服务用户&ndash;如何测试Terraform&gt;</a>能够确保Terraform脚本的质量，进而能够克服实施DevOps时所遇到的困难。</p>
+<p>本文介绍了企业内部如何高效使用Terraform工具，在企业内部使用Terraform工具的时候，严格执行以下几点原则能够帮助企业更加顺利地实施DevOps：</p>
+<ul>
+<li>给予研发人员充足的时间学习Terraform工具，尤其是掌握其中的Infrastructure as Code</li>
+<li>结合公司现实状况，独立所有运行环境、独立所有研发人员使用的账号。独立的好处是可以多人同时负责不同的模块，以及任何使某个环境瘫痪的操作不会影响到另外一个环境</li>
+<li>如果条件允许，在公司内部建立DevOps团队，建立DevOps团队的工作标准和工作流程，否则将DevOps的业务委托给专业的公司（比如<a href="https://2cloudlab.com/">2cloudlab.com</a>）</li>
+</ul>
+<p>看到这里，你会发现搭建世界级DevOps所需要的东西太多，有时甚至会不知所措。如果你正在为企业搭建DevOps但是不知如何前进，那么不妨以文章<a href="https://2cloudlab.com/portfolio/how-to-construct-enterprise-accounts/">&lt;如何构建企业级AWS账号体系&gt;</a>开启企业级DevOps之旅！</p>
+<p><em><strong><a href="https://2cloudlab.com/">2cloudlab.com</a>为企业准备产品的运行环境，只需要1天！</strong></em></p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://utteranc.es/client.js" repo="2cloudlab/comments" issue-term="pathname" theme="github-light"
+        crossorigin="anonymous" async>
+</script>
+
+
+<!-- Call To Action Section Start -->
+<section id="call-to-action">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2 class="title wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">听起来还不错 ？</h1>
+                    <p class="wow fadeInDown" data-wow-delay=".5s" data-wow-duration="500ms">如果你所在的企业遇到了以下问题：<br> 研发流程混乱不堪或者效率低下、经历了持续上升的运维成本、无法及时向用户发布新的服务或产品以及想使用云计算技术但缺乏经验！<br>那么，请毫不犹疑地</p>
+                    <a href="/contact" class="btn btn-default btn-contact wow fadeInDown" data-wow-delay=".7s" data-wow-duration="500ms">联系我们</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-- Call To Action Section End -->
+
+
+<!-- Footer Section Start -->
+<footer id="footer">
+    <div class="container">
+        <div class="row content-justify-between">
+            <div class="col-md-8 col-12 text-center text-lg-left text-md-left">
+                <p class="copyright">版权所有©:
+                    <span>
+                        <script>document.write(new Date().getFullYear())</script>
+                    </span> 上海漫步云端科技有限公司
+                    <a href="https://2cloudlab.com/" target="_blank">2cloudlab.com</a>.
+                    <br> 地址：上海市浦东区浦东南路 999 号新梅联合广场 1 期 32 层
+                    <br>
+                    邮箱：<a href="mailto:support@2cloudlab.com">support@2cloudlab.com</a>
+                </p>
+            </div>
+            <div class="col-md-4 col-12">
+                <!-- Social Media -->
+                <ul class="social text-center text-md-right text-lg-right">
+                    
+                    <li><a href="https://github.com/2cloudlab"><i class="ion-social-github"></i></a></li>
+                    
+                    <li><a href="https://www.linkedin.com/company/2cloudlab-com"><i class="ion-social-linkedin"></i></a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- footer section end -->
+
+<!-- jquery -->
+<script src="https://2cloudlab.com/plugins/jQurey/jquery.min.js"></script>
+<!-- Form Validation -->
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.form.js"></script>
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.validate.min.js"></script>
+<!-- slick slider -->
+<script src="https://2cloudlab.com/plugins/slick/slick.min.js"></script>
+<!-- bootstrap js -->
+<script src="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.js"></script>
+<!-- wow js -->
+<script src="https://2cloudlab.com/plugins/wow-js/wow.min.js"></script>
+<!-- slider js -->
+<script src="https://2cloudlab.com/plugins/slider/slider.js"></script>
+<!-- Fancybox -->
+<script src="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.js"></script>
+<!-- template main js -->
+
+<script src="https://2cloudlab.com/js/script.min.js"></script>
+<!-- google analitycs -->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-171018621-1', 'auto');
+    ga('send', 'pageview');
+</script></body>
+</html>

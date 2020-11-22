@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <!-- Basic Page Needs -->
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  
+  <meta name="description" content="在本文的示例中，我们将展示如何在DynamoDB中建立具有层级结构的数据（比如树状结构）。这个例子使用了大约25000个星巴克实体店的地址信息。你可以到[这里获取源码](https://github.com/alexdebrie/dynamodbguide.com/tree/master/examples/starbucks)来动手实践本文所提到的步骤。">
+  <meta name="author" content="2cloudlab">
+  <meta name="generator" content="Hugo 0.78.1" />
+  
+  <!-- Mobile Specific Metas -->
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>如何在DynamoDB中查询层级结构的数据</title>
+  <link rel="icon" href="https://2cloudlab.com/images/favicon.ico">
+
+  <!-- Twitter Bootstrs CSS -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.css">
+  <!-- Ionicons Fonts Css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/ionicons/ionicons.min.css">
+  <!-- animate css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/animate-css/animate.css">
+  <!-- Hero area slider css-->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slider/slider.css">
+  <!-- slick slider -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slick/slick.css">
+  <!-- Fancybox -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.css">
+  <!-- hover -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/hover/hover-min.css">
+  <!-- template main css file -->
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/style.min.css" integrity="" media="screen">
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/syntax.min.css" integrity="" media="screen">
+</head><body><section class="top-bar animated-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <a class="navbar-brand" href="https://2cloudlab.com/">
+                        <img src="https://2cloudlab.com/images/logo.png" alt="logo">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation"
+                        aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navigation">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                    href="https://2cloudlab.com/">首页</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/about">关于</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/service">服务</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/price">价格</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/blog">博客</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/nosql">NoSQL</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/contact">联系我们</a>
+                            </li>
+                            
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="global-page-header">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2>如何在DynamoDB中查询层级结构的数据</h2>
+                    <div class="portfolio-meta">
+                        <span>2020-03-12</span>|
+                        <span class="ion-pricetags"></span>
+                        <span>
+                            NoSQL, DynamoDB, Data-Intensive
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style type="text/css">
+    @media (min-width: 1200px) {
+        .post-container {
+            max-width: 800px;
+        }
+    }
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        display: block;
+        margin: auto;
+    }
+</style>
+
+<section class="single-post">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                
+                <div class="post-img">
+                    <img class="img-fluid lazy" alt="" data-src="https://2cloudlab.com/images/blog/hierarchical-data.png">
+                </div>
+                
+                <div class="post-content">
+                    <p>在本文的示例中，我们将展示如何在DynamoDB中建立具有层级结构的数据（比如树状结构）。这个例子使用了大约25000个星巴克实体店的地址信息。你可以到<a href="https://github.com/alexdebrie/dynamodbguide.com/tree/master/examples/starbucks">这里获取源码</a>来动手实践本文所提到的步骤。</p>
+<p>层级结构的数据经常在关系型数据库中使用，将数据以树状结构来表示，比如组织架构图或族谱就是这种类型的数据。在关系型数据库中，为了将这些层级结构的数据连接在一起，通常需要使用多个JOINs来完成。而在本文中，我们仅使用一张DynamoDB的表来建立这种数据结构，并提供了更快的查询性能。</p>
+<blockquote>
+<p>这个例子的灵感来自于Rick Houlihan在2017年的AWS reInvent上的研讨会，感兴趣的读者可以到<a href="https://youtu.be/jzeKPKpucS0?t=36m5s">这里一睹其风采</a>。</p>
+</blockquote>
+<h2 id="一些关于本文示例的基本信息">一些关于本文示例的基本信息</h2>
+<p>假设，我们是星巴克，一家跨国公司，门店遍布全球。现在，我们想把全球所有门店的信息存储在DynamoDB中，并希望能够快速查询以下信息：</p>
+<ul>
+<li>根据门店编号来获取对应的门店信息</li>
+<li>列举属于某个国家的所有门店信息</li>
+<li>列举一个州或一个省下的所有门店信息</li>
+<li>列举一个城市中所有门店信息</li>
+<li>列举一个区里所有门店信息</li>
+</ul>
+<p>第一种查询模式比较简单&ndash;就是那种key:value的关系，只需要给出门店编号，那么就能取到该门店的信息。剩余的4种查询模式就不是那么容易实现了。 当然，你可以创建4个<a href="https://2cloudlab.com/nosql/global-secondary-indexes/">全局附加索引</a>来分别支持这4种查询模式，也可以使用<a href="https://2cloudlab.com/nosql/filtering/">Filter表达式</a>来过滤出我们想要的数据，但是这2种方法并不高效，同时会消耗更多的读取能力，进而增加费用。</p>
+<p>为了解决以上提出的2个问题，我们可以借助该数据的层级信息以及仅使用一个全局附加索引来实现以上4种查询模式！接下来，让我们到<a href="https://www.kaggle.com/starbucks/store-locations">Kaggle获取遍布全球的星巴克门店数据</a>&ndash;大约25000条。获取之后需要将这些数据写入到我们的表中，并验证是否完全倒入！以下提到的代码片段<a href="https://github.com/alexdebrie/dynamodbguide.com/tree/master/examples/starbucks">摘自这里</a>。</p>
+<h2 id="准备工作">准备工作</h2>
+<p>为了运行以下示例，你需要下载之前提到的数据，并解压它，然后将CVS文件复制到你的工作目录，名称是directory.csv。除此之外，你还要安装Python以及Boto3框架，该框架是Python版本的AWS SDK。你可以运行指令<code>pip install boto3</code>来按照该框架。最后，有些例子使用了Click框架，该框架能够帮助你快速制定命令行接口，运行指令<code>pip install click</code>来安装它。</p>
+<h2 id="设计主键和插入数据">设计主键和插入数据</h2>
+<p>一切就绪之后，是时候创建表以及将数据插入到表中。</p>
+<p>首先，为表选择合适的主键。主键应该至少体现以下2点：</p>
+<ul>
+<li>它具有唯一性。也就是它能唯一识别每项数据</li>
+<li>它具有均匀分布的特性</li>
+</ul>
+<p>理想状态下，主键也需要满足至少一条查询模式。</p>
+<p>对于我们要处理的问题，将Store Number作为表的简单主键将是不错的选择。如果我们想要更新某个店铺的信息，那么肯定需要提供该店的Store Number。这符合查询模式的第一项：<strong>根据门店编号来获取对应的门店信息</strong>。除此之外，Store Number是均匀分布的。</p>
+<p>接着，我们需要考虑其余4种查询数据的模式&ndash;如何根据国家，州，城市，区号来获取对应的实体店信息？我们将很快在后面的内容中讨论这个问题，但是现在，我们只需要创建一个全局附加索引&quot;StoreLocationIndex&quot;，这些索引需要满足以下要求：</p>
+<ul>
+<li>将Country作为分区键（HASH key），用于指定实体店所在的国家</li>
+<li>排序键（RANGE key）为StateCityPostcode，它是一个由State, City和Postcode构成的字符串，其格式为<!-- raw HTML omitted -->#<!-- raw HTML omitted -->#<!-- raw HTML omitted -->。例如：一家位于Omaha，NE的店铺，该值应该是：NE#OMAHA#68144。</li>
+</ul>
+<p>为了创建这个表，则需要运行以下脚本文件。如果执行成功，则会输出以下信息：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ python create_table.py
+Table created successfully!
+</code></pre></div><p>接下来，将directory.csv文件中的数据加载到DynamoDB中。脚本文件<code>insert_items.py</code>将读取这个文件的数据，然后遍历所有数据项，并将每一项数据插入到DynamoDB中。注意：整个过程需要一些时间，因为大约有25000项数据。</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ python insert_items.py
+<span class="m">1000</span> locations written...
+<span class="m">2000</span> locations written...
+... &lt;snip&gt; ...
+<span class="m">24000</span> locations written...
+<span class="m">25000</span> locations written...
+</code></pre></div><p>让我们执行Scan语句来确保插入了25599条数据，如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ aws dynamodb scan <span class="se">\
+</span><span class="se"></span>    --table-name StarbucksLocations <span class="se">\
+</span><span class="se"></span>    --select COUNT <span class="se">\
+</span><span class="se"></span>    <span class="nv">$LOCAL</span>
+</code></pre></div><p>以上指令执行之后将返回25599条结果，如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">{</span>
+    <span class="s2">&#34;Count&#34;</span>: 25599,
+    <span class="s2">&#34;ScannedCount&#34;</span>: 25599,
+    <span class="s2">&#34;ConsumedCapacity&#34;</span>: null
+<span class="o">}</span>
+</code></pre></div><p>接下来，让我们查询一些数据！</p>
+<h2 id="根据store-number来获取实体店信息">根据Store Number来获取实体店信息</h2>
+<p>本文的一种获取实体店信息的模式是：给定一个Store Number，返回对应的实体店信息。这里我们将使用&quot;5860-29255&quot;作为Store Number。</p>
+<p>因为表的主键是Store Number，所以我们可以使用GetItem API来完成这类查询模式。</p>
+<p>运行脚本<code>get_store_location</code>，默认情况下，它将获取Store Number为&quot;5860-29255&quot;的实体店信息，如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ python get_store_location.py
+Attempting to retrieve store number 5860-29255...
+
+Store number found! Here<span class="s1">&#39;s your store:
+</span><span class="s1">
+</span><span class="s1">{&#39;</span>City<span class="s1">&#39;: {&#39;</span>S<span class="s1">&#39;: &#39;</span>Pasadena<span class="s1">&#39;},
+</span><span class="s1"> &#39;</span>Country<span class="s1">&#39;: {&#39;</span>S<span class="s1">&#39;: &#39;</span>US<span class="s1">&#39;},
+</span><span class="s1"> &#39;</span>Latitude<span class="s1">&#39;: {&#39;</span>S<span class="s1">&#39;: &#39;</span>34.16<span class="s1">&#39;},
+</span><span class="s1"> &#39;</span>Longitude<span class="s1">&#39;: {&#39;</span>S<span class="s1">&#39;: &#39;</span>-118.15<span class="s1">&#39;},
+</span><span class="s1"> &#39;</span>PhoneNumber<span class="s1">&#39;: {&#39;</span>S<span class="s1">&#39;: &#39;</span>626-440-9962<span class="s1">&#39;},
+</span><span class="s1"> &#39;</span>Postcode<span class="s1">&#39;: {&#39;</span>S<span class="s1">&#39;: &#39;</span>911033383<span class="s1">&#39;},
+</span><span class="s1"> &#39;</span>State<span class="s1">&#39;: {&#39;</span>S<span class="s1">&#39;: &#39;</span>CA<span class="s1">&#39;},
+</span><span class="s1"> &#39;</span>StateCityPostcode<span class="s1">&#39;: {&#39;</span>S<span class="s1">&#39;: &#39;</span>CA#PASADENA#911033383<span class="s1">&#39;},
+</span><span class="s1"> &#39;</span>StoreName<span class="s1">&#39;: {&#39;</span>S<span class="s1">&#39;: &#39;</span>Fair Oaks <span class="p">&amp;</span> Orange Grove, Pasadena<span class="s1">&#39;},
+</span><span class="s1"> &#39;</span>StoreNumber<span class="s1">&#39;: {&#39;</span>S<span class="s1">&#39;: &#39;</span>5860-29255<span class="s1">&#39;},
+</span><span class="s1"> &#39;</span>StreetAddress<span class="s1">&#39;: {&#39;</span>S<span class="s1">&#39;: &#39;</span><span class="m">671</span> N. Fair Oaks Avenue<span class="err">&#39;</span><span class="o">}}</span>
+</code></pre></div><p>从以上结果可知，返回的实体店信息其对应的Store Number就是&quot;5860-29255&quot;。如果你想获取其它实体店，那么使用选项<code>--store-number</code>，根据以下示例来实践：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ python get_store_location.py --store-number 3513-125945
+Attempting to retrieve store number 3513-125945...
+
+Store number found! Here<span class="s1">&#39;s your store:
+</span><span class="s1">
+</span><span class="s1">{&#39;</span>City<span class="s1">&#39;: {&#39;</span>S<span class="s1">&#39;: &#39;</span>Anchorage<span class="s1">&#39;},
+</span><span class="s1"> &#39;</span>Country<span class="s1">&#39;: {&#39;</span>S<span class="s1">&#39;: &#39;</span>US<span class="s1">&#39;},
+</span><span class="s1"> &#39;</span>Latitude<span class="s1">&#39;: {&#39;</span>S<span class="s1">&#39;: &#39;</span>61.21<span class="s1">&#39;},
+</span><span class="s1"> &#39;</span>Longitude<span class="s1">&#39;: {&#39;</span>S<span class="s1">&#39;: &#39;</span>-149.78<span class="s1">&#39;},
+</span><span class="s1"> &#39;</span>PhoneNumber<span class="s1">&#39;: {&#39;</span>S<span class="s1">&#39;: &#39;</span>907-339-0900<span class="s1">&#39;},
+</span><span class="s1"> &#39;</span>Postcode<span class="s1">&#39;: {&#39;</span>S<span class="s1">&#39;: &#39;</span>995042300<span class="s1">&#39;},
+</span><span class="s1"> &#39;</span>State<span class="s1">&#39;: {&#39;</span>S<span class="s1">&#39;: &#39;</span>AK<span class="s1">&#39;},
+</span><span class="s1"> &#39;</span>StateCityPostcode<span class="s1">&#39;: {&#39;</span>S<span class="s1">&#39;: &#39;</span>AK#ANCHORAGE#995042300<span class="s1">&#39;},
+</span><span class="s1"> &#39;</span>StoreName<span class="s1">&#39;: {&#39;</span>S<span class="s1">&#39;: &#39;</span>Safeway-Anchorage <span class="c1">#1809&#39;},</span>
+ <span class="s1">&#39;StoreNumber&#39;</span>: <span class="o">{</span><span class="s1">&#39;S&#39;</span>: <span class="s1">&#39;3513-125945&#39;</span><span class="o">}</span>,
+ <span class="s1">&#39;StreetAddress&#39;</span>: <span class="o">{</span><span class="s1">&#39;S&#39;</span>: <span class="s1">&#39;5600 Debarr Rd Ste 9&#39;</span><span class="o">}}</span>
+</code></pre></div><h2 id="聚合查询">聚合查询</h2>
+<p>现在让我们看看如何支持以上剩余的4种查询模式。为了支持这4种查询模式，则需要借助之前创建的全局附加索引-&ldquo;StoreLocationIndex&rdquo;。</p>
+<p>这里的数据，其层级信息非常关键。在一个州内的所有门店信息肯定属于同一个国家，同一个城市中的所有店铺肯定属于同一个州，同一个区下面的所有店铺肯定属于同一个城市。</p>
+<p>由于这种层级关系，我们可以借助分区键以及<code>begins_with()</code>函数来实现查找某一层下的所有店铺。</p>
+<p>让我们举例说明：有2家店铺，一家位于Pasadena，另外一家位于San Francisco。此时第一家店铺所对应的StateCityPostcode是CA#PASADENA#911033383，而第二家店铺，其StateCityPostcode是CA#SAN FRANCISCO#94158。这2家店铺都开设在同一个州CA，但在不同的城市。</p>
+<p>如果我想获取所有加利福尼亚州的所有店铺，那么我将使用以下<a href="https://2cloudlab.com/nosql/expression-basics/">关键字表达式</a>：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">Country</span> <span class="o">=</span> <span class="s2">&#34;US&#34;</span> AND begins_with<span class="o">(</span>StateCityPostcode, <span class="s2">&#34;CA&#34;</span><span class="o">)</span>
+</code></pre></div><p>如果我想查询某个城市的所有门店，应该怎么做？以下给出了答案：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">Country</span> <span class="o">=</span> <span class="s2">&#34;US&#34;</span> AND begins_with<span class="o">(</span>StateCityPostcode, <span class="s2">&#34;CA#SAN FRANCISCO&#34;</span><span class="o">)</span>
+</code></pre></div><p>最后，如果我想根据区域来获取门店信息，那么可以像下面一样：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">Country</span> <span class="o">=</span> <span class="s2">&#34;US&#34;</span> AND begins_with<span class="o">(</span>StateCityPostcode, <span class="s2">&#34;CA#SAN FRANCISCO#94158&#34;</span><span class="o">)</span>
+</code></pre></div><p>为了能帮助你快速执行以上指令，你可以使用脚本文件<code>query_store_locations.py</code>。</p>
+<p>首先，获取属于US内所有的门店信息。为了防止返回的结果填满整个命令行窗口，我在以下示例中使用了&ndash;count选项来仅返回门店数量：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ python query_store_locations.py --country <span class="s1">&#39;US&#39;</span> --count
+Querying locations in country US.
+No statecitypostcode specified. Retrieving all results in Country.
+
+Retrieved <span class="m">4648</span> locations.
+</code></pre></div><p>注意，以上信息显示了US下一共有4648家星巴克门店。</p>
+<p>接下来，让我们把查询范围缩小到州级别。比如，试一下查询Nebraska州内所有星巴克门店：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ python query_store_locations.py --country <span class="s1">&#39;US&#39;</span> --state <span class="s1">&#39;NE&#39;</span> --count
+Querying locations in country US, state NE.
+The key expression includes a begins_with<span class="o">()</span> <span class="k">function</span> with input of <span class="s1">&#39;NE&#39;</span>
+
+Retrieved <span class="m">58</span> locations.
+</code></pre></div><p>以上示例显示了我们使用关键字表达式以及begins_with()函数来查找州代号为&quot;NE&quot;的所有店铺信息（总共有58家）。</p>
+<p>当然，我们可以再将查询范围缩小到城市Omaha：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ python query_store_locations.py --country <span class="s1">&#39;US&#39;</span> --state <span class="s1">&#39;NE&#39;</span> --city <span class="s1">&#39;Omaha&#39;</span> --count
+Querying locations in country US, state NE, city Omaha.
+The key expression includes a begins_with<span class="o">()</span> <span class="k">function</span> with input of <span class="s1">&#39;NE#OMAHA&#39;</span>
+
+Retrieved <span class="m">30</span> locations.
+</code></pre></div><p>此时，我们得到了30家门店。最后，让我们看看查找某一个区下的所有门店。由于返回的结果很少，因此这一次我将去掉&ndash;count选项，如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ python query_store_locations.py --country <span class="s1">&#39;US&#39;</span> --state <span class="s1">&#39;NE&#39;</span> --city <span class="s1">&#39;Omaha&#39;</span> --postcode <span class="s1">&#39;68144&#39;</span>
+Querying locations in country US, state NE, city Omaha, postcode 68144.
+The key expression includes a begins_with<span class="o">()</span> <span class="k">function</span> with input of <span class="s1">&#39;NE#OMAHA#68144&#39;</span>
+
+<span class="o">{</span><span class="s1">&#39;Count&#39;</span>: 2,
+ <span class="s1">&#39;Items&#39;</span>: <span class="o">[{</span><span class="s1">&#39;City&#39;</span>: <span class="o">{</span><span class="s1">&#39;S&#39;</span>: <span class="s1">&#39;OMAHA&#39;</span><span class="o">}</span>,
+            <span class="s1">&#39;Country&#39;</span>: <span class="o">{</span><span class="s1">&#39;S&#39;</span>: <span class="s1">&#39;US&#39;</span><span class="o">}</span>,
+            <span class="s1">&#39;Latitude&#39;</span>: <span class="o">{</span><span class="s1">&#39;S&#39;</span>: <span class="s1">&#39;41.23&#39;</span><span class="o">}</span>,
+            <span class="s1">&#39;Longitude&#39;</span>: <span class="o">{</span><span class="s1">&#39;S&#39;</span>: <span class="s1">&#39;-96.14&#39;</span><span class="o">}</span>,
+            <span class="s1">&#39;PhoneNumber&#39;</span>: <span class="o">{</span><span class="s1">&#39;S&#39;</span>: <span class="s1">&#39;402-334-1415&#39;</span><span class="o">}</span>,
+            <span class="s1">&#39;Postcode&#39;</span>: <span class="o">{</span><span class="s1">&#39;S&#39;</span>: <span class="s1">&#39;68144&#39;</span><span class="o">}</span>,
+            <span class="s1">&#39;State&#39;</span>: <span class="o">{</span><span class="s1">&#39;S&#39;</span>: <span class="s1">&#39;NE&#39;</span><span class="o">}</span>,
+            <span class="s1">&#39;StateCityPostcode&#39;</span>: <span class="o">{</span><span class="s1">&#39;S&#39;</span>: <span class="s1">&#39;NE#OMAHA#68144&#39;</span><span class="o">}</span>,
+            <span class="s1">&#39;StoreName&#39;</span>: <span class="o">{</span><span class="s1">&#39;S&#39;</span>: <span class="s1">&#39;Family Fare 3784 Omaha&#39;</span><span class="o">}</span>,
+            <span class="s1">&#39;StoreNumber&#39;</span>: <span class="o">{</span><span class="s1">&#39;S&#39;</span>: <span class="s1">&#39;48135-261124&#39;</span><span class="o">}</span>,
+            <span class="s1">&#39;StreetAddress&#39;</span>: <span class="o">{</span><span class="s1">&#39;S&#39;</span>: <span class="s1">&#39;14444 W. CENTER RD., Westwood Plaza&#39;</span><span class="o">}}</span>,
+           <span class="o">{</span><span class="s1">&#39;City&#39;</span>: <span class="o">{</span><span class="s1">&#39;S&#39;</span>: <span class="s1">&#39;Omaha&#39;</span><span class="o">}</span>,
+            <span class="s1">&#39;Country&#39;</span>: <span class="o">{</span><span class="s1">&#39;S&#39;</span>: <span class="s1">&#39;US&#39;</span><span class="o">}</span>,
+            <span class="s1">&#39;Latitude&#39;</span>: <span class="o">{</span><span class="s1">&#39;S&#39;</span>: <span class="s1">&#39;41.23&#39;</span><span class="o">}</span>,
+            <span class="s1">&#39;Longitude&#39;</span>: <span class="o">{</span><span class="s1">&#39;S&#39;</span>: <span class="s1">&#39;-96.1&#39;</span><span class="o">}</span>,
+            <span class="s1">&#39;PhoneNumber&#39;</span>: <span class="o">{</span><span class="s1">&#39;S&#39;</span>: <span class="s1">&#39;4027785900&#39;</span><span class="o">}</span>,
+            <span class="s1">&#39;Postcode&#39;</span>: <span class="o">{</span><span class="s1">&#39;S&#39;</span>: <span class="s1">&#39;681443957&#39;</span><span class="o">}</span>,
+            <span class="s1">&#39;State&#39;</span>: <span class="o">{</span><span class="s1">&#39;S&#39;</span>: <span class="s1">&#39;NE&#39;</span><span class="o">}</span>,
+            <span class="s1">&#39;StateCityPostcode&#39;</span>: <span class="o">{</span><span class="s1">&#39;S&#39;</span>: <span class="s1">&#39;NE#OMAHA#681443957&#39;</span><span class="o">}</span>,
+            <span class="s1">&#39;StoreName&#39;</span>: <span class="o">{</span><span class="s1">&#39;S&#39;</span>: <span class="s1">&#39;125th &amp; W. Center Rd.&#39;</span><span class="o">}</span>,
+            <span class="s1">&#39;StoreNumber&#39;</span>: <span class="o">{</span><span class="s1">&#39;S&#39;</span>: <span class="s1">&#39;2651-53179&#39;</span><span class="o">}</span>,
+            <span class="s1">&#39;StreetAddress&#39;</span>: <span class="o">{</span><span class="s1">&#39;S&#39;</span>: <span class="s1">&#39;12245 West Center Rd.&#39;</span><span class="o">}}]</span>,
+ <span class="s1">&#39;ResponseMetadata&#39;</span>: <span class="o">{</span><span class="s1">&#39;HTTPHeaders&#39;</span>: <span class="o">{</span><span class="s1">&#39;content-length&#39;</span>: <span class="s1">&#39;738&#39;</span>,
+                                      <span class="s1">&#39;content-type&#39;</span>: <span class="s1">&#39;application/x-amz-json-1.0&#39;</span>,
+                                      <span class="s1">&#39;server&#39;</span>: <span class="s1">&#39;Jetty(8.1.12.v20130726)&#39;</span>,
+                                      <span class="s1">&#39;x-amz-crc32&#39;</span>: <span class="s1">&#39;2237738683&#39;</span>,
+                                      <span class="s1">&#39;x-amzn-requestid&#39;</span>: <span class="s1">&#39;5acf463b-6341-45b7-a485-dd2860845d97&#39;</span><span class="o">}</span>,
+                      <span class="s1">&#39;HTTPStatusCode&#39;</span>: 200,
+                      <span class="s1">&#39;RequestId&#39;</span>: <span class="s1">&#39;5acf463b-6341-45b7-a485-dd2860845d97&#39;</span>,
+                      <span class="s1">&#39;RetryAttempts&#39;</span>: 0<span class="o">}</span>,
+ <span class="s1">&#39;ScannedCount&#39;</span>: 2<span class="o">}</span>
+</code></pre></div><p>我们的关键字表达式使用了NE#OMAHA#68144作为判断依据，其返回结果只有2家门店信息。每家信息都十分全。</p>
+<p>你可以继续使用<code>query_store_locations.py</code>脚本来实验其他门店。如果不知道如何使用该脚本，那么可以使用<code>--help</code>选项来查看使用说明，如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ python query_store_locations.py --help
+Usage: query_store_locations.py <span class="o">[</span>OPTIONS<span class="o">]</span>
+
+Options:
+  --country TEXT      Country <span class="k">for</span> stores to query. Default is <span class="s1">&#39;US&#39;</span>.
+  --state TEXT        State abbreviation <span class="k">for</span> stores to query. E.g.: <span class="s1">&#39;NE&#39;</span>
+  --city TEXT         City <span class="k">for</span> stores to query. E.g.: <span class="s1">&#39;Omaha&#39;</span>
+  --postcode TEXT     Post code <span class="k">for</span> stores to query. E.g.: <span class="s1">&#39;68144&#39;</span>
+  --default-state     Use defaults to query at state level.
+  --default-city      Use defaults to query at city level.
+  --default-postcode  Use defaults to query at post code level.
+  --count             Only show counts of items.
+  --help              Show this message and exit.
+</code></pre></div><blockquote>
+<p>如果对以上例子还有不明白的地方，那么给我<a href="https://twitter.com/alexbdebrie">留言或者发邮件给我</a>！</p>
+</blockquote>
+<ul>
+<li><a href="https://www.dynamodbguide.com/hierarchical-data">原文链接</a></li>
+</ul>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://utteranc.es/client.js" repo="2cloudlab/comments" issue-term="pathname" theme="github-light"
+        crossorigin="anonymous" async>
+</script>
+
+
+<!-- Call To Action Section Start -->
+<section id="call-to-action">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2 class="title wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">听起来还不错 ？</h1>
+                    <p class="wow fadeInDown" data-wow-delay=".5s" data-wow-duration="500ms">如果你所在的企业遇到了以下问题：<br> 研发流程混乱不堪或者效率低下、经历了持续上升的运维成本、无法及时向用户发布新的服务或产品以及想使用云计算技术但缺乏经验！<br>那么，请毫不犹疑地</p>
+                    <a href="/contact" class="btn btn-default btn-contact wow fadeInDown" data-wow-delay=".7s" data-wow-duration="500ms">联系我们</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-- Call To Action Section End -->
+
+
+<!-- Footer Section Start -->
+<footer id="footer">
+    <div class="container">
+        <div class="row content-justify-between">
+            <div class="col-md-8 col-12 text-center text-lg-left text-md-left">
+                <p class="copyright">版权所有©:
+                    <span>
+                        <script>document.write(new Date().getFullYear())</script>
+                    </span> 上海漫步云端科技有限公司
+                    <a href="https://2cloudlab.com/" target="_blank">2cloudlab.com</a>.
+                    <br> 地址：上海市浦东区浦东南路 999 号新梅联合广场 1 期 32 层
+                    <br>
+                    邮箱：<a href="mailto:support@2cloudlab.com">support@2cloudlab.com</a>
+                </p>
+            </div>
+            <div class="col-md-4 col-12">
+                <!-- Social Media -->
+                <ul class="social text-center text-md-right text-lg-right">
+                    
+                    <li><a href="https://github.com/2cloudlab"><i class="ion-social-github"></i></a></li>
+                    
+                    <li><a href="https://www.linkedin.com/company/2cloudlab-com"><i class="ion-social-linkedin"></i></a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- footer section end -->
+
+<!-- jquery -->
+<script src="https://2cloudlab.com/plugins/jQurey/jquery.min.js"></script>
+<!-- Form Validation -->
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.form.js"></script>
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.validate.min.js"></script>
+<!-- slick slider -->
+<script src="https://2cloudlab.com/plugins/slick/slick.min.js"></script>
+<!-- bootstrap js -->
+<script src="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.js"></script>
+<!-- wow js -->
+<script src="https://2cloudlab.com/plugins/wow-js/wow.min.js"></script>
+<!-- slider js -->
+<script src="https://2cloudlab.com/plugins/slider/slider.js"></script>
+<!-- Fancybox -->
+<script src="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.js"></script>
+<!-- template main js -->
+
+<script src="https://2cloudlab.com/js/script.min.js"></script>
+<!-- google analitycs -->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-171018621-1', 'auto');
+    ga('send', 'pageview');
+</script></body>
+</html>

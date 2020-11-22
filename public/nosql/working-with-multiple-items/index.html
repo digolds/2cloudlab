@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <!-- Basic Page Needs -->
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  
+  <meta name="description" content="在过去的章节里，我们一次只能操作一项数据--比如插入，查找，更新以及删除单项数据。而在这篇文章里，我们将一次同时操作多项数据。从这章开始，我们将创建一张具有复合主键的表，并在该表中同时操作多项数据。">
+  <meta name="author" content="2cloudlab">
+  <meta name="generator" content="Hugo 0.78.1" />
+  
+  <!-- Mobile Specific Metas -->
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>如何在DynamoDB中同时操作多项数据</title>
+  <link rel="icon" href="https://2cloudlab.com/images/favicon.ico">
+
+  <!-- Twitter Bootstrs CSS -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.css">
+  <!-- Ionicons Fonts Css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/ionicons/ionicons.min.css">
+  <!-- animate css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/animate-css/animate.css">
+  <!-- Hero area slider css-->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slider/slider.css">
+  <!-- slick slider -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slick/slick.css">
+  <!-- Fancybox -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.css">
+  <!-- hover -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/hover/hover-min.css">
+  <!-- template main css file -->
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/style.min.css" integrity="" media="screen">
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/syntax.min.css" integrity="" media="screen">
+</head><body><section class="top-bar animated-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <a class="navbar-brand" href="https://2cloudlab.com/">
+                        <img src="https://2cloudlab.com/images/logo.png" alt="logo">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation"
+                        aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navigation">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                    href="https://2cloudlab.com/">首页</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/about">关于</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/service">服务</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/price">价格</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/blog">博客</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/nosql">NoSQL</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/contact">联系我们</a>
+                            </li>
+                            
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="global-page-header">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2>如何在DynamoDB中同时操作多项数据</h2>
+                    <div class="portfolio-meta">
+                        <span>2020-02-26</span>|
+                        <span class="ion-pricetags"></span>
+                        <span>
+                            NoSQL, DynamoDB, Data-Intensive
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style type="text/css">
+    @media (min-width: 1200px) {
+        .post-container {
+            max-width: 800px;
+        }
+    }
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        display: block;
+        margin: auto;
+    }
+</style>
+
+<section class="single-post">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                
+                <div class="post-img">
+                    <img class="img-fluid lazy" alt="" data-src="https://2cloudlab.com/images/blog/working-with-multiple-items.png">
+                </div>
+                
+                <div class="post-content">
+                    <p>在过去的章节里，我们一次只能操作一项数据&ndash;比如<a href="https://2cloudlab.com/nosql/inserting-retrieving-items/">插入，查找</a>，<a href="https://2cloudlab.com/nosql/updating-deleting-items/">更新以及删除单项数据</a>。而在这篇文章里，我们将一次同时操作多项数据。从这章开始，我们将创建一张具有复合主键的表，并在该表中同时操作多项数据。</p>
+<p><a href="https://2cloudlab.com/nosql/anatomy-of-an-item/">复合主键</a>对于DynamoDB而言非常有用。它允许你通过一个查询操作就能获取一组相关的数据项，除此之外，它还有其它强大的用途。</p>
+<p>本文将创建一张具有复合主键的表。然后我们将使用BatchWriteItem API来批量生成多项数据。后续的几篇文章将使用<a href="https://2cloudlab.com/nosql/querying/">Query</a>和<a href="https://2cloudlab.com/nosql/scans/">Scan</a> API作用到这些数据。</p>
+<h2 id="创建表">创建表</h2>
+<p>创建一张具有复合主键的表<a href="https://2cloudlab.com/nosql/inserting-retrieving-items/">与创建一张具有简单主键的表</a>类似，都需要定义属性和key schema。不同的是，你需要指定2个属性构成复合主键，而不是1个。 然后你需要指定其中一个属性是分区键，另外一个属性是排序键。</p>
+<p>分区键决定了你的数据是如何划分的，而排序键则决定了具有相同分期键的数据项是有序的。分区键尤其重要-当使用Query操作时，你只能使用分区键。分区键与排序键组合在一起可以建立一对多的数据模型-因为一个相同的分区键下，可以有多个不同的排序键。</p>
+<p>每当需要基于复合主键来对数据建模时，可以根据以下句子来填写空格处，最终构建正确的查询模式：</p>
+<blockquote>
+<p>&ldquo;Give me all of the ____ from a particular ___.&rdquo;</p>
+</blockquote>
+<p>放入第一个空格的属性应该是排序键，而放到最后一个空格的属性则是分区键。在以下示例中，我们将创建一张即包含User类型数据，同时也会包含Order类型数据的表：&ldquo;UserOrdersTable&rdquo;，其中每个User可以包含多个Orders。按照以上句子来构建查询模型，其最终的结果是：&ldquo;返回该Username的所有OrderIds&rdquo;。基于这句话，可以得出：Username是分区键，而OrderId则是排序键。</p>
+<p>为了创建&quot;UserOrdersTable&quot;，需要使用CreateTable API：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ aws dynamodb create-table <span class="se">\
+</span><span class="se"></span>    --table-name UserOrdersTable <span class="se">\
+</span><span class="se"></span>    --attribute-definitions <span class="s1">&#39;[
+</span><span class="s1">      {
+</span><span class="s1">          &#34;AttributeName&#34;: &#34;Username&#34;,
+</span><span class="s1">          &#34;AttributeType&#34;: &#34;S&#34;
+</span><span class="s1">      },
+</span><span class="s1">      {
+</span><span class="s1">          &#34;AttributeName&#34;: &#34;OrderId&#34;,
+</span><span class="s1">          &#34;AttributeType&#34;: &#34;S&#34;
+</span><span class="s1">      }
+</span><span class="s1">    ]&#39;</span> <span class="se">\
+</span><span class="se"></span>    --key-schema <span class="s1">&#39;[
+</span><span class="s1">      {
+</span><span class="s1">          &#34;AttributeName&#34;: &#34;Username&#34;,
+</span><span class="s1">          &#34;KeyType&#34;: &#34;HASH&#34;
+</span><span class="s1">      },
+</span><span class="s1">      {
+</span><span class="s1">          &#34;AttributeName&#34;: &#34;OrderId&#34;,
+</span><span class="s1">          &#34;KeyType&#34;: &#34;RANGE&#34;
+</span><span class="s1">      }
+</span><span class="s1">    ]&#39;</span> <span class="se">\
+</span><span class="se"></span>    --provisioned-throughput <span class="s1">&#39;{
+</span><span class="s1">      &#34;ReadCapacityUnits&#34;: 1,
+</span><span class="s1">      &#34;WriteCapacityUnits&#34;: 1
+</span><span class="s1">    }&#39;</span> <span class="se">\
+</span><span class="se"></span>    <span class="nv">$LOCAL</span>
+</code></pre></div><p>返回的结果如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">{</span>
+    <span class="s2">&#34;TableDescription&#34;</span>: <span class="o">{</span>
+        <span class="s2">&#34;TableArn&#34;</span>: <span class="s2">&#34;arn:aws:dynamodb:ddblocal:000000000000:table/UserOrdersTable&#34;</span>,
+        <span class="s2">&#34;AttributeDefinitions&#34;</span>: <span class="o">[</span>
+            <span class="o">{</span>
+                <span class="s2">&#34;AttributeName&#34;</span>: <span class="s2">&#34;Username&#34;</span>,
+                <span class="s2">&#34;AttributeType&#34;</span>: <span class="s2">&#34;S&#34;</span>
+            <span class="o">}</span>,
+            <span class="o">{</span>
+                <span class="s2">&#34;AttributeName&#34;</span>: <span class="s2">&#34;OrderId&#34;</span>,
+                <span class="s2">&#34;AttributeType&#34;</span>: <span class="s2">&#34;S&#34;</span>
+            <span class="o">}</span>
+        <span class="o">]</span>,
+        <span class="s2">&#34;ProvisionedThroughput&#34;</span>: <span class="o">{</span>
+            <span class="s2">&#34;NumberOfDecreasesToday&#34;</span>: 0,
+            <span class="s2">&#34;WriteCapacityUnits&#34;</span>: 1,
+            <span class="s2">&#34;LastIncreaseDateTime&#34;</span>: 0.0,
+            <span class="s2">&#34;ReadCapacityUnits&#34;</span>: 1,
+            <span class="s2">&#34;LastDecreaseDateTime&#34;</span>: 0.0
+        <span class="o">}</span>,
+        <span class="s2">&#34;TableSizeBytes&#34;</span>: 0,
+        <span class="s2">&#34;TableName&#34;</span>: <span class="s2">&#34;UserOrdersTable&#34;</span>,
+        <span class="s2">&#34;TableStatus&#34;</span>: <span class="s2">&#34;ACTIVE&#34;</span>,
+        <span class="s2">&#34;KeySchema&#34;</span>: <span class="o">[</span>
+            <span class="o">{</span>
+                <span class="s2">&#34;KeyType&#34;</span>: <span class="s2">&#34;HASH&#34;</span>,
+                <span class="s2">&#34;AttributeName&#34;</span>: <span class="s2">&#34;Username&#34;</span>
+            <span class="o">}</span>,
+            <span class="o">{</span>
+                <span class="s2">&#34;KeyType&#34;</span>: <span class="s2">&#34;RANGE&#34;</span>,
+                <span class="s2">&#34;AttributeName&#34;</span>: <span class="s2">&#34;OrderId&#34;</span>
+            <span class="o">}</span>
+        <span class="o">]</span>,
+        <span class="s2">&#34;ItemCount&#34;</span>: 0,
+        <span class="s2">&#34;CreationDateTime&#34;</span>: 1514657981.297
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><p>这有点类似我们之前创建的&quot;UsersTable&quot;，只不过，这次我们还添加了分区键&quot;OrderId&quot;。</p>
+<h2 id="批量写入多项数据">批量写入多项数据</h2>
+<p>到目前为止，我们已经创建了表&quot;UserOrdersTable&quot;。为了同时操作多项数据，接下来我们将向该表写入多项数据。有一种批量写入多项数据的方式是借助BatchWriteItem API。这个API能让你在一次请求中最多同时插入或者删除25项数据。借助这个API，你甚至能在同一请求中操作不同的表。</p>
+<p>然而使用BatchWriteAPI会有一些限制。首先，你无法在其中使用UpdateItem API，因为UpdateItem只能单独使用。其次，你无法使用条件表达式。</p>
+<p>当执行批量操作时，失败的结果有2种。其中一种是：非法参数导致整个操作失败的错误。比如试图向一张不存在的表中插入数据，试图写入超过25项数据或者写入的数据量超过了限制。</p>
+<p>另外一种：一项或多项数据的插入是失败的。 这是一种比较常见的错误，比如你的操作超出了表的写入限制或AWS内部的错误。如果时这种错误，那么返回的结果将返回那些没有执行成功的数据项，而这些数据项将放置在&quot;UnprocessedItems&quot;字段中。</p>
+<p>下面这个示例展示了BatchWriteItem的用法，它将向&quot;UserOrdersTable&quot;中插入25项数据。每项数据不仅有&quot;Username&quot;属性，还有&quot;OrderId&quot;属性。OrderId属性的值是时间戳，格式如：<!-- raw HTML omitted -->-<!-- raw HTML omitted -->。除此之外还有Amount属性，该属性描述了订单额度。</p>
+<p>在<a href="https://2cloudlab.com/nosql/querying/">下一篇文章中</a>，我们将基于插入的数据项来实践多项数据的查询操作。</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ aws dynamodb batch-write-item <span class="se">\
+</span><span class="se"></span>    --request-items <span class="s1">&#39;{
+</span><span class="s1">        &#34;UserOrdersTable&#34;: [
+</span><span class="s1">            {
+</span><span class="s1">                &#34;PutRequest&#34;: {
+</span><span class="s1">                    &#34;Item&#34;: {
+</span><span class="s1">                        &#34;Username&#34;: {&#34;S&#34;: &#34;alexdebrie&#34;},
+</span><span class="s1">                        &#34;OrderId&#34;: {&#34;S&#34;: &#34;20160630-12928&#34;},
+</span><span class="s1">                        &#34;Amount&#34;: {&#34;N&#34;: &#34;142.23&#34;}
+</span><span class="s1">                    }
+</span><span class="s1">                }
+</span><span class="s1">            },
+</span><span class="s1">            {
+</span><span class="s1">                &#34;PutRequest&#34;: {
+</span><span class="s1">                    &#34;Item&#34;: {
+</span><span class="s1">                        &#34;Username&#34;: {&#34;S&#34;: &#34;daffyduck&#34;},
+</span><span class="s1">                        &#34;OrderId&#34;: {&#34;S&#34;: &#34;20170608-10171&#34;},
+</span><span class="s1">                        &#34;Amount&#34;: {&#34;N&#34;: &#34;18.95&#34;}
+</span><span class="s1">                    }
+</span><span class="s1">                }
+</span><span class="s1">            },
+</span><span class="s1">            {
+</span><span class="s1">                &#34;PutRequest&#34;: {
+</span><span class="s1">                    &#34;Item&#34;: {
+</span><span class="s1">                        &#34;Username&#34;: {&#34;S&#34;: &#34;daffyduck&#34;},
+</span><span class="s1">                        &#34;OrderId&#34;: {&#34;S&#34;: &#34;20170609-25875&#34;},
+</span><span class="s1">                        &#34;Amount&#34;: {&#34;N&#34;: &#34;116.86&#34;}
+</span><span class="s1">                    }
+</span><span class="s1">                }
+</span><span class="s1">            },
+</span><span class="s1">            {
+</span><span class="s1">                &#34;PutRequest&#34;: {
+</span><span class="s1">                    &#34;Item&#34;: {
+</span><span class="s1">                        &#34;Username&#34;: {&#34;S&#34;: &#34;daffyduck&#34;},
+</span><span class="s1">                        &#34;OrderId&#34;: {&#34;S&#34;: &#34;20160630-28176&#34;},
+</span><span class="s1">                        &#34;Amount&#34;: {&#34;N&#34;: &#34;88.30&#34;}
+</span><span class="s1">                    }
+</span><span class="s1">                }
+</span><span class="s1">            },
+</span><span class="s1">            {
+</span><span class="s1">                &#34;PutRequest&#34;: {
+</span><span class="s1">                    &#34;Item&#34;: {
+</span><span class="s1">                        &#34;Username&#34;: {&#34;S&#34;: &#34;yosemitesam&#34;},
+</span><span class="s1">                        &#34;OrderId&#34;: {&#34;S&#34;: &#34;20170609-18618&#34;},
+</span><span class="s1">                        &#34;Amount&#34;: {&#34;N&#34;: &#34;122.45&#34;}
+</span><span class="s1">                    }
+</span><span class="s1">                }
+</span><span class="s1">            },
+</span><span class="s1">            {
+</span><span class="s1">                &#34;PutRequest&#34;: {
+</span><span class="s1">                    &#34;Item&#34;: {
+</span><span class="s1">                        &#34;Username&#34;: {&#34;S&#34;: &#34;alexdebrie&#34;},
+</span><span class="s1">                        &#34;OrderId&#34;: {&#34;S&#34;: &#34;20170609-4177&#34;},
+</span><span class="s1">                        &#34;Amount&#34;: {&#34;N&#34;: &#34;27.89&#34;}
+</span><span class="s1">                    }
+</span><span class="s1">                }
+</span><span class="s1">            },
+</span><span class="s1">            {
+</span><span class="s1">                &#34;PutRequest&#34;: {
+</span><span class="s1">                    &#34;Item&#34;: {
+</span><span class="s1">                        &#34;Username&#34;: {&#34;S&#34;: &#34;alexdebrie&#34;},
+</span><span class="s1">                        &#34;OrderId&#34;: {&#34;S&#34;: &#34;20170608-24041&#34;},
+</span><span class="s1">                        &#34;Amount&#34;: {&#34;N&#34;: &#34;142.02&#34;}
+</span><span class="s1">                    }
+</span><span class="s1">                }
+</span><span class="s1">            },
+</span><span class="s1">            {
+</span><span class="s1">                &#34;PutRequest&#34;: {
+</span><span class="s1">                    &#34;Item&#34;: {
+</span><span class="s1">                        &#34;Username&#34;: {&#34;S&#34;: &#34;yosemitesam&#34;},
+</span><span class="s1">                        &#34;OrderId&#34;: {&#34;S&#34;: &#34;20170609-17146&#34;},
+</span><span class="s1">                        &#34;Amount&#34;: {&#34;N&#34;: &#34;114.00&#34;}
+</span><span class="s1">                    }
+</span><span class="s1">                }
+</span><span class="s1">            },
+</span><span class="s1">            {
+</span><span class="s1">                &#34;PutRequest&#34;: {
+</span><span class="s1">                    &#34;Item&#34;: {
+</span><span class="s1">                        &#34;Username&#34;: {&#34;S&#34;: &#34;yosemitesam&#34;},
+</span><span class="s1">                        &#34;OrderId&#34;: {&#34;S&#34;: &#34;20170609-9476&#34;},
+</span><span class="s1">                        &#34;Amount&#34;: {&#34;N&#34;: &#34;19.41&#34;}
+</span><span class="s1">                    }
+</span><span class="s1">                }
+</span><span class="s1">            },
+</span><span class="s1">            {
+</span><span class="s1">                &#34;PutRequest&#34;: {
+</span><span class="s1">                    &#34;Item&#34;: {
+</span><span class="s1">                        &#34;Username&#34;: {&#34;S&#34;: &#34;alexdebrie&#34;},
+</span><span class="s1">                        &#34;OrderId&#34;: {&#34;S&#34;: &#34;20160630-13286&#34;},
+</span><span class="s1">                        &#34;Amount&#34;: {&#34;N&#34;: &#34;146.37&#34;}
+</span><span class="s1">                    }
+</span><span class="s1">                }
+</span><span class="s1">            },
+</span><span class="s1">            {
+</span><span class="s1">                &#34;PutRequest&#34;: {
+</span><span class="s1">                    &#34;Item&#34;: {
+</span><span class="s1">                        &#34;Username&#34;: {&#34;S&#34;: &#34;alexdebrie&#34;},
+</span><span class="s1">                        &#34;OrderId&#34;: {&#34;S&#34;: &#34;20170609-8718&#34;},
+</span><span class="s1">                        &#34;Amount&#34;: {&#34;N&#34;: &#34;76.19&#34;}
+</span><span class="s1">                    }
+</span><span class="s1">                }
+</span><span class="s1">            },
+</span><span class="s1">            {
+</span><span class="s1">                &#34;PutRequest&#34;: {
+</span><span class="s1">                    &#34;Item&#34;: {
+</span><span class="s1">                        &#34;Username&#34;: {&#34;S&#34;: &#34;daffyduck&#34;},
+</span><span class="s1">                        &#34;OrderId&#34;: {&#34;S&#34;: &#34;20171129-29970&#34;},
+</span><span class="s1">                        &#34;Amount&#34;: {&#34;N&#34;: &#34;6.98&#34;}
+</span><span class="s1">                    }
+</span><span class="s1">                }
+</span><span class="s1">            },
+</span><span class="s1">            {
+</span><span class="s1">                &#34;PutRequest&#34;: {
+</span><span class="s1">                    &#34;Item&#34;: {
+</span><span class="s1">                        &#34;Username&#34;: {&#34;S&#34;: &#34;alexdebrie&#34;},
+</span><span class="s1">                        &#34;OrderId&#34;: {&#34;S&#34;: &#34;20170609-10699&#34;},
+</span><span class="s1">                        &#34;Amount&#34;: {&#34;N&#34;: &#34;122.52&#34;}
+</span><span class="s1">                    }
+</span><span class="s1">                }
+</span><span class="s1">            },
+</span><span class="s1">            {
+</span><span class="s1">                &#34;PutRequest&#34;: {
+</span><span class="s1">                    &#34;Item&#34;: {
+</span><span class="s1">                        &#34;Username&#34;: {&#34;S&#34;: &#34;alexdebrie&#34;},
+</span><span class="s1">                        &#34;OrderId&#34;: {&#34;S&#34;: &#34;20160630-25621&#34;},
+</span><span class="s1">                        &#34;Amount&#34;: {&#34;N&#34;: &#34;141.78&#34;}
+</span><span class="s1">                    }
+</span><span class="s1">                }
+</span><span class="s1">            },
+</span><span class="s1">            {
+</span><span class="s1">                &#34;PutRequest&#34;: {
+</span><span class="s1">                    &#34;Item&#34;: {
+</span><span class="s1">                        &#34;Username&#34;: {&#34;S&#34;: &#34;alexdebrie&#34;},
+</span><span class="s1">                        &#34;OrderId&#34;: {&#34;S&#34;: &#34;20170330-29929&#34;},
+</span><span class="s1">                        &#34;Amount&#34;: {&#34;N&#34;: &#34;80.36&#34;}
+</span><span class="s1">                    }
+</span><span class="s1">                }
+</span><span class="s1">            },
+</span><span class="s1">            {
+</span><span class="s1">                &#34;PutRequest&#34;: {
+</span><span class="s1">                    &#34;Item&#34;: {
+</span><span class="s1">                        &#34;Username&#34;: {&#34;S&#34;: &#34;yosemitesam&#34;},
+</span><span class="s1">                        &#34;OrderId&#34;: {&#34;S&#34;: &#34;20160630-4350&#34;},
+</span><span class="s1">                        &#34;Amount&#34;: {&#34;N&#34;: &#34;138.93&#34;}
+</span><span class="s1">                    }
+</span><span class="s1">                }
+</span><span class="s1">            },
+</span><span class="s1">            {
+</span><span class="s1">                &#34;PutRequest&#34;: {
+</span><span class="s1">                    &#34;Item&#34;: {
+</span><span class="s1">                        &#34;Username&#34;: {&#34;S&#34;: &#34;alexdebrie&#34;},
+</span><span class="s1">                        &#34;OrderId&#34;: {&#34;S&#34;: &#34;20170330-20659&#34;},
+</span><span class="s1">                        &#34;Amount&#34;: {&#34;N&#34;: &#34;47.79&#34;}
+</span><span class="s1">                    }
+</span><span class="s1">                }
+</span><span class="s1">            },
+</span><span class="s1">            {
+</span><span class="s1">                &#34;PutRequest&#34;: {
+</span><span class="s1">                    &#34;Item&#34;: {
+</span><span class="s1">                        &#34;Username&#34;: {&#34;S&#34;: &#34;alexdebrie&#34;},
+</span><span class="s1">                        &#34;OrderId&#34;: {&#34;S&#34;: &#34;20170115-20782&#34;},
+</span><span class="s1">                        &#34;Amount&#34;: {&#34;N&#34;: &#34;80.05&#34;}
+</span><span class="s1">                    }
+</span><span class="s1">                }
+</span><span class="s1">            },
+</span><span class="s1">            {
+</span><span class="s1">                &#34;PutRequest&#34;: {
+</span><span class="s1">                    &#34;Item&#34;: {
+</span><span class="s1">                        &#34;Username&#34;: {&#34;S&#34;: &#34;yosemitesam&#34;},
+</span><span class="s1">                        &#34;OrderId&#34;: {&#34;S&#34;: &#34;20170330-18781&#34;},
+</span><span class="s1">                        &#34;Amount&#34;: {&#34;N&#34;: &#34;98.40&#34;}
+</span><span class="s1">                    }
+</span><span class="s1">                }
+</span><span class="s1">            },
+</span><span class="s1">            {
+</span><span class="s1">                &#34;PutRequest&#34;: {
+</span><span class="s1">                    &#34;Item&#34;: {
+</span><span class="s1">                        &#34;Username&#34;: {&#34;S&#34;: &#34;yosemitesam&#34;},
+</span><span class="s1">                        &#34;OrderId&#34;: {&#34;S&#34;: &#34;20170330-1645&#34;},
+</span><span class="s1">                        &#34;Amount&#34;: {&#34;N&#34;: &#34;25.53&#34;}
+</span><span class="s1">                    }
+</span><span class="s1">                }
+</span><span class="s1">            },
+</span><span class="s1">            {
+</span><span class="s1">                &#34;PutRequest&#34;: {
+</span><span class="s1">                    &#34;Item&#34;: {
+</span><span class="s1">                        &#34;Username&#34;: {&#34;S&#34;: &#34;alexdebrie&#34;},
+</span><span class="s1">                        &#34;OrderId&#34;: {&#34;S&#34;: &#34;20170115-2268&#34;},
+</span><span class="s1">                        &#34;Amount&#34;: {&#34;N&#34;: &#34;37.30&#34;}
+</span><span class="s1">                    }
+</span><span class="s1">                }
+</span><span class="s1">            },
+</span><span class="s1">            {
+</span><span class="s1">                &#34;PutRequest&#34;: {
+</span><span class="s1">                    &#34;Item&#34;: {
+</span><span class="s1">                        &#34;Username&#34;: {&#34;S&#34;: &#34;alexdebrie&#34;},
+</span><span class="s1">                        &#34;OrderId&#34;: {&#34;S&#34;: &#34;20170609-8267&#34;},
+</span><span class="s1">                        &#34;Amount&#34;: {&#34;N&#34;: &#34;32.13&#34;}
+</span><span class="s1">                    }
+</span><span class="s1">                }
+</span><span class="s1">            },
+</span><span class="s1">            {
+</span><span class="s1">                &#34;PutRequest&#34;: {
+</span><span class="s1">                    &#34;Item&#34;: {
+</span><span class="s1">                        &#34;Username&#34;: {&#34;S&#34;: &#34;alexdebrie&#34;},
+</span><span class="s1">                        &#34;OrderId&#34;: {&#34;S&#34;: &#34;20170330-3572&#34;},
+</span><span class="s1">                        &#34;Amount&#34;: {&#34;N&#34;: &#34;126.17&#34;}
+</span><span class="s1">                    }
+</span><span class="s1">                }
+</span><span class="s1">            },
+</span><span class="s1">            {
+</span><span class="s1">                &#34;PutRequest&#34;: {
+</span><span class="s1">                    &#34;Item&#34;: {
+</span><span class="s1">                        &#34;Username&#34;: {&#34;S&#34;: &#34;alexdebrie&#34;},
+</span><span class="s1">                        &#34;OrderId&#34;: {&#34;S&#34;: &#34;20171129-28042&#34;},
+</span><span class="s1">                        &#34;Amount&#34;: {&#34;N&#34;: &#34;83.12&#34;}
+</span><span class="s1">                    }
+</span><span class="s1">                }
+</span><span class="s1">            },
+</span><span class="s1">            {
+</span><span class="s1">                &#34;PutRequest&#34;: {
+</span><span class="s1">                    &#34;Item&#34;: {
+</span><span class="s1">                        &#34;Username&#34;: {&#34;S&#34;: &#34;yosemitesam&#34;},
+</span><span class="s1">                        &#34;OrderId&#34;: {&#34;S&#34;: &#34;20170609-481&#34;},
+</span><span class="s1">                        &#34;Amount&#34;: {&#34;N&#34;: &#34;136.68&#34;}
+</span><span class="s1">                    }
+</span><span class="s1">                }
+</span><span class="s1">            }
+</span><span class="s1">        ]
+</span><span class="s1">    }&#39;</span> <span class="se">\
+</span><span class="se"></span>    <span class="nv">$LOCAL</span>
+</code></pre></div><p>其返回结果显示，所有数据项均成功写入DynamoDB，如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">{</span>
+    <span class="s2">&#34;UnprocessedItems&#34;</span>: <span class="o">{}</span>
+<span class="o">}</span>
+</code></pre></div><ul>
+<li><a href="https://www.dynamodbguide.com/working-with-multiple-items">原文连接</a></li>
+</ul>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://utteranc.es/client.js" repo="2cloudlab/comments" issue-term="pathname" theme="github-light"
+        crossorigin="anonymous" async>
+</script>
+
+
+<!-- Call To Action Section Start -->
+<section id="call-to-action">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2 class="title wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">听起来还不错 ？</h1>
+                    <p class="wow fadeInDown" data-wow-delay=".5s" data-wow-duration="500ms">如果你所在的企业遇到了以下问题：<br> 研发流程混乱不堪或者效率低下、经历了持续上升的运维成本、无法及时向用户发布新的服务或产品以及想使用云计算技术但缺乏经验！<br>那么，请毫不犹疑地</p>
+                    <a href="/contact" class="btn btn-default btn-contact wow fadeInDown" data-wow-delay=".7s" data-wow-duration="500ms">联系我们</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-- Call To Action Section End -->
+
+
+<!-- Footer Section Start -->
+<footer id="footer">
+    <div class="container">
+        <div class="row content-justify-between">
+            <div class="col-md-8 col-12 text-center text-lg-left text-md-left">
+                <p class="copyright">版权所有©:
+                    <span>
+                        <script>document.write(new Date().getFullYear())</script>
+                    </span> 上海漫步云端科技有限公司
+                    <a href="https://2cloudlab.com/" target="_blank">2cloudlab.com</a>.
+                    <br> 地址：上海市浦东区浦东南路 999 号新梅联合广场 1 期 32 层
+                    <br>
+                    邮箱：<a href="mailto:support@2cloudlab.com">support@2cloudlab.com</a>
+                </p>
+            </div>
+            <div class="col-md-4 col-12">
+                <!-- Social Media -->
+                <ul class="social text-center text-md-right text-lg-right">
+                    
+                    <li><a href="https://github.com/2cloudlab"><i class="ion-social-github"></i></a></li>
+                    
+                    <li><a href="https://www.linkedin.com/company/2cloudlab-com"><i class="ion-social-linkedin"></i></a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- footer section end -->
+
+<!-- jquery -->
+<script src="https://2cloudlab.com/plugins/jQurey/jquery.min.js"></script>
+<!-- Form Validation -->
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.form.js"></script>
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.validate.min.js"></script>
+<!-- slick slider -->
+<script src="https://2cloudlab.com/plugins/slick/slick.min.js"></script>
+<!-- bootstrap js -->
+<script src="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.js"></script>
+<!-- wow js -->
+<script src="https://2cloudlab.com/plugins/wow-js/wow.min.js"></script>
+<!-- slider js -->
+<script src="https://2cloudlab.com/plugins/slider/slider.js"></script>
+<!-- Fancybox -->
+<script src="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.js"></script>
+<!-- template main js -->
+
+<script src="https://2cloudlab.com/js/script.min.js"></script>
+<!-- google analitycs -->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-171018621-1', 'auto');
+    ga('send', 'pageview');
+</script></body>
+</html>

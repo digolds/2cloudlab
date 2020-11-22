@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <!-- Basic Page Needs -->
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  
+  <meta name="description" content="[数据项](https://2cloudlab.com/nosql/anatomy-of-an-item/)是DynamoDB的基础单元，每一张表都会包含多项数据。接下来，在本文中，我们将向DynamoDB中插入和读取数据项。我们将创建Users表，并为该表指定一个简单键：Username。接着，我们将操作2个基本的接口：PutItem和GetItem。下一篇文章，我们将在这篇文章的基础上应用表达式来实现更加复杂的查询功能。在这之后，我们另起一篇文章来讲解如何更新和删除数据项。">
+  <meta name="author" content="2cloudlab">
+  <meta name="generator" content="Hugo 0.78.1" />
+  
+  <!-- Mobile Specific Metas -->
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>在DynamoDB中插入和读取数据项</title>
+  <link rel="icon" href="https://2cloudlab.com/images/favicon.ico">
+
+  <!-- Twitter Bootstrs CSS -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.css">
+  <!-- Ionicons Fonts Css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/ionicons/ionicons.min.css">
+  <!-- animate css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/animate-css/animate.css">
+  <!-- Hero area slider css-->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slider/slider.css">
+  <!-- slick slider -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slick/slick.css">
+  <!-- Fancybox -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.css">
+  <!-- hover -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/hover/hover-min.css">
+  <!-- template main css file -->
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/style.min.css" integrity="" media="screen">
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/syntax.min.css" integrity="" media="screen">
+</head><body><section class="top-bar animated-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <a class="navbar-brand" href="https://2cloudlab.com/">
+                        <img src="https://2cloudlab.com/images/logo.png" alt="logo">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation"
+                        aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navigation">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                    href="https://2cloudlab.com/">首页</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/about">关于</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/service">服务</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/price">价格</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/blog">博客</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/nosql">NoSQL</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/contact">联系我们</a>
+                            </li>
+                            
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="global-page-header">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2>在DynamoDB中插入和读取数据项</h2>
+                    <div class="portfolio-meta">
+                        <span>2019-02-23</span>|
+                        <span class="ion-pricetags"></span>
+                        <span>
+                            NoSQL, DynamoDB, Data-Intensive
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style type="text/css">
+    @media (min-width: 1200px) {
+        .post-container {
+            max-width: 800px;
+        }
+    }
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        display: block;
+        margin: auto;
+    }
+</style>
+
+<section class="single-post">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                
+                <div class="post-img">
+                    <img class="img-fluid lazy" alt="" data-src="https://2cloudlab.com/images/blog/inserting-retrieving-items.png">
+                </div>
+                
+                <div class="post-content">
+                    <p><a href="https://2cloudlab.com/nosql/anatomy-of-an-item/">数据项</a>是DynamoDB的基础单元，每一张表都会包含多项数据。接下来，在本文中，我们将向DynamoDB中插入和读取数据项。我们将创建Users表，并为该表指定一个<a href="https://2cloudlab.com/nosql/anatomy-of-an-item/">简单键</a>：Username。接着，我们将操作2个基本的接口：PutItem和GetItem。下一篇文章，我们将在这篇文章的基础上<a href="https://2cloudlab.com/nosql/expression-basics/">应用表达式</a>来实现更加复杂的查询功能。在这之后，我们将另起一篇文章来讲解<a href="https://2cloudlab.com/nosql/updating-deleting-items">如何更新和删除数据项</a>。</p>
+<blockquote>
+<p>为了能顺利操作本文所列举的示例，请确保<a href="https://2cloudlab.com/nosql/environment-setup">DynamoDB的环境</a>已经准备好。注意：如果你使用的是本地版本的DynamoDB，那么请确保<code>$LOCAL</code>变量配置正确，如果使用的是AWS上的DynamoDB，那么在每一个命令后面无需追加这个参数。</p>
+</blockquote>
+<h2 id="创建表">创建表</h2>
+<p>在演练本文列举的用例之前，首先需要创建一张表。我们将创建一张表&quot;Users&quot;，并为该表定义了一个简单主键：&ldquo;Username&rdquo;，它的类型是string。</p>
+<p>当创建表时，你需要为主键或索引提供属性定义。这些属性定义包含了属性名和属性类型。在Users这张表中，我们使用&quot;Username&quot;作为主键，其类型是string（&ldquo;S&rdquo;）。除此之外，你还需要为该表定义KeySchema，其中指定了哪些属性构成主键以及这些属性是HASH键还是RANGE键。在以下示例中，属性&quot;Username&quot;构成了该表的简单主键。最后，你需要指定表名和表的吞吐单元，其中吞吐单元由读和写单元构成。在以下示例中，&ldquo;Users&quot;表的读写单元都是1，简单来说，越多的读写单元，单位时间内读写数据的速度越快和越多，反之亦然！</p>
+<p>有了以上概念, 让我们运行以下指令来创建表&quot;Users&rdquo;:</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ aws dynamodb create-table <span class="se">\
+</span><span class="se"></span>  --table-name Users <span class="se">\
+</span><span class="se"></span>  --attribute-definitions <span class="s1">&#39;[
+</span><span class="s1">    {
+</span><span class="s1">        &#34;AttributeName&#34;: &#34;Username&#34;,
+</span><span class="s1">        &#34;AttributeType&#34;: &#34;S&#34;
+</span><span class="s1">    }
+</span><span class="s1">  ]&#39;</span> <span class="se">\
+</span><span class="se"></span>  --key-schema <span class="s1">&#39;[
+</span><span class="s1">    {
+</span><span class="s1">        &#34;AttributeName&#34;: &#34;Username&#34;,
+</span><span class="s1">        &#34;KeyType&#34;: &#34;HASH&#34;
+</span><span class="s1">    }
+</span><span class="s1">  ]&#39;</span> <span class="se">\
+</span><span class="se"></span>  --provisioned-throughput <span class="s1">&#39;{
+</span><span class="s1">    &#34;ReadCapacityUnits&#34;: 1,
+</span><span class="s1">    &#34;WriteCapacityUnits&#34;: 1
+</span><span class="s1">  }&#39;</span> <span class="se">\
+</span><span class="se"></span>  <span class="nv">$LOCAL</span>
+</code></pre></div><p>如果创建表的操作成功了，你将看到以下返回结果：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">{</span>
+    <span class="s2">&#34;TableDescription&#34;</span>: <span class="o">{</span>
+        <span class="s2">&#34;TableArn&#34;</span>: <span class="s2">&#34;arn:aws:dynamodb:ddblocal:000000000000:table/Users&#34;</span>,
+        <span class="s2">&#34;AttributeDefinitions&#34;</span>: <span class="o">[</span>
+            <span class="o">{</span>
+                <span class="s2">&#34;AttributeName&#34;</span>: <span class="s2">&#34;Username&#34;</span>,
+                <span class="s2">&#34;AttributeType&#34;</span>: <span class="s2">&#34;S&#34;</span>
+            <span class="o">}</span>
+        <span class="o">]</span>,
+        <span class="s2">&#34;ProvisionedThroughput&#34;</span>: <span class="o">{</span>
+            <span class="s2">&#34;NumberOfDecreasesToday&#34;</span>: 0,
+            <span class="s2">&#34;WriteCapacityUnits&#34;</span>: 1,
+            <span class="s2">&#34;LastIncreaseDateTime&#34;</span>: 0.0,
+            <span class="s2">&#34;ReadCapacityUnits&#34;</span>: 1,
+            <span class="s2">&#34;LastDecreaseDateTime&#34;</span>: 0.0
+        <span class="o">}</span>,
+        <span class="s2">&#34;TableSizeBytes&#34;</span>: 0,
+        <span class="s2">&#34;TableName&#34;</span>: <span class="s2">&#34;Users&#34;</span>,
+        <span class="s2">&#34;TableStatus&#34;</span>: <span class="s2">&#34;ACTIVE&#34;</span>,
+        <span class="s2">&#34;KeySchema&#34;</span>: <span class="o">[</span>
+            <span class="o">{</span>
+                <span class="s2">&#34;KeyType&#34;</span>: <span class="s2">&#34;HASH&#34;</span>,
+                <span class="s2">&#34;AttributeName&#34;</span>: <span class="s2">&#34;Username&#34;</span>
+            <span class="o">}</span>
+        <span class="o">]</span>,
+        <span class="s2">&#34;ItemCount&#34;</span>: 0,
+        <span class="s2">&#34;CreationDateTime&#34;</span>: 1514562957.925
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><p>为了验证已经成功创建表&quot;Users&quot;，你可以执行<code>list-tables</code>命令来获取已创建的表：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ aws dynamodb list-tables <span class="nv">$LOCAL</span>
+<span class="o">{</span>
+    <span class="s2">&#34;TableNames&#34;</span>: <span class="o">[</span>
+        <span class="s2">&#34;Users&#34;</span>
+    <span class="o">]</span>
+<span class="o">}</span>
+</code></pre></div><p>紧接着，你可以通过<code>describe-table</code>来查看某张表的详细信息，如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ aws dynamodb describe-table <span class="se">\
+</span><span class="se"></span>  --table-name Users <span class="se">\
+</span><span class="se"></span>  <span class="nv">$LOCAL</span>
+</code></pre></div><h2 id="插入单项数据">插入单项数据</h2>
+<p>既然我们已经创建了表&quot;Users&quot;，接下来，让我们向该表插入一些数据。为了完成这一操作，我们需要借助DynamoDB的PutItem API。使用PutItem时，开发者需要提供完整的数据项，这项数据除了要包含主键信息，还需要包含其它属性信息。如果新插入的数据项，其主键已经包含在&quot;Users&quot;表中，那么将新插入额度数据项将覆盖老的数据项，否则直接将数据项添加到&quot;Users&quot;表里。</p>
+<blockquote>
+<p>如果你想避免覆盖原有的数据项，那么可以考虑使用<a href="https://2cloudlab.com/nosql/expression-basics/">条件表达式</a>。如果你只是想更新某项数据的某些属性，那么你可以考虑使用DynamoDB的<a href="https://2cloudlab.com/nosql/updating-deleting-items/">UpdateItem API</a>。</p>
+</blockquote>
+<p>接下来，让我们插入一个数据项，这项数据只包含了主键信息&quot;alexdebrie&quot;，如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ aws dynamodb put-item <span class="se">\
+</span><span class="se"></span>    --table-name Users <span class="se">\
+</span><span class="se"></span>    --item <span class="s1">&#39;{
+</span><span class="s1">      &#34;Username&#34;: {&#34;S&#34;: &#34;alexdebrie&#34;}
+</span><span class="s1">    }&#39;</span> <span class="se">\
+</span><span class="se"></span>    <span class="nv">$LOCAL</span>
+</code></pre></div><p>如果没有错误发生，那么意味着这次插入是成功的。</p>
+<p>让我们向该表中添加更多的数据项，这一次添加的数据项不仅包括主键属性（比如&quot;Username&quot;）还包括其它属性，比如&quot;Name&quot;和&quot;Age&quot;，如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ aws dynamodb put-item <span class="se">\
+</span><span class="se"></span>    --table-name Users <span class="se">\
+</span><span class="se"></span>    --item <span class="s1">&#39;{
+</span><span class="s1">      &#34;Username&#34;: {&#34;S&#34;: &#34;daffyduck&#34;},
+</span><span class="s1">      &#34;Name&#34;: {&#34;S&#34;: &#34;Daffy Duck&#34;},
+</span><span class="s1">      &#34;Age&#34;: {&#34;N&#34;: &#34;81&#34;}
+</span><span class="s1">    }&#39;</span> <span class="se">\
+</span><span class="se"></span>    <span class="nv">$LOCAL</span>
+</code></pre></div><p>注意：在上述操作示例中，我们不仅提供了表&quot;Users&quot;所必须的属性&quot;Username&quot;，我们还提供了其它非必须的属性，比如&quot;Name&quot;和&quot;Age&quot;以及每一个属性[对应的类型]((<a href="https://2cloudlab.com/nosql/anatomy-of-an-item/">https://2cloudlab.com/nosql/anatomy-of-an-item/</a>)。与关系型数据库不同的是，DynamoDB允许开发者在添加数据项时决定具体的属性信息（Schema-Less），而不是通过Schema提前定义好数据类型。</p>
+<p>DynamoDB的这种数据模型的灵活性（Schema-Less）有好有坏。其好处是，开发者可以将多个不同类型的数据实体放在同一张表里（比如：User和Order可以放在同一张表里），从而提高数据读取的性能。然而，这种灵活性违背了SQL的范式原则，比如可能会导致数据变得不一致，数据冗余等，也会导致分析表中的数据变得更加困难。</p>
+<h2 id="获取单项数据">获取单项数据</h2>
+<p>在插入单项数据那一节，我们在表&quot;Users&quot;中插入了2项数据。现在让我们来看看如何读取这2项数据。</p>
+<p>为了获取单项数据，需要借助GetItem API。为了使用这个API，你需要提供表的名称，如&quot;Users&quot;，除此之外，你还需要提供需要获取这项数据的主键。让我们获取第一个User，如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ aws dynamodb get-item <span class="se">\
+</span><span class="se"></span>    --table-name Users <span class="se">\
+</span><span class="se"></span>    --key <span class="s1">&#39;{
+</span><span class="s1">      &#34;Username&#34;: {&#34;S&#34;: &#34;alexdebrie&#34;}
+</span><span class="s1">    }&#39;</span> <span class="se">\
+</span><span class="se"></span>    <span class="nv">$LOCAL</span>
+
+<span class="o">{</span>
+    <span class="s2">&#34;Item&#34;</span>: <span class="o">{</span>
+        <span class="s2">&#34;Username&#34;</span>: <span class="o">{</span>
+            <span class="s2">&#34;S&#34;</span>: <span class="s2">&#34;alexdebrie&#34;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><p>注意：上述操作示例所获取的User信息被放置在Item中。</p>
+<p>接下来让我们获取第二个User的信息，这一次的用户不仅返回了主键信息，而且还将其它属性的信息（如&quot;Name&quot;和&quot;Age&quot;）也返回了。如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ aws dynamodb get-item <span class="se">\
+</span><span class="se"></span>    --table-name Users <span class="se">\
+</span><span class="se"></span>    --key <span class="s1">&#39;{
+</span><span class="s1">      &#34;Username&#34;: {&#34;S&#34;: &#34;daffyduck&#34;}
+</span><span class="s1">    }&#39;</span> <span class="se">\
+</span><span class="se"></span>    <span class="nv">$LOCAL</span>
+
+<span class="o">{</span>
+    <span class="s2">&#34;Item&#34;</span>: <span class="o">{</span>
+        <span class="s2">&#34;Username&#34;</span>: <span class="o">{</span>
+            <span class="s2">&#34;S&#34;</span>: <span class="s2">&#34;daffyduck&#34;</span>
+        <span class="o">}</span>,
+        <span class="s2">&#34;Age&#34;</span>: <span class="o">{</span>
+            <span class="s2">&#34;N&#34;</span>: <span class="s2">&#34;81&#34;</span>
+        <span class="o">}</span>,
+        <span class="s2">&#34;Name&#34;</span>: <span class="o">{</span>
+            <span class="s2">&#34;S&#34;</span>: <span class="s2">&#34;Daffy Duck&#34;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><p>有时，你只想获取某项数据的某些属性信息，比如我只想获取第2个User的&quot;Age&quot;和&quot;Name&quot;信息，那么可以使用<code>--projection-expression</code>选项，如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ aws dynamodb get-item <span class="se">\
+</span><span class="se"></span>    --table-name UsersTable <span class="se">\
+</span><span class="se"></span>    --projection-expression <span class="s2">&#34;Age, Username&#34;</span> <span class="se">\
+</span><span class="se"></span>    --key <span class="s1">&#39;{
+</span><span class="s1">      &#34;Username&#34;: {&#34;S&#34;: &#34;daffyduck&#34;}
+</span><span class="s1">    }&#39;</span> <span class="se">\
+</span><span class="se"></span>    <span class="nv">$LOCAL</span>
+
+<span class="o">{</span>
+    <span class="s2">&#34;Item&#34;</span>: <span class="o">{</span>
+        <span class="s2">&#34;Username&#34;</span>: <span class="o">{</span>
+            <span class="s2">&#34;S&#34;</span>: <span class="s2">&#34;daffyduck&#34;</span>
+        <span class="o">}</span>,
+        <span class="s2">&#34;Age&#34;</span>: <span class="o">{</span>
+            <span class="s2">&#34;N&#34;</span>: <span class="s2">&#34;81&#34;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><p>在上面的操作示例中，我们使用了<code>--projection-expression</code>选项来获取某些属性信息。该选项也可以作用于List和Map属性中的元素。</p>
+<p>这篇文章涉及了向DynamoDB中插入和获取单项数据的基础操作示例。在接下来的<a href="https://2cloudlab.com/nosql/expression-basics/">一篇文章</a>中，我们将结合表达式来实现更加复杂实用的插入和查询操作。</p>
+<ul>
+<li><a href="https://www.dynamodbguide.com/inserting-retrieving-items">原文链接</a></li>
+</ul>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://utteranc.es/client.js" repo="2cloudlab/comments" issue-term="pathname" theme="github-light"
+        crossorigin="anonymous" async>
+</script>
+
+
+<!-- Call To Action Section Start -->
+<section id="call-to-action">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2 class="title wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">听起来还不错 ？</h1>
+                    <p class="wow fadeInDown" data-wow-delay=".5s" data-wow-duration="500ms">如果你所在的企业遇到了以下问题：<br> 研发流程混乱不堪或者效率低下、经历了持续上升的运维成本、无法及时向用户发布新的服务或产品以及想使用云计算技术但缺乏经验！<br>那么，请毫不犹疑地</p>
+                    <a href="/contact" class="btn btn-default btn-contact wow fadeInDown" data-wow-delay=".7s" data-wow-duration="500ms">联系我们</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-- Call To Action Section End -->
+
+
+<!-- Footer Section Start -->
+<footer id="footer">
+    <div class="container">
+        <div class="row content-justify-between">
+            <div class="col-md-8 col-12 text-center text-lg-left text-md-left">
+                <p class="copyright">版权所有©:
+                    <span>
+                        <script>document.write(new Date().getFullYear())</script>
+                    </span> 上海漫步云端科技有限公司
+                    <a href="https://2cloudlab.com/" target="_blank">2cloudlab.com</a>.
+                    <br> 地址：上海市浦东区浦东南路 999 号新梅联合广场 1 期 32 层
+                    <br>
+                    邮箱：<a href="mailto:support@2cloudlab.com">support@2cloudlab.com</a>
+                </p>
+            </div>
+            <div class="col-md-4 col-12">
+                <!-- Social Media -->
+                <ul class="social text-center text-md-right text-lg-right">
+                    
+                    <li><a href="https://github.com/2cloudlab"><i class="ion-social-github"></i></a></li>
+                    
+                    <li><a href="https://www.linkedin.com/company/2cloudlab-com"><i class="ion-social-linkedin"></i></a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- footer section end -->
+
+<!-- jquery -->
+<script src="https://2cloudlab.com/plugins/jQurey/jquery.min.js"></script>
+<!-- Form Validation -->
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.form.js"></script>
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.validate.min.js"></script>
+<!-- slick slider -->
+<script src="https://2cloudlab.com/plugins/slick/slick.min.js"></script>
+<!-- bootstrap js -->
+<script src="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.js"></script>
+<!-- wow js -->
+<script src="https://2cloudlab.com/plugins/wow-js/wow.min.js"></script>
+<!-- slider js -->
+<script src="https://2cloudlab.com/plugins/slider/slider.js"></script>
+<!-- Fancybox -->
+<script src="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.js"></script>
+<!-- template main js -->
+
+<script src="https://2cloudlab.com/js/script.min.js"></script>
+<!-- google analitycs -->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-171018621-1', 'auto');
+    ga('send', 'pageview');
+</script></body>
+</html>

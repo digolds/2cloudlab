@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <!-- Basic Page Needs -->
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  
+  <meta name="description" content="2cloudlab是云计算解决方案提供商，致力于云计算和DEVOPS。我们渴望通过云计算技术来帮助企业进行数字化转型。提高企业的研发效率、降低企业的研发成本以及加快企业的创新速度是我们成立的初衷！">
+  <meta name="author" content="2cloudlab">
+  <meta name="generator" content="Hugo 0.78.1" />
+  
+  <!-- Mobile Specific Metas -->
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Data-Intensive</title>
+  <link rel="icon" href="https://2cloudlab.com/images/favicon.ico">
+
+  <!-- Twitter Bootstrs CSS -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.css">
+  <!-- Ionicons Fonts Css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/ionicons/ionicons.min.css">
+  <!-- animate css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/animate-css/animate.css">
+  <!-- Hero area slider css-->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slider/slider.css">
+  <!-- slick slider -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slick/slick.css">
+  <!-- Fancybox -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.css">
+  <!-- hover -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/hover/hover-min.css">
+  <!-- template main css file -->
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/style.min.css" integrity="" media="screen">
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/syntax.min.css" integrity="" media="screen">
+</head><body><section class="top-bar animated-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <a class="navbar-brand" href="https://2cloudlab.com/">
+                        <img src="https://2cloudlab.com/images/logo.png" alt="logo">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation"
+                        aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navigation">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                    href="https://2cloudlab.com/">首页</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/about">关于</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/service">服务</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/price">价格</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/blog">博客</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/nosql">NoSQL</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/contact">联系我们</a>
+                            </li>
+                            
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Global Page Section Start -->
+<section class="global-page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2>Data-Intensive</h2>
+                    <ol class="breadcrumb list-inline text-center">
+                        <li class="list-inline-item">
+                            <a href="https://2cloudlab.com/">
+                                <i class="ion-ios-home"></i>
+                                返回首页 &nbsp; &nbsp;/
+                            </a>
+                        </li>
+                        <li class="active list-inline-item">Data-Intensive</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Global Page Section End -->
+
+<style type="text/css">
+    @media (min-width: 1200px) {
+    .post-container{
+        max-width: 800px;
+    }
+  }
+</style>
+
+<section id="blog-full-width">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                
+                <article class="wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">
+                    
+                    <div class="blog-post-image">
+                        <a href="https://2cloudlab.com/nosql/nosql-index/">
+                             <img class="img-fluid lazy" data-src="https://2cloudlab.com/images/blog/nosql-index.png" alt="post-image"/>
+                        </a>
+                    </div>
+                    <div class="blog-content">
+                        <h2 class="blogpost-title">
+                            <a href="https://2cloudlab.com/nosql/nosql-index/">DynamoDB的学习指南</a>
+                        </h2>
+                        <div class="blog-meta">
+                            <span>2020-04-15</span>
+                            <span>作者
+                                郑思龙，Alex
+                            </span>
+                            
+                            
+                            <span>
+                                NoSQL, DynamoDB, Data-Intensive
+                            </span>
+                            
+                        </div>
+                        <p>
+                            
+                            如果你在软件行业（尤其是后端服务的研发）里从业几年，你肯定会听说过与存储和处理数据相关的几个时髦的技术词：NoSQL，大数据，云计算，ServerLess，ACID，CAP，分布式等等。驱动这些技术发展的原因是多样的，主要有以下几点：
+                        </p>
+                        <a href="https://2cloudlab.com/nosql/nosql-index/" class="btn btn-dafault btn-details hvr-bounce-to-right">阅读全文</a>
+                    </div>
+                </article>
+                
+                <article class="wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">
+                    
+                    <div class="blog-post-image">
+                        <a href="https://2cloudlab.com/nosql/how-to-use-dynamodb-effectively/">
+                             <img class="img-fluid lazy" data-src="https://2cloudlab.com/images/blog/dynamodb-relate-components.png" alt="post-image"/>
+                        </a>
+                    </div>
+                    <div class="blog-content">
+                        <h2 class="blogpost-title">
+                            <a href="https://2cloudlab.com/nosql/how-to-use-dynamodb-effectively/">如何正确使用DynamoDB</a>
+                        </h2>
+                        <div class="blog-meta">
+                            <span>2020-03-15</span>
+                            <span>作者
+                                郑思龙
+                            </span>
+                            
+                            
+                            <span>
+                                NoSQL, DynamoDB, Data-Intensive
+                            </span>
+                            
+                        </div>
+                        <p>
+                            
+                            把DynamoDB作为数据层的引擎能带来许多好处，一方面，它能够存储大规模数据的同时也保持高性能的数据存取，另外一方面，它能减少运维工作。打造一个稳定高效的数据服务需要解决很多问题，这些问题有：选择哪些工具为DynamoDB建模？如何记录热数据以及引发异常的数据？如何保证数据是加密存储在磁盘的？如何减少存取数据的响应延时？限制哪些用户拥有哪些数据存取的权限？选择哪种类型的数据备份策略？如何将数据发布到全球并保持同步？DynamoDB的最佳设计原则有哪些？等等。
+                        </p>
+                        <a href="https://2cloudlab.com/nosql/how-to-use-dynamodb-effectively/" class="btn btn-dafault btn-details hvr-bounce-to-right">阅读全文</a>
+                    </div>
+                </article>
+                
+                <article class="wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">
+                    
+                    <div class="blog-post-image">
+                        <a href="https://2cloudlab.com/nosql/amazon-back-end-data-system/">
+                             <img class="img-fluid lazy" data-src="https://2cloudlab.com/images/blog/mongoDB-data-model.png" alt="post-image"/>
+                        </a>
+                    </div>
+                    <div class="blog-content">
+                        <h2 class="blogpost-title">
+                            <a href="https://2cloudlab.com/nosql/amazon-back-end-data-system/">由amazon.com背后的数据系统所引发的思考</a>
+                        </h2>
+                        <div class="blog-meta">
+                            <span>2020-03-14</span>
+                            <span>作者
+                                郑思龙
+                            </span>
+                            
+                            
+                            <span>
+                                NoSQL, DynamoDB, Data-Intensive
+                            </span>
+                            
+                        </div>
+                        <p>
+                            
+                            amazon.com是服务于全球的在线电商，用户在它的平台上购买一件商品所需的时间不超过10秒。它是如何陈列成千上万件商品的同时，依然输出稳定的数据存取性能，从而提升全球用户在购物过程中的体验？对于这个问题的思考，将加深我们对数据库系统的理解，进而设计出优良的数据服务！本文将从Amazon的分类商品和推荐商品问题开始，揭示其背后的数据中心及其构成。紧接着为遇到的问题进行数据建模并分别使用MySQL，MongoDB，DynamoDB技术方案来解决这些问题。每种技术方案都有其适用的场景，并体现在文中，最终形成了一些判断依据，用于决定选择NoSQL还是SQL。
+                        </p>
+                        <a href="https://2cloudlab.com/nosql/amazon-back-end-data-system/" class="btn btn-dafault btn-details hvr-bounce-to-right">阅读全文</a>
+                    </div>
+                </article>
+                
+                <article class="wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">
+                    
+                    <div class="blog-post-image">
+                        <a href="https://2cloudlab.com/nosql/leaderboard-write-sharding/">
+                             <img class="img-fluid lazy" data-src="https://2cloudlab.com/images/blog/leaderboard-write-sharding.png" alt="post-image"/>
+                        </a>
+                    </div>
+                    <div class="blog-content">
+                        <h2 class="blogpost-title">
+                            <a href="https://2cloudlab.com/nosql/leaderboard-write-sharding/">如何在DynamoDB中实现排名榜</a>
+                        </h2>
+                        <div class="blog-meta">
+                            <span>2020-03-13</span>
+                            <span>作者
+                                Alex
+                            </span>
+                            
+                            
+                            <span>
+                                NoSQL, DynamoDB, Data-Intensive
+                            </span>
+                            
+                        </div>
+                        <p>
+                            
+                            在互联网的世界里，你通常会看到一些Top 10事件，比如微博里的Top 10热点事件，领英每年发布的某个行业里最具影响力的Top 20行家，一个图片网站里最受欢迎的Top 100图片等等。你不仅能看到Top 10事件，还会购买一些Top 10热销产品，比如说一些电商网站上好评前10的产品，购买量Top 10的产品等。这些事件或商品有一个特征：Top 10。那么如何利用DynamoDB为这类数据建模呢？如何在海量的事件或者商品里快速找到Top 10的事件或商品呢？这些问题的答案将在下文给出！
+                        </p>
+                        <a href="https://2cloudlab.com/nosql/leaderboard-write-sharding/" class="btn btn-dafault btn-details hvr-bounce-to-right">阅读全文</a>
+                    </div>
+                </article>
+                
+                <article class="wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">
+                    
+                    <div class="blog-post-image">
+                        <a href="https://2cloudlab.com/nosql/hierarchical-data/">
+                             <img class="img-fluid lazy" data-src="https://2cloudlab.com/images/blog/hierarchical-data.png" alt="post-image"/>
+                        </a>
+                    </div>
+                    <div class="blog-content">
+                        <h2 class="blogpost-title">
+                            <a href="https://2cloudlab.com/nosql/hierarchical-data/">如何在DynamoDB中查询层级结构的数据</a>
+                        </h2>
+                        <div class="blog-meta">
+                            <span>2020-03-12</span>
+                            <span>作者
+                                Alex
+                            </span>
+                            
+                            
+                            <span>
+                                NoSQL, DynamoDB, Data-Intensive
+                            </span>
+                            
+                        </div>
+                        <p>
+                            
+                            在本文的示例中，我们将展示如何在DynamoDB中建立具有层级结构的数据（比如树状结构）。这个例子使用了大约25000个星巴克实体店的地址信息。你可以到这里获取源码来动手实践本文所提到的步骤。
+                        </p>
+                        <a href="https://2cloudlab.com/nosql/hierarchical-data/" class="btn btn-dafault btn-details hvr-bounce-to-right">阅读全文</a>
+                    </div>
+                </article>
+                
+                <article class="wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">
+                    
+                    <div class="blog-post-image">
+                        <a href="https://2cloudlab.com/nosql/dynamodb-streams/">
+                             <img class="img-fluid lazy" data-src="https://2cloudlab.com/images/blog/dynamodb-streams.png" alt="post-image"/>
+                        </a>
+                    </div>
+                    <div class="blog-content">
+                        <h2 class="blogpost-title">
+                            <a href="https://2cloudlab.com/nosql/dynamodb-streams/">DynamoDB Stream</a>
+                        </h2>
+                        <div class="blog-meta">
+                            <span>2020-03-05</span>
+                            <span>作者
+                                郑思龙
+                            </span>
+                            
+                            
+                            <span>
+                                NoSQL, DynamoDB, Data-Intensive
+                            </span>
+                            
+                        </div>
+                        <p>
+                            
+                            DynamoDB的表能够存储大量的数据，为了提高查找性能，研发人员通常会将关联但不同的数据实体（比如User和Order）集中存放在一台服务器上，这就导致表中的数据关系难以理解！如果直接基于该表来分析其中的数据，则分析工作将会变得困难起来，除此之外，也会影响终端用户的用户体验（分析任务会占用该表的读写单元）。为了使分析工作变得简单，则需要将表中的数据导入到其它分析系统，最终依赖其它分析系统来分析数据。将数据导出到其它系统主要有2种办法，它们分别是：1.遍历整张表，并将每一项数据写入到其它系统；2.表中的数据每变更一次，则将变更写入到其它系统。前者不适用于数据量庞大的情景，而后者可以很好地避开处理大量数据，但需要借助DynamoDB Stream功能来实现。
+                        </p>
+                        <a href="https://2cloudlab.com/nosql/dynamodb-streams/" class="btn btn-dafault btn-details hvr-bounce-to-right">阅读全文</a>
+                    </div>
+                </article>
+                
+                <article class="wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">
+                    
+                    <div class="blog-post-image">
+                        <a href="https://2cloudlab.com/nosql/global-secondary-indexes/">
+                             <img class="img-fluid lazy" data-src="https://2cloudlab.com/images/blog/global-secondary-indexes.png" alt="post-image"/>
+                        </a>
+                    </div>
+                    <div class="blog-content">
+                        <h2 class="blogpost-title">
+                            <a href="https://2cloudlab.com/nosql/global-secondary-indexes/">DynamoDB的全局附加索引</a>
+                        </h2>
+                        <div class="blog-meta">
+                            <span>2020-03-04</span>
+                            <span>作者
+                                Alex
+                            </span>
+                            
+                            
+                            <span>
+                                NoSQL, DynamoDB, Data-Intensive
+                            </span>
+                            
+                        </div>
+                        <p>
+                            
+                            本文将介绍全局附加索引。与之前介绍本地附加索引的文章一样,我们将涉及全局附加索引的基础知识，然后通过一个例子来使用全局附加索引。
+                        </p>
+                        <a href="https://2cloudlab.com/nosql/global-secondary-indexes/" class="btn btn-dafault btn-details hvr-bounce-to-right">阅读全文</a>
+                    </div>
+                </article>
+                
+                <article class="wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">
+                    
+                    <div class="blog-post-image">
+                        <a href="https://2cloudlab.com/nosql/local-secondary-indexes/">
+                             <img class="img-fluid lazy" data-src="https://2cloudlab.com/images/blog/local-secondary-indexes.png" alt="post-image"/>
+                        </a>
+                    </div>
+                    <div class="blog-content">
+                        <h2 class="blogpost-title">
+                            <a href="https://2cloudlab.com/nosql/local-secondary-indexes/">DynamoDB的本地附加索引</a>
+                        </h2>
+                        <div class="blog-meta">
+                            <span>2020-03-03</span>
+                            <span>作者
+                                Alex
+                            </span>
+                            
+                            
+                            <span>
+                                NoSQL, DynamoDB, Data-Intensive
+                            </span>
+                            
+                        </div>
+                        <p>
+                            
+                            在之前的文章中，我们学习了附加索引的基础知识。在本文中，我们将深入到本地附加索引。首先，我们将涉及本地附加索引的基础，紧接着通过一个例子来使用本地附加索引。Let&amp;rsquo;s Go!
+                        </p>
+                        <a href="https://2cloudlab.com/nosql/local-secondary-indexes/" class="btn btn-dafault btn-details hvr-bounce-to-right">阅读全文</a>
+                    </div>
+                </article>
+                
+                <article class="wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">
+                    
+                    <div class="blog-post-image">
+                        <a href="https://2cloudlab.com/nosql/secondary-indexes/">
+                             <img class="img-fluid lazy" data-src="https://2cloudlab.com/images/blog/secondary-indexes.png" alt="post-image"/>
+                        </a>
+                    </div>
+                    <div class="blog-content">
+                        <h2 class="blogpost-title">
+                            <a href="https://2cloudlab.com/nosql/secondary-indexes/">DynamoDB的附加索引</a>
+                        </h2>
+                        <div class="blog-meta">
+                            <span>2020-03-02</span>
+                            <span>作者
+                                Alex
+                            </span>
+                            
+                            
+                            <span>
+                                NoSQL, DynamoDB, Data-Intensive
+                            </span>
+                            
+                        </div>
+                        <p>
+                            
+                            到目前为止，大部分的读操作主要是基于表的主键来执行的，要么通过GetItem或者Query完成。使用表的主键来查找数据项是非常高效的一种做法，同时也避免了使用Scan来遍历整张表。
+                        </p>
+                        <a href="https://2cloudlab.com/nosql/secondary-indexes/" class="btn btn-dafault btn-details hvr-bounce-to-right">阅读全文</a>
+                    </div>
+                </article>
+                
+                <article class="wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">
+                    
+                    <div class="blog-post-image">
+                        <a href="https://2cloudlab.com/nosql/filtering/">
+                             <img class="img-fluid lazy" data-src="https://2cloudlab.com/images/blog/filtering.png" alt="post-image"/>
+                        </a>
+                    </div>
+                    <div class="blog-content">
+                        <h2 class="blogpost-title">
+                            <a href="https://2cloudlab.com/nosql/filtering/">在DynamoDB中使用Filter表达式</a>
+                        </h2>
+                        <div class="blog-meta">
+                            <span>2020-03-01</span>
+                            <span>作者
+                                Alex
+                            </span>
+                            
+                            
+                            <span>
+                                NoSQL, DynamoDB, Data-Intensive
+                            </span>
+                            
+                        </div>
+                        <p>
+                            
+                            在过去的几篇文章里，我们讨论了关键字表达式，条件表达式，映射表达式以及更新表达式。本文将讨论最后一类表达式&amp;ndash;过滤器表达式。
+                        </p>
+                        <a href="https://2cloudlab.com/nosql/filtering/" class="btn btn-dafault btn-details hvr-bounce-to-right">阅读全文</a>
+                    </div>
+                </article>
+                
+                <article class="wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">
+                    
+                    <div class="blog-post-image">
+                        <a href="https://2cloudlab.com/nosql/scans/">
+                             <img class="img-fluid lazy" data-src="https://2cloudlab.com/images/blog/scans.png" alt="post-image"/>
+                        </a>
+                    </div>
+                    <div class="blog-content">
+                        <h2 class="blogpost-title">
+                            <a href="https://2cloudlab.com/nosql/scans/">在DynamoDB中，谨慎使用Scans操作</a>
+                        </h2>
+                        <div class="blog-meta">
+                            <span>2020-02-28</span>
+                            <span>作者
+                                Alex
+                            </span>
+                            
+                            
+                            <span>
+                                NoSQL, DynamoDB, Data-Intensive
+                            </span>
+                            
+                        </div>
+                        <p>
+                            
+                            本文将介绍DynamoDB的Scans操作。该操作是DynamoDB的重型武器。做一个相似的对比: GetItem操作就是是一对镊子，可以夹出某个特定的物件。Query操作像把铁铲，能挖出一大堆物件，但是其作用的范围依旧很小。然而，Scan操作就像一辆拖拉机，把整个修整区域翻个底朝天。
+                        </p>
+                        <a href="https://2cloudlab.com/nosql/scans/" class="btn btn-dafault btn-details hvr-bounce-to-right">阅读全文</a>
+                    </div>
+                </article>
+                
+                <article class="wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">
+                    
+                    <div class="blog-post-image">
+                        <a href="https://2cloudlab.com/nosql/querying/">
+                             <img class="img-fluid lazy" data-src="https://2cloudlab.com/images/blog/querying.png" alt="post-image"/>
+                        </a>
+                    </div>
+                    <div class="blog-content">
+                        <h2 class="blogpost-title">
+                            <a href="https://2cloudlab.com/nosql/querying/">如何在DynamoDB高效查询多项数据</a>
+                        </h2>
+                        <div class="blog-meta">
+                            <span>2020-02-27</span>
+                            <span>作者
+                                Alex
+                            </span>
+                            
+                            
+                            <span>
+                                NoSQL, DynamoDB, Data-Intensive
+                            </span>
+                            
+                        </div>
+                        <p>
+                            
+                            在DynamoDB中，查找操作的功能十分强大。它允许开发者根据相同的分区键来查询拥有不同排序键的数据项。本文将介绍查询操作的基础知识，分为以下几部分：
+                        </p>
+                        <a href="https://2cloudlab.com/nosql/querying/" class="btn btn-dafault btn-details hvr-bounce-to-right">阅读全文</a>
+                    </div>
+                </article>
+                
+                <article class="wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">
+                    
+                    <div class="blog-post-image">
+                        <a href="https://2cloudlab.com/nosql/working-with-multiple-items/">
+                             <img class="img-fluid lazy" data-src="https://2cloudlab.com/images/blog/working-with-multiple-items.png" alt="post-image"/>
+                        </a>
+                    </div>
+                    <div class="blog-content">
+                        <h2 class="blogpost-title">
+                            <a href="https://2cloudlab.com/nosql/working-with-multiple-items/">如何在DynamoDB中同时操作多项数据</a>
+                        </h2>
+                        <div class="blog-meta">
+                            <span>2020-02-26</span>
+                            <span>作者
+                                Alex
+                            </span>
+                            
+                            
+                            <span>
+                                NoSQL, DynamoDB, Data-Intensive
+                            </span>
+                            
+                        </div>
+                        <p>
+                            
+                            在过去的章节里，我们一次只能操作一项数据&amp;ndash;比如插入，查找，更新以及删除单项数据。而在这篇文章里，我们将一次同时操作多项数据。从这章开始，我们将创建一张具有复合主键的表，并在该表中同时操作多项数据。
+                        </p>
+                        <a href="https://2cloudlab.com/nosql/working-with-multiple-items/" class="btn btn-dafault btn-details hvr-bounce-to-right">阅读全文</a>
+                    </div>
+                </article>
+                
+                <article class="wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">
+                    
+                    <div class="blog-post-image">
+                        <a href="https://2cloudlab.com/nosql/updating-deleting-items/">
+                             <img class="img-fluid lazy" data-src="https://2cloudlab.com/images/blog/updating-deleting-items.png" alt="post-image"/>
+                        </a>
+                    </div>
+                    <div class="blog-content">
+                        <h2 class="blogpost-title">
+                            <a href="https://2cloudlab.com/nosql/updating-deleting-items/">更新和删除数据项</a>
+                        </h2>
+                        <div class="blog-meta">
+                            <span>2020-02-25</span>
+                            <span>作者
+                                Alex
+                            </span>
+                            
+                            
+                            <span>
+                                NoSQL, DynamoDB, Data-Intensive
+                            </span>
+                            
+                        </div>
+                        <p>
+                            
+                            在这篇文章中，我们将学习如何向表中更新和删除单项数据。这是最后一篇关于单项数据操作的文章，后续的文章将涉及多个数据项的操作，这些操作主要有Queries和Scans。
+                        </p>
+                        <a href="https://2cloudlab.com/nosql/updating-deleting-items/" class="btn btn-dafault btn-details hvr-bounce-to-right">阅读全文</a>
+                    </div>
+                </article>
+                
+                <article class="wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">
+                    
+                    <div class="blog-post-image">
+                        <a href="https://2cloudlab.com/nosql/expression-basics/">
+                             <img class="img-fluid lazy" data-src="https://2cloudlab.com/images/blog/expression-basics.png" alt="post-image"/>
+                        </a>
+                    </div>
+                    <div class="blog-content">
+                        <h2 class="blogpost-title">
+                            <a href="https://2cloudlab.com/nosql/expression-basics/">DynamoDB的基础表达式</a>
+                        </h2>
+                        <div class="blog-meta">
+                            <span>2020-02-24</span>
+                            <span>作者
+                                Alex
+                            </span>
+                            
+                            
+                            <span>
+                                NoSQL, DynamoDB, Data-Intensive
+                            </span>
+                            
+                        </div>
+                        <p>
+                            
+                            本文是关于DynamoDB的表达式。表达式是DynamoDB的内置功能，它又细分为以下几类表达式：
+                        </p>
+                        <a href="https://2cloudlab.com/nosql/expression-basics/" class="btn btn-dafault btn-details hvr-bounce-to-right">阅读全文</a>
+                    </div>
+                </article>
+                
+                <article class="wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">
+                    
+                    <div class="blog-post-image">
+                        <a href="https://2cloudlab.com/nosql/inserting-retrieving-items/">
+                             <img class="img-fluid lazy" data-src="https://2cloudlab.com/images/blog/inserting-retrieving-items.png" alt="post-image"/>
+                        </a>
+                    </div>
+                    <div class="blog-content">
+                        <h2 class="blogpost-title">
+                            <a href="https://2cloudlab.com/nosql/inserting-retrieving-items/">在DynamoDB中插入和读取数据项</a>
+                        </h2>
+                        <div class="blog-meta">
+                            <span>2019-02-23</span>
+                            <span>作者
+                                Alex
+                            </span>
+                            
+                            
+                            <span>
+                                NoSQL, DynamoDB, Data-Intensive
+                            </span>
+                            
+                        </div>
+                        <p>
+                            
+                            数据项是DynamoDB的基础单元，每一张表都会包含多项数据。接下来，在本文中，我们将向DynamoDB中插入和读取数据项。我们将创建Users表，并为该表指定一个简单键：Username。接着，我们将操作2个基本的接口：PutItem和GetItem。下一篇文章，我们将在这篇文章的基础上应用表达式来实现更加复杂的查询功能。在这之后，我们将另起一篇文章来讲解如何更新和删除数据项。
+                        </p>
+                        <a href="https://2cloudlab.com/nosql/inserting-retrieving-items/" class="btn btn-dafault btn-details hvr-bounce-to-right">阅读全文</a>
+                    </div>
+                </article>
+                
+                <article class="wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">
+                    
+                    <div class="blog-post-image">
+                        <a href="https://2cloudlab.com/nosql/anatomy-of-an-item/">
+                             <img class="img-fluid lazy" data-src="https://2cloudlab.com/images/blog/anatomy-of-an-item.png" alt="post-image"/>
+                        </a>
+                    </div>
+                    <div class="blog-content">
+                        <h2 class="blogpost-title">
+                            <a href="https://2cloudlab.com/nosql/anatomy-of-an-item/">DynamoDB中，每项数据（item）的构成单元</a>
+                        </h2>
+                        <div class="blog-meta">
+                            <span>2019-02-22</span>
+                            <span>作者
+                                Alex
+                            </span>
+                            
+                            
+                            <span>
+                                NoSQL, DynamoDB, Data-Intensive
+                            </span>
+                            
+                        </div>
+                        <p>
+                            
+                            DynamoDB中的每条数据是构成整个数据集的基础，它对应着关系型数据库中的某一张表中的某一行数据或者对应MongoDB中一个文档，又或者是编程当中的一个对象（比如一个用户对象）。每条数据由主键唯一标识，而主键是在创建表的时候指定的。除了主键之外，每条数据也可以包含其它属性，这些属性与主键组成了一条完整的数据单元（比如：一个用户数据由user_id, name, phone组成，其中user_id是主键）。每个属性（包括主键）都有对应类型，比如string，numbers，lists，sets等，当写入或查询数据的时候，这些类型都需要提供。在这篇文章中，我们将通过以下几个方面来讨论构成每项数据的基础单元：
+                        </p>
+                        <a href="https://2cloudlab.com/nosql/anatomy-of-an-item/" class="btn btn-dafault btn-details hvr-bounce-to-right">阅读全文</a>
+                    </div>
+                </article>
+                
+                <article class="wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">
+                    
+                    <div class="blog-post-image">
+                        <a href="https://2cloudlab.com/nosql/additional-reading/">
+                             <img class="img-fluid lazy" data-src="https://2cloudlab.com/images/blog/additional-reading.png" alt="post-image"/>
+                        </a>
+                    </div>
+                    <div class="blog-content">
+                        <h2 class="blogpost-title">
+                            <a href="https://2cloudlab.com/nosql/additional-reading/">NoSQL的学习资料</a>
+                        </h2>
+                        <div class="blog-meta">
+                            <span>2019-02-21</span>
+                            <span>作者
+                                Alex
+                            </span>
+                            
+                            
+                            <span>
+                                NoSQL, DynamoDB, Data-Intensive
+                            </span>
+                            
+                        </div>
+                        <p>
+                            
+                            这篇文章收录了一些关于NoSQL的英文资料。有的解释NoSQL为何能规模化而SQL却受到限制；有的涉及NoSQL的单表设计原则，以及解释为何需要使用单表；其中有一篇文章是关于如何将SQL中多张有关联的表转化成DynamoDB中的单张表。还有一些关于DynamoDB的视频资料，其中的内容讲述了NoSQL的设计原则，以及如何高效使用DynamoDB。读者可以通过这些学习资料来掌握NoSQL的理论知识，通过这些知识来设计既能支持100TBs以上数据又能输出稳定性能的数据应用方案。
+                        </p>
+                        <a href="https://2cloudlab.com/nosql/additional-reading/" class="btn btn-dafault btn-details hvr-bounce-to-right">阅读全文</a>
+                    </div>
+                </article>
+                
+                <article class="wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">
+                    
+                    <div class="blog-post-image">
+                        <a href="https://2cloudlab.com/nosql/environment-setup/">
+                             <img class="img-fluid lazy" data-src="https://2cloudlab.com/images/blog/environment-setup.png" alt="post-image"/>
+                        </a>
+                    </div>
+                    <div class="blog-content">
+                        <h2 class="blogpost-title">
+                            <a href="https://2cloudlab.com/nosql/environment-setup/">DynamoDB的环境搭建</a>
+                        </h2>
+                        <div class="blog-meta">
+                            <span>2019-02-13</span>
+                            <span>作者
+                                Alex
+                            </span>
+                            
+                            
+                            <span>
+                                NoSQL, DynamoDB, Data-Intensive
+                            </span>
+                            
+                        </div>
+                        <p>
+                            
+                            DynamoDB是一个完全托管于AWS的NoSQL解决方案。开发者可以选择直接在AWS上创建一个DynamoDB的表或者将DynamoDB安装到本地。后续的内容将涉及DynamoDB的API，比如通过AWS CLI来操作DynamoDB。为了操作DynamoDB，我们需要搭建DynamoDB的环境。
+                        </p>
+                        <a href="https://2cloudlab.com/nosql/environment-setup/" class="btn btn-dafault btn-details hvr-bounce-to-right">阅读全文</a>
+                    </div>
+                </article>
+                
+                <article class="wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">
+                    
+                    <div class="blog-post-image">
+                        <a href="https://2cloudlab.com/nosql/the-dynamo-paper/">
+                             <img class="img-fluid lazy" data-src="https://2cloudlab.com/images/blog/the-dynamo-paper.png" alt="post-image"/>
+                        </a>
+                    </div>
+                    <div class="blog-content">
+                        <h2 class="blogpost-title">
+                            <a href="https://2cloudlab.com/nosql/the-dynamo-paper/">关于Dynamo的论文</a>
+                        </h2>
+                        <div class="blog-meta">
+                            <span>2019-02-12</span>
+                            <span>作者
+                                Alex
+                            </span>
+                            
+                            
+                            <span>
+                                NoSQL, DynamoDB, Data-Intensive
+                            </span>
+                            
+                        </div>
+                        <p>
+                            
+                            在2004这一年，Amazon.com的增长速度很快，最终其Oracle上的数据规模达到极限，限制了其业务的发展。为了摆脱这种限制，Amazon开始考虑建立他们自己的数据库（注意：在公司内部搭建一个数据库系统是非常糟糕的想法）。在研发自家的数据库之后，亚马逊的工程师创建了创造了Amazon Dynamo数据库，这个数据库支撑了大部分Amazon.com业务，包括其购物车。
+                        </p>
+                        <a href="https://2cloudlab.com/nosql/the-dynamo-paper/" class="btn btn-dafault btn-details hvr-bounce-to-right">阅读全文</a>
+                    </div>
+                </article>
+                
+                <article class="wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">
+                    
+                    <div class="blog-post-image">
+                        <a href="https://2cloudlab.com/nosql/key-concepts/">
+                             <img class="img-fluid lazy" data-src="https://2cloudlab.com/images/blog/key-concepts.png" alt="post-image"/>
+                        </a>
+                    </div>
+                    <div class="blog-content">
+                        <h2 class="blogpost-title">
+                            <a href="https://2cloudlab.com/nosql/key-concepts/">DynamoDB的关键概念</a>
+                        </h2>
+                        <div class="blog-meta">
+                            <span>2019-02-11</span>
+                            <span>作者
+                                Alex
+                            </span>
+                            
+                            
+                            <span>
+                                NoSQL, DynamoDB, Data-Intensive
+                            </span>
+                            
+                        </div>
+                        <p>
+                            
+                            在使用DynamoDB之前，我们需要了解一些基础概念，这些概念涉及了：表（tables），数据项（items）和每项数据的属性（attributes）、主键（primary keys），有简单主键（Partition Key）和复合主键（Partition Key &#43; Sort Key）、附加索引（secondary indexes）、DynamoDB的读写能力。
+                        </p>
+                        <a href="https://2cloudlab.com/nosql/key-concepts/" class="btn btn-dafault btn-details hvr-bounce-to-right">阅读全文</a>
+                    </div>
+                </article>
+                
+                <article class="wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">
+                    
+                    <div class="blog-post-image">
+                        <a href="https://2cloudlab.com/nosql/what-is-dynamo-db/">
+                             <img class="img-fluid lazy" data-src="https://2cloudlab.com/images/blog/what-is-dynamo-db.png" alt="post-image"/>
+                        </a>
+                    </div>
+                    <div class="blog-content">
+                        <h2 class="blogpost-title">
+                            <a href="https://2cloudlab.com/nosql/what-is-dynamo-db/">什么是DynamoDB？</a>
+                        </h2>
+                        <div class="blog-meta">
+                            <span>2019-02-10</span>
+                            <span>作者
+                                Alex
+                            </span>
+                            
+                            
+                            <span>
+                                NoSQL, DynamoDB, Data-Intensive
+                            </span>
+                            
+                        </div>
+                        <p>
+                            
+                            DynamoDB是一个由AWS提供的NoSQL数据库服务。它完全托管于AWS，开发者只需要定义数据访问模式以及一些关键信息，就能通过HTTP API来使用它。它具有以下特点：
+                        </p>
+                        <a href="https://2cloudlab.com/nosql/what-is-dynamo-db/" class="btn btn-dafault btn-details hvr-bounce-to-right">阅读全文</a>
+                    </div>
+                </article>
+                
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Call To Action Section Start -->
+<section id="call-to-action">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2 class="title wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">听起来还不错 ？</h1>
+                    <p class="wow fadeInDown" data-wow-delay=".5s" data-wow-duration="500ms">如果你所在的企业遇到了以下问题：<br> 研发流程混乱不堪或者效率低下、经历了持续上升的运维成本、无法及时向用户发布新的服务或产品以及想使用云计算技术但缺乏经验！<br>那么，请毫不犹疑地</p>
+                    <a href="/contact" class="btn btn-default btn-contact wow fadeInDown" data-wow-delay=".7s" data-wow-duration="500ms">联系我们</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-- Call To Action Section End -->
+
+
+<!-- Footer Section Start -->
+<footer id="footer">
+    <div class="container">
+        <div class="row content-justify-between">
+            <div class="col-md-8 col-12 text-center text-lg-left text-md-left">
+                <p class="copyright">版权所有©:
+                    <span>
+                        <script>document.write(new Date().getFullYear())</script>
+                    </span> 上海漫步云端科技有限公司
+                    <a href="https://2cloudlab.com/" target="_blank">2cloudlab.com</a>.
+                    <br> 地址：上海市浦东区浦东南路 999 号新梅联合广场 1 期 32 层
+                    <br>
+                    邮箱：<a href="mailto:support@2cloudlab.com">support@2cloudlab.com</a>
+                </p>
+            </div>
+            <div class="col-md-4 col-12">
+                <!-- Social Media -->
+                <ul class="social text-center text-md-right text-lg-right">
+                    
+                    <li><a href="https://github.com/2cloudlab"><i class="ion-social-github"></i></a></li>
+                    
+                    <li><a href="https://www.linkedin.com/company/2cloudlab-com"><i class="ion-social-linkedin"></i></a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- footer section end -->
+
+<!-- jquery -->
+<script src="https://2cloudlab.com/plugins/jQurey/jquery.min.js"></script>
+<!-- Form Validation -->
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.form.js"></script>
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.validate.min.js"></script>
+<!-- slick slider -->
+<script src="https://2cloudlab.com/plugins/slick/slick.min.js"></script>
+<!-- bootstrap js -->
+<script src="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.js"></script>
+<!-- wow js -->
+<script src="https://2cloudlab.com/plugins/wow-js/wow.min.js"></script>
+<!-- slider js -->
+<script src="https://2cloudlab.com/plugins/slider/slider.js"></script>
+<!-- Fancybox -->
+<script src="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.js"></script>
+<!-- template main js -->
+
+<script src="https://2cloudlab.com/js/script.min.js"></script>
+<!-- google analitycs -->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-171018621-1', 'auto');
+    ga('send', 'pageview');
+</script></body>
+</html>

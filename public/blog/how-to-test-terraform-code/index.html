@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <!-- Basic Page Needs -->
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  
+  <meta name="description" content="在企业中经常会发生此类事情：临近产品新功能发布的日子，企业上下忙的不可开交，甚至有些研发人员被半夜叫醒解决新功能无法使用的问题，大家急急忙忙将遇到的问题解决了却又引发了其它问题，最终导致产品新功能无法及时发布或者产品运行在一个容易奔溃的环境。这类事件反复发生，使得研发人员害怕产品新功能的每一次发布。这种害怕将导致企业延长新功能的发布周期，本来一周一次的发布计划改成了一个月一次发布。更长的发布周期将会积累和隐藏更多的风险和不确定因素，因此这类事件变得更加常见，问题变得更加糟糕！面对这个问题所带来的挑战，企业需要缩短发布周期来及早暴露和解决问题，而缩短发布周期的关键点在于如何在短时间内发现更多的缺陷！自动化测试是实现这个关键点的因素之一。">
+  <meta name="author" content="2cloudlab">
+  <meta name="generator" content="Hugo 0.78.1" />
+  
+  <!-- Mobile Specific Metas -->
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>如何为产品提供可信度较高的运行环境</title>
+  <link rel="icon" href="https://2cloudlab.com/images/favicon.ico">
+
+  <!-- Twitter Bootstrs CSS -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.css">
+  <!-- Ionicons Fonts Css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/ionicons/ionicons.min.css">
+  <!-- animate css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/animate-css/animate.css">
+  <!-- Hero area slider css-->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slider/slider.css">
+  <!-- slick slider -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slick/slick.css">
+  <!-- Fancybox -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.css">
+  <!-- hover -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/hover/hover-min.css">
+  <!-- template main css file -->
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/style.min.css" integrity="" media="screen">
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/syntax.min.css" integrity="" media="screen">
+</head><body><section class="top-bar animated-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <a class="navbar-brand" href="https://2cloudlab.com/">
+                        <img src="https://2cloudlab.com/images/logo.png" alt="logo">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation"
+                        aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navigation">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                    href="https://2cloudlab.com/">首页</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/about">关于</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/service">服务</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/price">价格</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/blog">博客</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/nosql">NoSQL</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/contact">联系我们</a>
+                            </li>
+                            
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="global-page-header">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2>如何为产品提供可信度较高的运行环境</h2>
+                    <div class="portfolio-meta">
+                        <span>2019-11-15</span>|
+                        <span class="ion-pricetags"></span>
+                        <span>
+                            2cloudlab.com, 云计算, devops, terraform, 自动化测试
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style type="text/css">
+    @media (min-width: 1200px) {
+        .post-container {
+            max-width: 800px;
+        }
+    }
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        display: block;
+        margin: auto;
+    }
+</style>
+
+<section class="single-post">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                
+                <div class="post-img">
+                    <img class="img-fluid lazy" alt="" data-src="https://2cloudlab.com/images/blog/provide-stable-running-environment-for-products.jpg">
+                </div>
+                
+                <div class="post-content">
+                    <p>在企业中经常会发生此类事情：临近产品新功能发布的日子，企业上下忙的不可开交，甚至有些研发人员被半夜叫醒解决新功能无法使用的问题，大家急急忙忙将遇到的问题解决了却又引发了其它问题，最终导致产品新功能无法及时发布或者产品运行在一个容易奔溃的环境。这类事件反复发生，使得研发人员害怕产品新功能的每一次发布。这种害怕将导致企业延长新功能的发布周期，本来一周一次的发布计划改成了一个月一次发布。更长的发布周期将会积累和隐藏更多的风险和不确定因素，因此这类事件变得更加常见，问题变得更加糟糕！面对这个问题所带来的挑战，企业需要缩短发布周期来及早暴露和解决问题，而缩短发布周期的关键点在于如何在短时间内发现更多的缺陷！自动化测试是实现这个关键点的因素之一。</p>
+<p>自动化测试在产品的研发过程中无处不在。研发团队在研发产品时需要为其编写单元测试；测试团队在测试产品时要为其编写手动测试、集成测试和UI测试；DevOps团队需要为产品的运行环境编写自动化测试用例，确保生成的环境是稳定且支持产品的。为产品研发实施自动化测试的目的在于短时间内发现和解决更多的缺陷，从而增强产品对外发布的信心！本文将通过以下方面来介绍如何对产品的运行环境进行自动化测试，企业可以根据自身情况，引入本文所提到的自动化测试经验来确保产品的运行环境是可信的。</p>
+<ol>
+<li>2cloudlab模块的自动化测试</li>
+<li>静态检测Terraform的编码</li>
+<li>针对Terraform模块编写单元测试（Unit Test）</li>
+<li>针对Terraform模块编写集成测试（Integration Test）</li>
+<li>针对Terraform模块编写端到端的测试（End-to-End Test）</li>
+<li>为测试环境中的资源定制清除策略</li>
+<li>总结</li>
+</ol>
+<p>其中单元测试、集成测试和End-to-End测试需要使用<code>Go</code>语言来编写大量测试代码，产品运行环境的质量主要由它们来保证。这些测试的难易程度、数量占比和运行时间由下图所示：</p>
+<p>
+<img class="lazy" data-src="https://2cloudlab.com/images/blog/number-of-different-test-types.png" alt=""  />
+</p>
+<h2 id="2cloudlab模块的自动化测试">2cloudlab模块的自动化测试</h2>
+<p>2cloudlab的模块都会包含一些自动化测试用例。每一个Terraform模块都会有对应的测试用例，这些测试用例会放在一个<code>test</code>目录下（目录结构如下所示），每一个测试用例所验证的场景是不同的。由于这些自动化测试用例都是用<code>Go</code>语言来编写的，因此需要使用<code>Go</code>语言的运行时环境来运行。除此之外，为了能够高效地编写自动化测试用例，需要引入第三方工具<a href="https://github.com/gruntwork-io/terratest">Terratest</a>，该工具也是基于Go语言来编写的（<a href="https://2cloudlab.com/blog/how-to-use-go-to-develop-part1.md">这篇文章</a>介绍了Go语言的基础知识），它像一把瑞士军刀，提供了大量通用的基础操作。</p>
+<div class="highlight"><pre class="chroma"><code class="language-terraform" data-lang="terraform"><span class="p">.</span>
+<span class="o">|</span><span class="err">____</span><span class="nx">examples</span>
+<span class="o">|</span> <span class="o">|</span><span class="err">____</span><span class="nx">iam_across_account_assistant</span>
+<span class="o">|</span> <span class="o">|</span> <span class="o">|</span><span class="err">____</span><span class="nx">main</span><span class="p">.</span><span class="nx">tf</span>
+<span class="o">|</span> <span class="o">|</span> <span class="o">|</span><span class="err">____</span><span class="nx">outputs</span><span class="p">.</span><span class="nx">tf</span>
+<span class="o">|</span> <span class="o">|</span> <span class="o">|</span><span class="err">____</span><span class="nx">README</span><span class="p">.</span><span class="nx">md</span>
+<span class="o">|</span> <span class="o">|</span> <span class="o">|</span><span class="err">____</span><span class="nx">terraform</span><span class="p">.</span><span class="nx">tfstate</span>
+<span class="o">|</span> <span class="o">|</span> <span class="o">|</span><span class="err">____</span><span class="nx">terraform</span><span class="p">.</span><span class="nx">tfstate</span><span class="p">.</span><span class="nx">backup</span>
+<span class="o">|</span> <span class="o">|</span> <span class="o">|</span><span class="err">____</span><span class="nb">var</span><span class="nx">iables</span><span class="p">.</span><span class="nx">tf</span>
+<span class="o">|</span><span class="err">____</span><span class="nb">module</span><span class="nx">s</span>
+<span class="o">|</span> <span class="o">|</span><span class="err">____</span><span class="nx">iam_across_account_assistant</span>
+<span class="o">|</span> <span class="o">|</span> <span class="o">|</span><span class="err">____</span><span class="nx">main</span><span class="p">.</span><span class="nx">tf</span>
+<span class="o">|</span> <span class="o">|</span> <span class="o">|</span><span class="err">____</span><span class="nx">outputs</span><span class="p">.</span><span class="nx">tf</span>
+<span class="o">|</span> <span class="o">|</span> <span class="o">|</span><span class="err">____</span><span class="nx">README</span><span class="p">.</span><span class="nx">md</span>
+<span class="o">|</span> <span class="o">|</span> <span class="o">|</span><span class="err">____</span><span class="nb">var</span><span class="nx">iables</span><span class="p">.</span><span class="nx">tf</span>
+<span class="o">|</span><span class="err">____</span><span class="nx">test</span>
+<span class="o">|</span> <span class="o">|</span><span class="err">____</span><span class="nx">iam_across_account_assistant_test</span><span class="p">.</span><span class="nx">go</span>
+<span class="o">|</span> <span class="o">|</span><span class="err">____</span><span class="nx">README</span><span class="p">.</span><span class="nx">md</span>
+</code></pre></div><p>其中<code>test</code>目录下的测试用例<code>iam_across_account_assistant_test.go</code>会调用<code>examples</code>下的手动测试例子来验证目录<code>modules</code>下的Terraform模块<code>iam_across_account_assistant</code>。</p>
+<p>2cloudlab根据以上目录结构编写了大量的单元测试以及少量的集成测试。这些测试是遵守了以下原则来编写的:</p>
+<ol>
+<li>每一个测试用例都会基于真实环境来执行</li>
+<li>每一个测试用例执行结束后都会销毁已创建的资源</li>
+<li>为每一个资源指定一个独立的命名空间，以免发生名称冲突</li>
+<li>每一个测试用例都会在独立的临时目录下下运行</li>
+<li>为每一个集成测试添加可配置stage步骤</li>
+<li>测试用例之间是相互独立且可并发执行</li>
+</ol>
+<p>在编写测试用例之前，有一步关键的验证：静态检测。为Terraform模块实施静态检测只需要花费几分钟，但是确能够避免一些常见的错误，接下来让我们从静态检测开始来一步一步提高产品运行环境的稳定性！</p>
+<h2 id="静态检测terraform的编码">静态检测Terraform的编码</h2>
+<p>静态检测的主要作用在于分析Terraform模块是否遵守了Terraform的语法规则。为Terraform实施静态检测是非常有必要的，这种检测能够捕获常见的错误（比如<code>{}</code>没有成对出现，拼写错误）。实施静态检测只需要花费几分钟就能做到，因此在提高Terraform模块的质量的过程中，企业应该将静态检测实施起来。</p>
+<p>Terraform自身提供了实施静态检测的命令：<code>terraform validate</code>。这个命令会在验证当前目录下所有后缀为<code>.tf</code>的文件，如果某些文件包含了一些编码错误，那么这些错误会被Terraform暴露出来。比如当<code>{}</code>没有成对出现的时，执行命令<code>terraform validate</code>会曝出以下提示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-terraform" data-lang="terraform"><span class="nx">Error</span><span class="o">:</span> <span class="nx">Argument</span> <span class="nx">or</span> <span class="nx">block</span> <span class="nx">definition</span> <span class="nx">required</span>
+
+  <span class="nx">on</span> <span class="nx">main</span><span class="p">.</span><span class="nx">tf</span> <span class="nx">line</span> <span class="m">18</span><span class="p">,</span> <span class="k">in</span> <span class="nb">module</span> <span class="s2">&#34;iam_across_account_assistant&#34;</span><span class="o">:</span>
+
+<span class="nx">An</span> <span class="nx">argument</span> <span class="nx">or</span> <span class="nx">block</span> <span class="nx">definition</span> <span class="nx">is</span> <span class="nx">required</span> <span class="nx">here</span><span class="p">.</span>
+</code></pre></div><p>除了Terraform自身提供的检测机制，还有一些工具（<a href="https://github.com/terraform-linters/tflint">tflint</a>和<a href="https://www.hashicorp.com/sentinel/">HashiCorp Sentinel</a>）也能提供静态检测的功能。</p>
+<p>静态检测虽然能够捕获语法上的错误，但是它无法捕获运行时环境上的错误。运行时环境是现实世界中真实的环境，这些环境中的资源都是动态运行的。语法上的错误是比较容易发现并解决的，而运行时环境中的错误是难以察觉且不好解决，因此需要编写Unit Test、Integration Test和End-to-End Test来捕捉运行时环境中的缺陷。如果你已经花了几分钟实施静态检测，那么下一步就需要考虑如何实施单元测试。</p>
+<h2 id="针对terraform模块编写单元测试unit-test">针对Terraform模块编写单元测试（Unit Test）</h2>
+<p>编写单元测试的主要作用是：验证独立模块的可靠性。2cloudlab使用Terraform编写了大量的独立模块，这些模块相互独立，部署每一个模块所需的时间大约在1～5分钟。编写大量小而独立的模块有许多好处。首先，可以组合这些模块来完成复杂的部署;其次，独立的模块可以由不同的团队成员同步研发;最后，独立的模块方便测试。小而独立的模块为测试带来以下好处:</p>
+<ul>
+<li>可并发执行单元测试用例</li>
+<li>执行所有单元测试所需的时间变得更短</li>
+<li>可以执行部分单元测试</li>
+</ul>
+<p>这些好处能够缩短单元测试运行的时间，使得团队能够及时得到测试报告，进而根据测试报告修复检测到的缺陷。以下例子是使用Go所编写的单元测试：</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">test</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;fmt&#34;</span>
+	<span class="s">&#34;path/filepath&#34;</span>
+	<span class="s">&#34;testing&#34;</span>
+
+	<span class="s">&#34;github.com/gruntwork-io/terratest/modules/random&#34;</span>
+	<span class="s">&#34;github.com/gruntwork-io/terratest/modules/terraform&#34;</span>
+	<span class="s">&#34;github.com/gruntwork-io/terratest/modules/test-structure&#34;</span>
+	<span class="s">&#34;github.com/gruntwork-io/terratest/modules/aws&#34;</span>
+	<span class="s">&#34;github.com/aws/aws-sdk-go/service/iam&#34;</span>
+
+	<span class="s">&#34;github.com/stretchr/testify/assert&#34;</span>
+<span class="p">)</span>
+
+<span class="c1">//Create full_access group with admin permissions and config with MFA option
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">TestIntegrationIAM2Groups</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c1">//1. Make this test case parallel which means it will not block other test cases
+</span><span class="c1"></span>	<span class="nx">t</span><span class="p">.</span><span class="nf">Parallel</span><span class="p">()</span>
+	<span class="c1">//2. Copy folder &#34;../&#34; to a tmp folder and return the tmp path of &#34;examples&#34;
+</span><span class="c1"></span>	<span class="nx">examplesFolder</span> <span class="o">:=</span> <span class="nx">test_structure</span><span class="p">.</span><span class="nf">CopyTerraformFolderToTemp</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="s">&#34;../&#34;</span><span class="p">,</span> <span class="s">&#34;examples&#34;</span><span class="p">)</span>
+	<span class="nx">iam_across_account_assistantFolder</span> <span class="o">:=</span> <span class="nx">filepath</span><span class="p">.</span><span class="nf">Join</span><span class="p">(</span><span class="nx">examplesFolder</span><span class="p">,</span> <span class="s">&#34;iam_across_account_assistant&#34;</span><span class="p">)</span>
+
+	<span class="c1">//3. Create terraform options which is passed to terraform module
+</span><span class="c1"></span>	<span class="nx">expected_group_name</span> <span class="o">:=</span> <span class="s">&#34;full_access&#34;</span>
+	<span class="nx">expected_user_name</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;username-%s&#34;</span><span class="p">,</span> <span class="nx">random</span><span class="p">.</span><span class="nf">UniqueId</span><span class="p">())</span>
+	<span class="nx">user_groups</span> <span class="o">:=</span> <span class="p">[]</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}{</span>
+		<span class="p">{</span>
+			<span class="s">&#34;group_name&#34;</span><span class="p">:</span> <span class="nx">expected_group_name</span><span class="p">,</span>
+			<span class="s">&#34;user_profiles&#34;</span><span class="p">:</span> <span class="p">[]</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}{</span>
+				<span class="p">{</span>
+					<span class="c1">//Use random.UniqueId() to make input value uniqued!
+</span><span class="c1"></span>					<span class="s">&#34;pgp_key&#34;</span><span class="p">:</span>   <span class="s">&#34;keybase:freshairfreshliv&#34;</span><span class="p">,</span>
+					<span class="s">&#34;user_name&#34;</span><span class="p">:</span> <span class="nx">expected_user_name</span><span class="p">,</span>
+				<span class="p">},</span>
+			<span class="p">},</span>
+		<span class="p">},</span>
+	<span class="p">}</span>
+	<span class="nx">terraformOptions</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">terraform</span><span class="p">.</span><span class="nx">Options</span><span class="p">{</span>
+		<span class="nx">TerraformDir</span><span class="p">:</span> <span class="nx">iam_across_account_assistantFolder</span><span class="p">,</span>
+		<span class="nx">Vars</span><span class="p">:</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}{</span>
+			<span class="s">&#34;should_require_mfa&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+			<span class="s">&#34;user_groups&#34;</span><span class="p">:</span>        <span class="nx">user_groups</span><span class="p">,</span>
+		<span class="p">},</span>
+		<span class="c1">// Retry up to 3 times, with 5 seconds between retries, on known errors
+</span><span class="c1"></span>		<span class="nx">MaxRetries</span><span class="p">:</span>         <span class="mi">3</span><span class="p">,</span>
+		<span class="nx">TimeBetweenRetries</span><span class="p">:</span> <span class="mi">5</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">,</span>
+		<span class="nx">RetryableTerraformErrors</span><span class="p">:</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span><span class="p">{</span>
+			<span class="s">&#34;RequestError: send request failed&#34;</span><span class="p">:</span> <span class="s">&#34;Throttling issue?&#34;</span><span class="p">,</span>
+		<span class="p">},</span>
+	<span class="p">}</span>
+
+	<span class="c1">//4. Something like finally in try...catch
+</span><span class="c1"></span>	<span class="k">defer</span> <span class="nx">terraform</span><span class="p">.</span><span class="nf">Destroy</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">terraformOptions</span><span class="p">)</span>
+
+	<span class="c1">//5. Something like terraform init and terraform apply
+</span><span class="c1"></span>	<span class="nx">terraform</span><span class="p">.</span><span class="nf">InitAndApply</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">terraformOptions</span><span class="p">)</span>
+
+	<span class="c1">//6. Validate the created group
+</span><span class="c1"></span>	<span class="nx">iamClient</span> <span class="o">:=</span> <span class="nx">aws</span><span class="p">.</span><span class="nf">NewIamClient</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="s">&#34;us-east-2&#34;</span><span class="p">)</span>
+
+	<span class="nx">resp</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">iamClient</span><span class="p">.</span><span class="nf">GetGroup</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">iam</span><span class="p">.</span><span class="nx">GetGroupInput</span> <span class="p">{</span>
+		<span class="nx">GroupName</span> <span class="p">:</span> <span class="o">&amp;</span><span class="nx">expected_group_name</span><span class="p">,</span>
+	<span class="p">})</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+	<span class="nx">actual_group_name</span> <span class="o">:=</span> <span class="o">*</span><span class="nx">resp</span><span class="p">.</span><span class="nx">Group</span><span class="p">.</span><span class="nx">GroupName</span>
+	<span class="nx">assert</span><span class="p">.</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">expected_group_name</span><span class="p">,</span> <span class="nx">actual_group_name</span><span class="p">,</span> <span class="s">&#34;These 2 groups should be the same.&#34;</span><span class="p">)</span>
+	<span class="nx">actual_user_name</span> <span class="o">:=</span> <span class="o">*</span><span class="nx">resp</span><span class="p">.</span><span class="nx">Users</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">UserName</span>
+	<span class="nx">assert</span><span class="p">.</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">expected_user_name</span><span class="p">,</span> <span class="nx">actual_user_name</span><span class="p">,</span> <span class="s">&#34;These 2 user names should be the same.&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><p>以上自动化测试用例测试了Terraform模块<code>iam_across_account_assistant</code>。注意代码中注释，一共分成6个部分，2cloudlab针对Terraform模块所编写的自动化测试用例都会按照以上模式。它们的作用在于：</p>
+<ol>
+<li><code>t.Parallel()</code>使得所有测试用例能够并发执行，这样的好处是可以缩短执行测试用例所需的整体时间</li>
+<li>会将Terraform模块拷贝到一个临时目录，这样做的好处是避免不同测试场景调用相同Terraform模块所引发的State文件冲突</li>
+<li>在Go中创建Terraform的输入参数，注意参数<code>MaxRetries</code>、<code>TimeBetweenRetries</code>和<code>RetryableTerraformErrors</code>确保了每一个测试用例如果发生了意外错误的时候，依然可以重复执行</li>
+<li>使用<code>defer</code>确保测试用例在退出的时候依然能够执行资源销毁操作</li>
+<li>在Go中调用Terraform模块，通过执行命令<code>terraform init</code>和<code>terraform apply</code></li>
+<li>验证逻辑，这个验证逻辑因不同的Terraform模块而不同，需要借助Terratest所提供的一些函数来实现</li>
+</ol>
+<p>编写完以上测试之后需要执行以下命令来运行该测试用例（其中参数<code>timeout</code>能够确保自动化测试有充足的时间执行）:</p>
+<div class="highlight"><pre class="chroma"><code class="language-terraform" data-lang="terraform"><span class="nx">go</span> <span class="nx">test</span> <span class="o">-</span><span class="nx">v</span> <span class="o">-</span><span class="nx">timeout</span> <span class="m">30</span><span class="nx">m</span>
+</code></pre></div><p>输出结果如下（该测试用例花了大约204秒）：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">--- PASS: TestIntegrationIAM2Groups <span class="o">(</span>204.00s<span class="o">)</span>
+PASS
+ok      module_security/test    204.031s
+</code></pre></div><p>2cloudlab提供了大量的Terraform模块，这些模块都是相互独立的。为了确保这些模块的质量，2cloudlab会用Go编写大量的单元测试，因此这些单元测试都会按照以上模式来编写。当Terraform模块都能独立工作的时候，那么如何确保它们组合在一起的时候依然能够正常工作，这个时候就需要通过集成测试来保证。接下来让我们把注意力转移到如何编写和组织集成测试。</p>
+<h2 id="针对terraform模块编写集成测试integration-test">针对Terraform模块编写集成测试（Integration Test）</h2>
+<p>集成测试的主要目的是验证几个模块组合在一起时是否能够正常工作。使用Go来编写集成测试的时候，除了要根据单元测试的模式来编写之外，还需要结合Terratest所提供的<code>test_structure.RunTestStage</code>。接下来让我们通过一个例子来说明如何编写有效的集成测试。这个例子有2个模块，它们分别是：<code>mysql_database</code>和<code>web_app</code>，其中后者依赖前者。每个模块的职责如下：</p>
+<ul>
+<li><code>mysql_database</code>将创建一个RDS服务，其输出的是连接信息（地址+端口），该信息将被<code>web_app</code>使用</li>
+<li><code>web_app</code>将创建一个EC2服务，并且会在端口8080监听请求，并将数据库的连接信息（<code>mysql_database</code>的地址+端口）返回给用户</li>
+</ul>
+<p>为了验证这2个模块能够放在一起正常工作，则需要编写以下Go代码：</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// web_app_intergration_test.go
+</span><span class="c1"></span><span class="kd">const</span> <span class="nx">dbExampleDir</span> <span class="p">=</span> <span class="s">&#34;../examples/mysql_database&#34;</span>
+<span class="kd">const</span> <span class="nx">webAppExampleDir</span> <span class="p">=</span> <span class="s">&#34;../examples/web_app&#34;</span>
+
+<span class="c1">//Start up web app with real db
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">TestIntegrationWebApp</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c1">//1. Make this test case parallel which means it will not block other test cases
+</span><span class="c1"></span>	<span class="nx">t</span><span class="p">.</span><span class="nf">Parallel</span><span class="p">()</span>
+	<span class="c1">//2. Deploy database
+</span><span class="c1"></span>	<span class="k">defer</span> <span class="nx">test_structure</span><span class="p">.</span><span class="nf">RunTestStage</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="s">&#34;destroy_db&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span> <span class="nf">destroyDb</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">dbExampleDir</span><span class="p">)</span> <span class="p">})</span>
+	<span class="nx">test_structure</span><span class="p">.</span><span class="nf">RunTestStage</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="s">&#34;deploy_db&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span> <span class="nf">deployDb</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">dbExampleDir</span><span class="p">)</span> <span class="p">})</span>
+	<span class="c1">//3. Deploy web app
+</span><span class="c1"></span>	<span class="k">defer</span> <span class="nx">test_structure</span><span class="p">.</span><span class="nf">RunTestStage</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="s">&#34;destroy_web_app&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span> <span class="nf">destroyWebApp</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">webAppExampleDir</span><span class="p">)</span> <span class="p">})</span>
+	<span class="nx">test_structure</span><span class="p">.</span><span class="nf">RunTestStage</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="s">&#34;deploy_web_app&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span> <span class="nf">deployWebApp</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">webAppExampleDir</span><span class="p">)</span> <span class="p">})</span>
+
+	<span class="c1">//4. Validate
+</span><span class="c1"></span>	<span class="nx">test_structure</span><span class="p">.</span><span class="nf">RunTestStage</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="s">&#34;validate_web_app&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span> <span class="nf">validateWebApp</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">webAppExampleDir</span><span class="p">)</span> <span class="p">})</span>
+<span class="p">}</span>
+</code></pre></div><p>为了方便理解，以上集成测试代码只保留了主体部分，完整的代码可以到<a href="https://github.com/2cloudlab/package_aws_web_service/blob/master/test/web_app_intergration_test.go">这里</a>去查阅。该集成测试主要完成了以下几个步骤：</p>
+<ol>
+<li>调用<code>t.Parallel()</code>使得该集成测试不会堵塞住其它自动化测试</li>
+<li>创建数据库服务</li>
+<li>获取第二步数据库连接信息，并将其用于创建WebApp服务</li>
+<li>根据第3步的WebApp返回的url+port来发送HTTP请求，并验证返回结果</li>
+<li>先销毁WebApp资源，再销毁数据库资源</li>
+</ol>
+<p>运行以上集成测试所需的时间如下(大约需要14分钟)：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">--- PASS: TestIntegrationWebApp <span class="o">(</span>892.07s<span class="o">)</span>
+PASS
+ok      package_aws_web_service/test    892.095s
+</code></pre></div><p>正常情况下，在自动化测试的环境里，需要把每一个测试从头到尾执行一遍。但是，研发人员在本地会反复修改模块，并执行对应的自动化测试用例，如果是这样，那么这种从头开始执行测试用例并最终销毁所创建的资源的漫长过程是不合理的。正确的做法应该是这样：研发人员一开始就将集成测试所需的资源创建，并跳过销毁阶段。在随后的研发过程中，研发人员只会修改某一部分，然后重新部署该部分所对应的资源，其它未修改的部分则不需要重新部署。为了实现这种可选择执行哪些模块的部署和销毁，则需要借助Terratest所提供的<code>test_structure.RunTestStage</code>功能。使用这个功能可以划分不同阶段并可选择那个阶段是需要执行的而哪些阶段是不需要执行的。让我们接着分析以上集成测试的例子来理解这一过程。</p>
+<p>假设研发人员开始测试WebApp服务，他/她需要输入以下命令来创建集成测试所需的资源，同时避免销毁(通过设置<code>SKIP_destroy_db</code>和<code>SKIP_destroy_web_app</code>为<code>true</code>来实现)这些资源。</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">SKIP_destroy_db</span><span class="o">=</span><span class="nb">true</span> <span class="se">\
+</span><span class="se"></span><span class="nv">SKIP_destroy_web_app</span><span class="o">=</span><span class="nb">true</span> <span class="se">\
+</span><span class="se"></span>go <span class="nb">test</span> -v -timeout 30m -run <span class="s1">&#39;TestIntegrationWebApp&#39;</span>
+</code></pre></div><p>该研发人员发现web_app模块的一些bug，并花了一个小时修复这些bug。他／她准备验证修复的bug，因此需要再次部署与web_app相关的资源，他／她可以通过以下命令来实现(通过<code>SKIP_deploy_db=true</code>来跳过数据库模块相关的资源创建)：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">SKIP_destroy_db</span><span class="o">=</span><span class="nb">true</span> <span class="se">\
+</span><span class="se"></span><span class="nv">SKIP_destroy_web_app</span><span class="o">=</span><span class="nb">true</span> <span class="se">\
+</span><span class="se"></span><span class="nv">SKIP_deploy_db</span><span class="o">=</span><span class="nb">true</span> <span class="se">\
+</span><span class="se"></span>go <span class="nb">test</span> -v -timeout 30m -run <span class="s1">&#39;TestIntegrationWebApp&#39;</span>
+</code></pre></div><p>运行以上指令的输出结果如下所示，整个运行时间缩短为160s。</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">--- PASS: TestIntegrationWebApp <span class="o">(</span>160.56s<span class="o">)</span>
+PASS
+ok      package_aws_web_service/test    160.588s
+</code></pre></div><p>如果该研发人员修复了这些bug，那么他/她只需要执行销毁操作，如下所示：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">SKIP_deploy_db</span><span class="o">=</span><span class="nb">true</span> <span class="se">\
+</span><span class="se"></span><span class="nv">SKIP_deploy_web_app</span><span class="o">=</span><span class="nb">true</span> <span class="se">\
+</span><span class="se"></span><span class="nv">SKIP_validate_web_app</span><span class="o">=</span><span class="nb">true</span>
+go <span class="nb">test</span> -v -timeout 30m -run <span class="s1">&#39;TestIntegrationWebApp&#39;</span>
+</code></pre></div><p>通过以上示例可知：集成测试所花费的时间会远远大于每个独立的单元测试所需的时间；通过机器执行集成测试应该从头到尾执行一遍，以便确保每一步都能够覆盖到；研发人员在本地进行集成测试的时候，需要选择哪些阶段可以执行而哪些阶段应该避免重复执行，以便减少集成测试的运行时间，及时得到测试反馈。</p>
+<p>一个研发团队在编写自动化测试的时候，不仅要编写大量的单元测试来验证模块是能够单独正常工作的，而且还需要编写一部分集成测试来验证模块组合在一起也是能正常工作的。每运行一次集成测试都有可能发现新的缺陷，修复这些缺陷能够增强团队对自己的输出成果的信心，但是集成测试通过并不能说明线上的真实环境也能正常工作！为了进一步增强团队的信心，需要做进一步的End-to-End测试。</p>
+<h2 id="针对terraform模块编写端到端的测试end-to-end-test">针对Terraform模块编写端到端的测试（End-to-End Test）</h2>
+<p>现在的软件产品变得越来越复杂，有时一个完整的产品需要几百个资源来支撑，这就意味着为了测试一个完整的产品则需要创建上百个资源。使用云计算服务时，成功地创建一个资源的概率是99.9%，剩下的0.1%则是因为偶然因素而无法正常地创建资源。要想同时将这上百个资源成功地创建出来，这件事情发生的概率为(99.9%)^600=55%。也就是说想要顺利地进行End-2-End测试，那么能够成功的概率只有一半。加之现实情况下有各种因素(比如人为因素)会导致这个概率变得更低，从而使得整个End-2-End测试变得愈加困难。</p>
+<p>从上一节的集成测试例子所提供的结果来看，每一个集成测试用例运行一次平均需要14分钟，因此一次完整的End-2-End测试需要的时间会更多，往往在半个小时到3个小时之间。也就是说，在比较幸运的工作时间，最多只有3次能够成功地地执行End-2-End测试，每执行一次End-2-End测试，都需要经历漫长的等待，从而无法及时拿到测试报告。</p>
+<p>由于End-2-End测试的这些特点，企业内部基本上不会从头开始执行End-2-End测试，而是以增量递进的方式进行End-2-End测试。一般情况下，研发团队会创建一个End-2-End测试环境，这个测试环境仿真了真实环境，唯一的区别是End-2-End测试环境所创建的资源会比真实环境少。当有新功能或者补丁(bug修复，优化等)需要发布到真实环境，那么在这之前，需要以增量的方式发布到End-2-End测试环境，然后针对这次修改而执行对应的End-2-End测试。如果End-2-End测试通过，那么这些更新讲以同样的方式发布到真实环境。这种增量发布的好处是:End-2-End测试执行的时间很短，能够让研发团队快速得到测试结果;符合日常的研发模式，即产品是每个研发阶段所迭代的产物。</p>
+<p>End-2-End测试在所有测试中的占比很少，而且执行起来也颇为复杂，因此企业实施完整的End-2-End测试是不太现实的。对于企业而言，更佳的实践方法是编写大量的独立模块以及对应的单元测试，找出关键的组件进行集成测试，最后以增量递进的方式进行End-2-End测试。</p>
+<p>当一个团队顺利地把测试活动有条不絮地展开时，产品质量或产品的运行环境都会得到一定的保障。但是进行了大量的测试之后，很有可能会因为各种原因(比如疏忽)遗留下闲置的资源，如果没有及时销毁这些无用的资源，那么会增加成本。因此在研发活动中实施了自动化测试流程之后，还需要制定资源清除的计划。</p>
+<h2 id="为测试环境中的资源定制清除策略">为测试环境中的资源定制清除策略</h2>
+<p>在为Terraform模块执行自动化测试的时候，应该为其准备一个独立的测试账号，这个账号能够访问云服务商（比如AWS）。在使用测试账号执行测试用例的时候，会生成临时资源，如果这些资源没有及时销毁，那么会增加云服务使用成本，因此需要定期为测试账号销毁不用的资源。完成这个任务需要借助一些工具（比如<a href="https://github.com/gruntwork-io/cloud-nuke">cloud-nuke</a>和<a href="https://github.com/rebuy-de/aws-nuke">aws-nuke</a>），以及一些定期清除策略。</p>
+<p>企业在日常研发的过程中主要涉及2类测试活动，一种是研发人员手动测试，另外一种是机器自动执行测试用例。每类测试场景，其资源的生命周期是不一样的，比如手动测试情况下，资源可能需要存在一整天，而在自动化测试场景下，只需要3个小时。因此企业可根据测试场景来定期清除资源。在实施定期清除方案时，企业可以借鉴以下经验:</p>
+<ol>
+<li>为自动化测试准备一个独立的账号，估算所有自动化测试执行所需要的时间，并使用cloud-nuke和crontab工具来定期清除资源</li>
+</ol>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># 销毁存活超过3h的资源，常用于自动化测试账号</span>
+cloud-nuke aws --older-than 3h
+</code></pre></div><ol start="2">
+<li>为每一名研发人员分配一个独立测试账号，这个测试账号主要用于手动测试，需要根据每一位研发人员的工作任务来确定定期清除资源所需的时间，根据该时间使用cloud-nuke和crontab工具</li>
+</ol>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># 销毁存活超过1天的资源，常用于手动测试账号</span>
+cloud-nuke aws --older-than 24h
+</code></pre></div><h2 id="总结">总结</h2>
+<p>本文主要介绍了如何使用Go语言编写测试Terraform模块的自动化测试用例以及在编写过程中应该注意的问题。总体而言，为了确保Terraform模块的质量，那么需要为其实施自动化测试流程。这些流程包括静态测试、单元测试、集成测试和End-2-End测试。每一类测试的侧重点是不一样的。静态测试关注Terraform模块语法上的错误，单元测试关注单个模块是否能正常工作，集成测试则是关注多个模块组合在一起的时候是否依然能正常工作，而End-2-End测试则是模拟真实的生产环境来验证功能是否正常。</p>
+<p>企业在具体实践的过程中会发现在数量上的关系是：单元测试&gt;集成测试&gt;End-2-End测试。除此之外企业会采取增量发布的方式在线更新功能。在执行大量的自动化测试用例之后很有可能被会因为某些意想不到的原因导致遗留了大量临时无用的资源，此时为了降低使用这些资源的费用，那么企业需要借助一些工具以及寻求一种有效的定期清除资源的策略来降低使用资源的费用。</p>
+<p><em><a href="https://2cloudlab.com/">2cloudlab.com</a>为企业准备产品的运行环境，只需要1天！</em></p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://utteranc.es/client.js" repo="2cloudlab/comments" issue-term="pathname" theme="github-light"
+        crossorigin="anonymous" async>
+</script>
+
+
+<!-- Call To Action Section Start -->
+<section id="call-to-action">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2 class="title wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">听起来还不错 ？</h1>
+                    <p class="wow fadeInDown" data-wow-delay=".5s" data-wow-duration="500ms">如果你所在的企业遇到了以下问题：<br> 研发流程混乱不堪或者效率低下、经历了持续上升的运维成本、无法及时向用户发布新的服务或产品以及想使用云计算技术但缺乏经验！<br>那么，请毫不犹疑地</p>
+                    <a href="/contact" class="btn btn-default btn-contact wow fadeInDown" data-wow-delay=".7s" data-wow-duration="500ms">联系我们</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-- Call To Action Section End -->
+
+
+<!-- Footer Section Start -->
+<footer id="footer">
+    <div class="container">
+        <div class="row content-justify-between">
+            <div class="col-md-8 col-12 text-center text-lg-left text-md-left">
+                <p class="copyright">版权所有©:
+                    <span>
+                        <script>document.write(new Date().getFullYear())</script>
+                    </span> 上海漫步云端科技有限公司
+                    <a href="https://2cloudlab.com/" target="_blank">2cloudlab.com</a>.
+                    <br> 地址：上海市浦东区浦东南路 999 号新梅联合广场 1 期 32 层
+                    <br>
+                    邮箱：<a href="mailto:support@2cloudlab.com">support@2cloudlab.com</a>
+                </p>
+            </div>
+            <div class="col-md-4 col-12">
+                <!-- Social Media -->
+                <ul class="social text-center text-md-right text-lg-right">
+                    
+                    <li><a href="https://github.com/2cloudlab"><i class="ion-social-github"></i></a></li>
+                    
+                    <li><a href="https://www.linkedin.com/company/2cloudlab-com"><i class="ion-social-linkedin"></i></a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- footer section end -->
+
+<!-- jquery -->
+<script src="https://2cloudlab.com/plugins/jQurey/jquery.min.js"></script>
+<!-- Form Validation -->
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.form.js"></script>
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.validate.min.js"></script>
+<!-- slick slider -->
+<script src="https://2cloudlab.com/plugins/slick/slick.min.js"></script>
+<!-- bootstrap js -->
+<script src="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.js"></script>
+<!-- wow js -->
+<script src="https://2cloudlab.com/plugins/wow-js/wow.min.js"></script>
+<!-- slider js -->
+<script src="https://2cloudlab.com/plugins/slider/slider.js"></script>
+<!-- Fancybox -->
+<script src="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.js"></script>
+<!-- template main js -->
+
+<script src="https://2cloudlab.com/js/script.min.js"></script>
+<!-- google analitycs -->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-171018621-1', 'auto');
+    ga('send', 'pageview');
+</script></body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <!-- Basic Page Needs -->
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  
+  <meta name="description" content="在过去的几篇文章里，我们讨论了关键字表达式，条件表达式，映射表达式以及更新表达式。本文将讨论最后一类表达式--过滤器表达式。">
+  <meta name="author" content="2cloudlab">
+  <meta name="generator" content="Hugo 0.78.1" />
+  
+  <!-- Mobile Specific Metas -->
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>在DynamoDB中使用Filter表达式</title>
+  <link rel="icon" href="https://2cloudlab.com/images/favicon.ico">
+
+  <!-- Twitter Bootstrs CSS -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.css">
+  <!-- Ionicons Fonts Css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/ionicons/ionicons.min.css">
+  <!-- animate css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/animate-css/animate.css">
+  <!-- Hero area slider css-->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slider/slider.css">
+  <!-- slick slider -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slick/slick.css">
+  <!-- Fancybox -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.css">
+  <!-- hover -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/hover/hover-min.css">
+  <!-- template main css file -->
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/style.min.css" integrity="" media="screen">
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/syntax.min.css" integrity="" media="screen">
+</head><body><section class="top-bar animated-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <a class="navbar-brand" href="https://2cloudlab.com/">
+                        <img src="https://2cloudlab.com/images/logo.png" alt="logo">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation"
+                        aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navigation">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                    href="https://2cloudlab.com/">首页</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/about">关于</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/service">服务</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/price">价格</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/blog">博客</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/nosql">NoSQL</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/contact">联系我们</a>
+                            </li>
+                            
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="global-page-header">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2>在DynamoDB中使用Filter表达式</h2>
+                    <div class="portfolio-meta">
+                        <span>2020-03-01</span>|
+                        <span class="ion-pricetags"></span>
+                        <span>
+                            NoSQL, DynamoDB, Data-Intensive
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style type="text/css">
+    @media (min-width: 1200px) {
+        .post-container {
+            max-width: 800px;
+        }
+    }
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        display: block;
+        margin: auto;
+    }
+</style>
+
+<section class="single-post">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                
+                <div class="post-img">
+                    <img class="img-fluid lazy" alt="" data-src="https://2cloudlab.com/images/blog/filtering.png">
+                </div>
+                
+                <div class="post-content">
+                    <p>在过去的几篇文章里，我们讨论了<a href="https://2cloudlab.com/nosql/expression-basics/">关键字表达式，条件表达式，映射表达式以及更新表达式</a>。本文将讨论最后一类表达式&ndash;过滤器表达式。</p>
+<p>过滤器表达式用于<a href="https://2cloudlab.com/nosql/querying/">Query</a>和<a href="https://2cloudlab.com/nosql/scans/">Scan</a>操作，它在作用于这些操作所返回的数据集，并过滤出满足条件的数据项，进而返回给客户端。在深入了解Filter之前，我们有必要来了解一下Query或Scan底层的执行过程。</p>
+<h2 id="query和scan的执行过程">Query和Scan的执行过程</h2>
+<p>对于DynamoDB的Query和Scan操作，有3步是需要DynamoDB来完成的：</p>
+<ol>
+<li>从表中查找数据。对于这2类操作，查询将从Starting Token开始，如果在Query中提供了关键字表达式，那么查询的过程中将考虑这类关键字</li>
+<li>（这一步是可选的），如果在查询（Query）或遍历（Query）的过程中使用了Filter，那么这个Filter将作用于第一步返回的数据集。同理，映射表达式也是在这一步作用于第一步返回的数据集。</li>
+<li>把数据返回给客户端</li>
+</ol>
+<p>有一点需要特别注意的是：DynamoDB对返回数据量的限制是由第一步来决定的。比如，如果你在第一步获取100KB的数据，而在第二步使用过滤器将数据量缩减到10KB，那么DynamoDB依然会按照100KB来计算其最终的返回数据量。还需要注意的是：DynamoDB中的任何操作其处理数据的量不能超过1MB，尽管你正在操作的表有充足的读单元。</p>
+<p>过滤表达式和映射表达式不是一个高性能的利器-它们不会使你的查询效率变高，然而，它们能帮助你减少数据量，从而最终减少传输带宽的使用。不仅如此，你可以将这些过滤操作逻辑从业务层转移到数据库层。</p>
+<blockquote>
+<p>关于更多Filter以及什么时候使用它的知识可以参考这篇文章<a href="https://www.alexdebrie.com/posts/dynamodb-filter-expressions/">When to use (and when not to use) DynamoDB Filter Expressions</a>。</p>
+</blockquote>
+<h2 id="如何使用filter">如何使用Filter</h2>
+<p>Filter表达式与关键字表达式类似，都可以和Query操作配合&ndash;你只需要在过滤表达式中指定想要过滤的属性，查询结果就会更具该表达式来过滤。</p>
+<p>让我们基于之前Query来查找用户&quot;daffyduck&quot;的订单。这一次我们想依据订单额度来过滤数据，比如我们只想返回订单量超过100美元的订单，示例如下：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ aws dynamodb query <span class="se">\
+</span><span class="se"></span>    --table-name UserOrdersTable <span class="se">\
+</span><span class="se"></span>    --key-condition-expression <span class="s2">&#34;Username = :username&#34;</span> <span class="se">\
+</span><span class="se"></span>    --filter-expression <span class="s2">&#34;Amount &gt; :amount&#34;</span> <span class="se">\
+</span><span class="se"></span>    --expression-attribute-values <span class="s1">&#39;{
+</span><span class="s1">        &#34;:username&#34;: { &#34;S&#34;: &#34;daffyduck&#34; },
+</span><span class="s1">        &#34;:amount&#34;: { &#34;N&#34;: &#34;100&#34; }
+</span><span class="s1">    }&#39;</span> <span class="se">\
+</span><span class="se"></span>    <span class="nv">$LOCAL</span>
+</code></pre></div><p>以下的返回结果只返回了一个订单：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">{</span>
+    <span class="s2">&#34;Count&#34;</span>: 1,
+    <span class="s2">&#34;Items&#34;</span>: <span class="o">[</span>
+        <span class="o">{</span>
+            <span class="s2">&#34;OrderId&#34;</span>: <span class="o">{</span>
+                <span class="s2">&#34;S&#34;</span>: <span class="s2">&#34;20170609-25875&#34;</span>
+            <span class="o">}</span>,
+            <span class="s2">&#34;Username&#34;</span>: <span class="o">{</span>
+                <span class="s2">&#34;S&#34;</span>: <span class="s2">&#34;daffyduck&#34;</span>
+            <span class="o">}</span>,
+            <span class="s2">&#34;Amount&#34;</span>: <span class="o">{</span>
+                <span class="s2">&#34;N&#34;</span>: <span class="s2">&#34;116.86&#34;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">]</span>,
+    <span class="s2">&#34;ScannedCount&#34;</span>: 4,
+    <span class="s2">&#34;ConsumedCapacity&#34;</span>: null
+<span class="o">}</span>
+</code></pre></div><p>需要注意一点：上面的返回结果包括了&quot;ScannedCount&quot;和&quot;Count&quot;。前者的含义是：DynamoDB帮你查到了一些数据集，数量是4，而后者是指满足过滤条件的数据项有1项，并返回给客户端。</p>
+<p>在之前的示例中，你会发现这2者的数值是一样的，那是因为我们没有使用Filter。当加上Filter之后，我们可看到DynamoDB依然会根据主键查找数据，然后在这些数据（4项）的基础上根据过滤表达式来过滤数据（1项）。此时，我们依然消耗4项数据的所对应的读单元，虽然最终返回给客户端的数据量是1项。</p>
+<p>最后一点需要注意的是：不能在Filter表达式中使用主键属性。这是合理的，因为你已经可以使用关键字表达式来查询数据了，为什么还需要在Filter表达式中将主键属性指定为过滤条件呢！然而这个限制不适用于Scan操作&ndash;也就是说，你依然可以在过滤表达式中使用主键属性。</p>
+<p>这篇文章将是最后一篇关于如何同时操作多项数据的。在接下来的章节里，我们将学习更多高级的功能比如<a href="https://2cloudlab.com/nosql/secondary-indexes/">附加索引</a>和DynamoDB的流。</p>
+<ul>
+<li><a href="https://www.dynamodbguide.com/filtering">原文链接</a></li>
+</ul>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://utteranc.es/client.js" repo="2cloudlab/comments" issue-term="pathname" theme="github-light"
+        crossorigin="anonymous" async>
+</script>
+
+
+<!-- Call To Action Section Start -->
+<section id="call-to-action">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2 class="title wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">听起来还不错 ？</h1>
+                    <p class="wow fadeInDown" data-wow-delay=".5s" data-wow-duration="500ms">如果你所在的企业遇到了以下问题：<br> 研发流程混乱不堪或者效率低下、经历了持续上升的运维成本、无法及时向用户发布新的服务或产品以及想使用云计算技术但缺乏经验！<br>那么，请毫不犹疑地</p>
+                    <a href="/contact" class="btn btn-default btn-contact wow fadeInDown" data-wow-delay=".7s" data-wow-duration="500ms">联系我们</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-- Call To Action Section End -->
+
+
+<!-- Footer Section Start -->
+<footer id="footer">
+    <div class="container">
+        <div class="row content-justify-between">
+            <div class="col-md-8 col-12 text-center text-lg-left text-md-left">
+                <p class="copyright">版权所有©:
+                    <span>
+                        <script>document.write(new Date().getFullYear())</script>
+                    </span> 上海漫步云端科技有限公司
+                    <a href="https://2cloudlab.com/" target="_blank">2cloudlab.com</a>.
+                    <br> 地址：上海市浦东区浦东南路 999 号新梅联合广场 1 期 32 层
+                    <br>
+                    邮箱：<a href="mailto:support@2cloudlab.com">support@2cloudlab.com</a>
+                </p>
+            </div>
+            <div class="col-md-4 col-12">
+                <!-- Social Media -->
+                <ul class="social text-center text-md-right text-lg-right">
+                    
+                    <li><a href="https://github.com/2cloudlab"><i class="ion-social-github"></i></a></li>
+                    
+                    <li><a href="https://www.linkedin.com/company/2cloudlab-com"><i class="ion-social-linkedin"></i></a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- footer section end -->
+
+<!-- jquery -->
+<script src="https://2cloudlab.com/plugins/jQurey/jquery.min.js"></script>
+<!-- Form Validation -->
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.form.js"></script>
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.validate.min.js"></script>
+<!-- slick slider -->
+<script src="https://2cloudlab.com/plugins/slick/slick.min.js"></script>
+<!-- bootstrap js -->
+<script src="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.js"></script>
+<!-- wow js -->
+<script src="https://2cloudlab.com/plugins/wow-js/wow.min.js"></script>
+<!-- slider js -->
+<script src="https://2cloudlab.com/plugins/slider/slider.js"></script>
+<!-- Fancybox -->
+<script src="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.js"></script>
+<!-- template main js -->
+
+<script src="https://2cloudlab.com/js/script.min.js"></script>
+<!-- google analitycs -->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-171018621-1', 'auto');
+    ga('send', 'pageview');
+</script></body>
+</html>

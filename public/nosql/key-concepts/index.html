@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <!-- Basic Page Needs -->
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  
+  <meta name="description" content="在使用DynamoDB之前，我们需要了解一些基础概念，这些概念涉及了：表（tables），数据项（items）和每项数据的属性（attributes）、主键（primary keys），有简单主键（Partition Key）和复合主键（Partition Key &#43; Sort Key）、附加索引（secondary indexes）、DynamoDB的读写能力。">
+  <meta name="author" content="2cloudlab">
+  <meta name="generator" content="Hugo 0.78.1" />
+  
+  <!-- Mobile Specific Metas -->
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DynamoDB的关键概念</title>
+  <link rel="icon" href="https://2cloudlab.com/images/favicon.ico">
+
+  <!-- Twitter Bootstrs CSS -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.css">
+  <!-- Ionicons Fonts Css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/ionicons/ionicons.min.css">
+  <!-- animate css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/animate-css/animate.css">
+  <!-- Hero area slider css-->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slider/slider.css">
+  <!-- slick slider -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slick/slick.css">
+  <!-- Fancybox -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.css">
+  <!-- hover -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/hover/hover-min.css">
+  <!-- template main css file -->
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/style.min.css" integrity="" media="screen">
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/syntax.min.css" integrity="" media="screen">
+</head><body><section class="top-bar animated-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <a class="navbar-brand" href="https://2cloudlab.com/">
+                        <img src="https://2cloudlab.com/images/logo.png" alt="logo">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation"
+                        aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navigation">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                    href="https://2cloudlab.com/">首页</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/about">关于</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/service">服务</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/price">价格</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/blog">博客</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/nosql">NoSQL</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/contact">联系我们</a>
+                            </li>
+                            
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="global-page-header">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2>DynamoDB的关键概念</h2>
+                    <div class="portfolio-meta">
+                        <span>2019-02-11</span>|
+                        <span class="ion-pricetags"></span>
+                        <span>
+                            NoSQL, DynamoDB, Data-Intensive
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style type="text/css">
+    @media (min-width: 1200px) {
+        .post-container {
+            max-width: 800px;
+        }
+    }
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        display: block;
+        margin: auto;
+    }
+</style>
+
+<section class="single-post">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                
+                <div class="post-img">
+                    <img class="img-fluid lazy" alt="" data-src="https://2cloudlab.com/images/blog/key-concepts.png">
+                </div>
+                
+                <div class="post-content">
+                    <p>在使用DynamoDB之前，我们需要了解一些基础概念，这些概念涉及了：表（tables），数据项（items）和每项数据的属性（attributes）、主键（primary keys），有简单主键（Partition Key）和复合主键（Partition Key + Sort Key）、附加索引（secondary indexes）、DynamoDB的读写能力。</p>
+<p>本文将讨论关于DynamoDB的关键概念。完成这一章的学习之后，你将对以下概念有进一步的认识：</p>
+<ul>
+<li>表（tables），数据项（items）和每项数据的属性（attributes）</li>
+<li>主键（primary keys），有简单主键（Partition Key）和复合主键（Partition Key + Sort Key）</li>
+<li>附加索引（secondary indexes）</li>
+<li>DynamoDB的读写能力</li>
+</ul>
+<h2 id="表tables数据项items和每项数据的属性attributes">表（tables），数据项（items）和每项数据的属性（attributes）</h2>
+<p>表（tables），数据项（items）和每项数据的属性（attributes）是DynamoDB的基础构建单元。</p>
+<p><em>表</em>是数据项的集合，不同类型的数据项都可以放到一张<em>表</em>里。例如：有一张<em>Users</em>表，该表存储了<em>每一个用户</em>的信息；有一张<em>Orders</em>表，该表存储了用户的所有订单信息。<em>表</em>的概念有点类似于关系型数据库中的<em>表</em>或MongoDB中的集合，与它们不同的是，DynamoDB中的表经常会存储不同类型的数据，比如用户信息以及该用户的所有订单信息会存储在<strong>同一张表中</strong>。</p>
+<p><em>每条数据</em>在表里就是一条记录（包含了多个属性（Attributes））。在表里，每条数据由主键（Primary Key）唯一确定。比如在Users表中，一条数据对应一个用户，这条数据包括了用户名，性别和住址等用户相关的信息。每条数据类似于关系型数据库表中的某一行或者MongoDB中的一个文档数据。</p>
+<p><em>数据的属性</em>组合成了每条数据，每条数据由多个数据属性构成。比如：一条用户数据包含了年龄属性，该属性存储了该用户的年龄。属性类似于关系型数据库表中的列或MongoDB中的属性。DynamoDB要求每一项数据都至少包含构成该数据主键的属性。</p>
+<h2 id="主键primary-key">主键（Primary Key）</h2>
+<p>表中的每项数据由主键唯一标识。在创建表的时候，必须定义由哪些属性构成主键，当向表中新添数据的时候，该数据至少需要包含主键信息。</p>
+<p>主键的类型有2类：<strong>简单主键</strong>和<strong>复合主键</strong>。前者仅由分区键（Partition Key）构成，而后者由分区键（Partiti Key）和排序键（Sort Key）组成。</p>
+<p>简单主键类似于Memcached中的Key和SQL表中的主键。比如：用户名可以作为表<em>Users</em>的简单主键。</p>
+<p>复合主键则更加复杂。你需要为表中的每一条数据提供分区键和排序键。排序键的作用在于使得同一分区的数据按照排序键的值进行排序。例如：某个用户的所有订单拥有相同的分区键（如：用户名），但每个订单的排序键（如：订单编号）是不相同的。</p>
+<p>这里需要提醒的是：表中的每条数据是由主键唯一标识的。当使用复合主键来标识数据时，不同的数据可以拥有相同的分区键，此时，这些数据必须使用不同的排序键。由相同的分区键和不同的排序键构成的主键唯一标识了表中每一条数据。</p>
+<p>复合主键可以支持复杂的<a href="https://2cloudlab.com/nosql/working-with-multiple-items/">数据查询模式</a>。这些查询模式有：根据分区键来获取表中的数据；使用排序键来缩小查询范围。</p>
+<p>读者可以根据<a href="https://2cloudlab.com/nosql/anatomy-of-an-item/">拆解数据项</a>来理解数据项的基本构成。</p>
+<h2 id="附加索引secondary-index">附加索引（Secondary Index）</h2>
+<p>主键唯一标识了表中的每一项数据，根据主键可以从表中获取到对应的数据项。然而有的时候，你需要根据其它模式来获取数据，比如你想查询订单金额超过某个范围的订单，而此时该表的Partition Key和Sort Key分别是用户名和订单号。使用该表的复合主键来满足这种查询显然是低效的，因此这个时候需要借助DynamoDB的<strong>附件索引</strong>来满足这一查询模式。附加索引有2种：local secondary index和global secondary index。</p>
+<p><strong>local secondary index</strong>使用了与表相同的分区键但是不同的排序键来构成索引。假设有一张Orders表，你想读取某个用户的所有订单，这些订单需要以订购数量（Amount）进行降序排序。此时，你只需要为Orders表创建一个local secondary index，该索引的分区键是用户ID（CustomerId），排序键是订单的订购数量（Amount）。开发者使用这个索引就能高效地获取某个用户的订单，并按照订单的数量进行排序。</p>
+<p><strong>global secondary index</strong>使用了与表完全不同的分区键和排序键来构成索引。你可以选择其它属性（不包含表的分区键）作为索引的分区键，从而构成该索引的简单主键，当然你也可以选择2个属性来构成索引的主键。假设有一张表，我们可以在这张表上定义一个global secondary index，该索引的分区键是订单号（OrderID），而排序键可以不设置，从而构成一个简单的主键。接着我们可以通过这个索引来根据订单号高效获取某个具体的订单，而无需通过查找用户和用户名下的订单这种低效的方式来查找。</p>
+<p>附加索引是一个异常复杂的话题，但是这个功能却非常实用。它是实现不同查询模式的基础，想要深入了解和应用附件索引，读者可以前往<a href="https://2cloudlab.com/nosql/secondary-indexes/">这里</a>。</p>
+<h2 id="读和写单元">读和写单元</h2>
+<p>当你使用MySQL，Postgres和MongoDB的时候，你需要启动一个服务器来运行这些数据库实例。你必须为这个服务器配置CPU，内存以及磁盘存储等。</p>
+<p>而使用DynamoDB时，你不需要自己启动这些服务器，你只需要为创建的表指定读和写的单元，AWS就能自动地帮你启动服务器，并根据这些读写单元来启动服务器。这些读写单元限制了读写数据的吞吐量（KB/S），越多的读写单元其吞吐量会越大。与自己启动服务器来运行数据库实例的方式相比，这种方式的计费模式更加贴近真实的使用费用。</p>
+<p>DynamoDB也能够自动增加和减少表的读写单元。这使得在数据使用的高峰期时，读写单元会自动增多，而在低峰期时，该读写单元会自动减少。通过这种根据实际使用情况来为表动态分配读写单元的方式能够减少支出。</p>
+<h2 id="下一步学习计划">下一步学习计划</h2>
+<p>如果你对DynamoDB的内部实现感兴趣，不妨去看看<a href="https://2cloudlab.com/nosql/the-dynamo-paper/">Dynamo Paper</a>。如果不感兴趣，那么可以从<a href="https://2cloudlab.com/nosql/environment-setup/">搭建DynamoDB的环境</a>开始，接着阅读<a href="https://2cloudlab.com/nosql/anatomy-of-an-item/">对单条数据进行操作</a>中的内容来理解数据的基本构成。</p>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://www.dynamodbguide.com/key-concepts">原文链接</a></li>
+</ul>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://utteranc.es/client.js" repo="2cloudlab/comments" issue-term="pathname" theme="github-light"
+        crossorigin="anonymous" async>
+</script>
+
+
+<!-- Call To Action Section Start -->
+<section id="call-to-action">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2 class="title wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">听起来还不错 ？</h1>
+                    <p class="wow fadeInDown" data-wow-delay=".5s" data-wow-duration="500ms">如果你所在的企业遇到了以下问题：<br> 研发流程混乱不堪或者效率低下、经历了持续上升的运维成本、无法及时向用户发布新的服务或产品以及想使用云计算技术但缺乏经验！<br>那么，请毫不犹疑地</p>
+                    <a href="/contact" class="btn btn-default btn-contact wow fadeInDown" data-wow-delay=".7s" data-wow-duration="500ms">联系我们</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-- Call To Action Section End -->
+
+
+<!-- Footer Section Start -->
+<footer id="footer">
+    <div class="container">
+        <div class="row content-justify-between">
+            <div class="col-md-8 col-12 text-center text-lg-left text-md-left">
+                <p class="copyright">版权所有©:
+                    <span>
+                        <script>document.write(new Date().getFullYear())</script>
+                    </span> 上海漫步云端科技有限公司
+                    <a href="https://2cloudlab.com/" target="_blank">2cloudlab.com</a>.
+                    <br> 地址：上海市浦东区浦东南路 999 号新梅联合广场 1 期 32 层
+                    <br>
+                    邮箱：<a href="mailto:support@2cloudlab.com">support@2cloudlab.com</a>
+                </p>
+            </div>
+            <div class="col-md-4 col-12">
+                <!-- Social Media -->
+                <ul class="social text-center text-md-right text-lg-right">
+                    
+                    <li><a href="https://github.com/2cloudlab"><i class="ion-social-github"></i></a></li>
+                    
+                    <li><a href="https://www.linkedin.com/company/2cloudlab-com"><i class="ion-social-linkedin"></i></a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- footer section end -->
+
+<!-- jquery -->
+<script src="https://2cloudlab.com/plugins/jQurey/jquery.min.js"></script>
+<!-- Form Validation -->
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.form.js"></script>
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.validate.min.js"></script>
+<!-- slick slider -->
+<script src="https://2cloudlab.com/plugins/slick/slick.min.js"></script>
+<!-- bootstrap js -->
+<script src="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.js"></script>
+<!-- wow js -->
+<script src="https://2cloudlab.com/plugins/wow-js/wow.min.js"></script>
+<!-- slider js -->
+<script src="https://2cloudlab.com/plugins/slider/slider.js"></script>
+<!-- Fancybox -->
+<script src="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.js"></script>
+<!-- template main js -->
+
+<script src="https://2cloudlab.com/js/script.min.js"></script>
+<!-- google analitycs -->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-171018621-1', 'auto');
+    ga('send', 'pageview');
+</script></body>
+</html>

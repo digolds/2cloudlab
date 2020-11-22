@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <!-- Basic Page Needs -->
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  
+  <meta name="description" content="企业的研发团队在研发产品功能时通常会选择2种分支管理策略，它们分别是Feature Branches Development和Trunk-based Development。2种分支管理策略都有它们适用的场景，比如在github上研发开源软件时，经常会使用Feature Branches Development模式，而Google，Facebook，LinkedIn，微软常常会使用Trunk-based Development模式。企业在实施CI（持续集成）时通常需要Trunk-based Development方面的实践，原因在于这种模式能够快速输出集成的结果。本文将围绕Trunk-based Development展开，并提供一些可实施该模式的操作步骤。">
+  <meta name="author" content="2cloudlab">
+  <meta name="generator" content="Hugo 0.78.1" />
+  
+  <!-- Mobile Specific Metas -->
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>如何提高企业的研发效率--trunk-based development</title>
+  <link rel="icon" href="https://2cloudlab.com/images/favicon.ico">
+
+  <!-- Twitter Bootstrs CSS -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.css">
+  <!-- Ionicons Fonts Css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/ionicons/ionicons.min.css">
+  <!-- animate css -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/animate-css/animate.css">
+  <!-- Hero area slider css-->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slider/slider.css">
+  <!-- slick slider -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/slick/slick.css">
+  <!-- Fancybox -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.css">
+  <!-- hover -->
+  <link rel="stylesheet" href="https://2cloudlab.com/plugins/hover/hover-min.css">
+  <!-- template main css file -->
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/style.min.css" integrity="" media="screen">
+  
+  <link rel="stylesheet" href="https://2cloudlab.com/css/syntax.min.css" integrity="" media="screen">
+</head><body><section class="top-bar animated-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <a class="navbar-brand" href="https://2cloudlab.com/">
+                        <img src="https://2cloudlab.com/images/logo.png" alt="logo">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation"
+                        aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navigation">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                    href="https://2cloudlab.com/">首页</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/about">关于</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/service">服务</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/price">价格</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/blog">博客</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/nosql">NoSQL</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://2cloudlab.com/contact">联系我们</a>
+                            </li>
+                            
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="global-page-header">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2>如何提高企业的研发效率--trunk-based development</h2>
+                    <div class="portfolio-meta">
+                        <span>2020-03-16</span>|
+                        <span class="ion-pricetags"></span>
+                        <span>
+                            软件研发流程, trunk-based development, CI/CD, 云计算, 分支管理
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style type="text/css">
+    @media (min-width: 1200px) {
+        .post-container {
+            max-width: 800px;
+        }
+    }
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        display: block;
+        margin: auto;
+    }
+</style>
+
+<section class="single-post">
+    <div class="container post-container">
+        <div class="row">
+            <div class="col-md-12">
+                
+                <div class="post-img">
+                    <img class="img-fluid lazy" alt="" data-src="https://2cloudlab.com/images/blog/trunk-based-development-6995662e.png">
+                </div>
+                
+                <div class="post-content">
+                    <p>企业的研发团队在研发产品功能时通常会选择2种分支管理策略，它们分别是Feature Branches Development和Trunk-based Development。2种分支管理策略都有它们适用的场景，比如在github上研发开源软件时，经常会使用Feature Branches Development模式，而Google，Facebook，LinkedIn，微软常常会使用Trunk-based Development模式。企业在实施CI（持续集成）时通常需要Trunk-based Development方面的实践，原因在于这种模式能够快速输出集成的结果。本文将围绕Trunk-based Development展开，并提供一些可实施该模式的操作步骤。</p>
+<ol>
+<li>什么是Trunk-based Development？</li>
+<li>团队需要掌握哪些技巧来实践Trunk-based Development？</li>
+<li>为Trunk-Based Development配套CI服务</li>
+<li>Trunk-Based Development的实施细节</li>
+<li>使用github来实施Trunk-Based Development的基本思路</li>
+<li>结论和参考</li>
+</ol>
+<h2 id="什么是trunk-based-development">什么是Trunk-based Development？</h2>
+<p>Trunk-based Development是指：所有研发人员围绕主分支<code>trunk</code>(也就是github上的<code>master</code>分支)来共同研发，在研发过程中拒绝创建存活时间较长的分支，并使用Feature Toggles和Branch by Abstraction等技术在主分支上逐步发布需要长时间（通常是1周）才能研发完成的功能。<a href="https://trunkbaseddevelopment.com/#one-line-summary">官方</a>对Trunk-based Development的概括如下所示：</p>
+<blockquote>
+<p>A source-control branching model, where developers collaborate on code in a single branch called ‘trunk’ *, resist any pressure to create other long-lived development branches by employing documented techniques. They therefore avoid merge hell, do not break the build, and live happily ever after.</p>
+</blockquote>
+<p>上面这段描述说明了Trunk-based Development的目的在于解决合并和持续构建的问题。为了理解Trunk-based Development是如何解决以上2个问题的，需要从下面这张图说起。下图展示了：采用Trunk-based development来进行软件研发时所涉及的一系列活动：</p>
+<p>
+<img class="lazy" data-src="https://2cloudlab.com/images/blog/what_is_trunk.jpg" alt=""  />
+</p>
+<p>上图规定了以下规则：</p>
+<ol>
+<li>所有研发人员直接在<code>trunk</code>上提交代码</li>
+<li>对外发布产品的时候需要从<code>trunk</code>上拉取<code>release</code>分支（比如1.1.x和1.2.x），并基于<code>release</code>分支来发布(比如1.1.0和1.1.1)</li>
+<li><code>release</code>分支中出现的bug或者需要性能优化时，则需要在<code>trunk</code>上完成，并通过<em>cherry-pick</em>的方式在<code>trunk</code>中挑选对应的<em>commits</em>合并到<code>release</code>分支，此时的小版本号从1.1.<code>0</code>变成1.1.<code>1</code></li>
+<li>对外发布新功能时，需要基于<code>trunk</code>分支，重新拉取<code>release</code>分支，版本号从1.<code>1</code>.x变成1.<code>2</code>.x，同时1.1.x的<code>release</code>分支将被废弃</li>
+<li>在<code>trunk</code>分支上，每个commit之间的提交间隔很短，通常在一天之内提交好几次，甚至更多次</li>
+</ol>
+<p>在这些规则之下，研发者可以持续地在<code>trunk</code>分支中提交代码，而且期间没有合并。为了能够使得每一次提交都能够顺利地在<code>trunk</code>分支中通过，则需要一些技巧和CI服务器。接下来让我们看看都有哪些技巧能够使得企业成功地实施Trunk-based Development。</p>
+<h2 id="团队需要掌握哪些技巧来实践trunk-based-development">团队需要掌握哪些技巧来实践Trunk-based Development？</h2>
+<p>为了使Trunk-based Development能够在研发团队中顺利开展起来，需要团队成员掌握以下技巧，并且达成共识。</p>
+<ol>
+<li>将任务划分成许多可以在1天以内完成的小模块</li>
+</ol>
+<p>快速验证想法的第一步就是将一个任务分解成多个可测试的子任务，并逐步实现。完成这些子任务所需的时间不应该超过一天，这么做的原因是每次完成子任务所需要的改动影响范围较小，而且这些改动被提交之后，其他团队成员能够及时看到，从而使得团队作为整体，清楚产品的研发状况。</p>
+<ol start="2">
+<li>针对研发的功能编写自动化测试用例，并在本地验证</li>
+</ol>
+<p>团队中的每一名研发人员都应该针对自己的研发任务来编写对应的单元测试，并在研发结束之后，在本地运行这些单元测试来验证正在研发的功能。除此之外，在开始研发时需要从<code>trunk</code>获取最新代码，并在本地运行已有的单元测试，确保拿到的代码是正常的。在设计单元测试时，须遵守的原则是每一个单元测试能够独立运行并且能够在短时间内运行结束（通常在本地执行所有单元测试所需的时间不应该超过5分钟）。在获取或提交代码时，在本地运行单元测试的原因是确保拿到的或者即将提交的代码能够正常工作，从而降低了破坏<code>trunk</code>的风险（<code>trunk</code>分支不稳定将会阻碍在这个分支上工作的所有人）。</p>
+<ol start="3">
+<li>执行实时Code Review</li>
+</ol>
+<p>当你研发的功能在本地验证通过之后，下一步就是寻找团队中其他人帮忙Code Review。通常大家习惯发起一个Pull Request，然后等待团队中的其他人进行Code Review。由于各种原因（比如没有及时看到这个Pull Request），这个Code Review的过程将变得漫长起来。因此，在实践Trunk-based Development时，需要实时进行Code Review，以便缩短Code Review所需的时间，进而能够及时将改动推送到<code>trunk</code>分支。这种实时Code Review的做法有很多种，比如让你身后的团队成员到你的电脑前帮忙Code Review，同时你可以给他解释为什么要这么做。</p>
+<ol start="4">
+<li>使用<a href="https://martinfowler.com/bliki/BranchByAbstraction.html">branch by abstraction</a>或者<a href="https://martinfowler.com/bliki/FeatureToggle.html">feature flags</a>等技术来逐步提交还在研发中的功能</li>
+</ol>
+<p>团队在研发的日常中，总是会遇到一些复杂且耗时的任务，完成这些任务需要一周或是更长的时间。因此在处理这些任务时不仅需要将其分解成多个子任务，而且每次完成子任务的研发时都需要将其提交到<code>trunk</code>分支中并且通过branch by abstraction或者feature flags等技术禁用这些子功能。直到所有子功能完成并且放在一起能够工作时才将这个任务开放出来。应用branch by abstraction或者feature flags等技术时应该遵守简单的原则，比如可以在代码中为该任务编写一个入口函数，但是这个入口函数没有被调用。</p>
+<ol start="5">
+<li>每次向<code>trunk</code>提交代码时，都应该自动地触发编译和测试</li>
+</ol>
+<p>为了能够自动化编译和测试新的提交，需要借助CI服务器。通过CI服务器构建编译和测试2个阶段（如下图所示）。这么做的目的是确保每一次提交都能够被机器自动化的验证，从而确保每一次提交都没有破坏<code>trunk</code>。</p>
+<p>
+<img class="lazy" data-src="https://2cloudlab.com/images/blog/pipelines1.png" alt=""  />
+</p>
+<ol start="6">
+<li>如果某一次提交破坏了<code>trunk</code>分支，那么应该停下手中的任务，优先恢复<code>trunk</code>分支</li>
+</ol>
+<p>团队在日常的研发事务中总是会犯错，如果一次疏忽导致<code>trunk</code>分支无法通过测试，那么需要第一时间解决这个问题。如果这个问题无法快速解决，那么需要将此次提交撤销，并回退到上一次提交。这么做就是要确保<code>trunk</code>分支随时可用。</p>
+<p>Trunk-Based Development自身并无没有给团队带来任何好处。为团队带来好处的是在Trunk-Based Development中应用了以上6点技巧。因此在企业研发部门实施Trunk-Based Development时，需要团队中的每一名成员都要掌握以上技巧，最终养成习惯。从这个角度来看，Trunk-Based Development更多的是依赖于人的行为，在一致的行为下应用自动化工具能够从整体上提高企业的研发效率！</p>
+<p>当研发人员都掌握了以上技巧，同时，企业的研发部门已经决定使用Trunk-Based Development来研发产品，那么接下来就需要搭建一些自动化基础设施来辅助整个研发团队，其中CI服务就是构建现代化高效软件研发流程的初始环节。</p>
+<h2 id="为trunk-based-development配套ci服务">为Trunk-Based Development配套CI服务</h2>
+<p>CI（Continues Integration）是指将各个研发团队的研发成果正确且快速地集成在一起，并提供给其他团队（测试团队、DevOps团队等）使用。为了将Trunk-Based Development向整个研发部门推广，则需要一个好的CI服务。每一个提交到<code>trunk</code>上的改动，都会自动地触发CI服务，并由该服务获取<code>trunk</code>上的源码并顺序执行自定义的一些步骤。这些步骤有编译该源码和执行单元测试，每一步执行结束后都会输出一些结果，这些结果有成功或者失败，如果失败则会出现失败的信息。为了能够让团队成员及时看到失败的结果，一种做法是将在团队周围放置一台大电视，用于显示CI服务的执行结果。</p>
+<p>除了要搭建CI服务，还需要应用一些发布策略。比如上图从<code>trunk</code>分支中拉出<code>release</code>分支，这么做是为了基于<code>release</code>分支对外发布产品，同时团队的其他成员依然能够在<code>trunk</code>上提交代码。由于<code>release</code>分支主要是为了对外发布产品，因此它不仅需要CI的支持，还需要CD（Continuous Delivery）的支持，2者结合就是CI/CD。与<code>trunk</code>不同，CI服务不仅需要监测<code>release</code>分支的变化并自动地编译源码、执行单元测试，而且还需要将编译的结果归档到团队内部共享的存储服务上，并自动地触发CD服务，使得CD服务能够将编译结果从存储服务中自动地部署到研发环境（dev）、测试环境（test）、预生产环境（stage）和生产环境（prod）。环境越多，实施自动化部署将任务也将增多，因此企业需要结合自身的现实状况来决定哪些环境是需要的（比如大多数企业只需要stage和prod环境就足够了）。</p>
+<h2 id="trunk-based-development的实施细节">Trunk-Based Development的实施细节</h2>
+<p>不同企业在研发团队中实施Trunk-Based Development都会有一些细微的差别，对于大多数需要<strong>研发软件产品</strong>的企业，可以参考以下步骤在研发团队中实施Trunk-Based Development。</p>
+<ul>
+<li>将产品相关的代码放到一个repository里，并且严格要求这个repository的分支数量每天不能超过研发人数（比如该研发团队有5个研发，2个测试，1个PO，1个UX，1个SM以及1个架构师，一共11个人）</li>
+<li>该repository有一个长期存在的分支<code>trunk</code>或者<code>master</code>。当需要对外发布的时候则需要拉出<code>release</code>分支，当有新的功能要发布的时候，将该分支删除并拉取新的<code>release</code>分支。研发人员可以直接在<code>trunk</code>或<code>master</code>分支上提交代码，当然也可以拉取<code>feature</code>分支，但是<code>feature</code>分支的生命周期应该在1天之内</li>
+<li>搭建CI服务，比如可以考虑使用Jenkins或者使用github的Actions。前者需要自己搭建，工作量大，服务器可以是自建，也可以使用云服务提供商的服务器（比如阿里云或AWS）。后者只需要编写<code>.yaml</code>文件就可以构建CI服务，服务器是github提供的</li>
+<li>CI服务器会检测<code>trunk</code>和<code>release</code>分支，每个次提交，都会触发CI服务器，构建代码和执行自动化测试。<code>trunk</code>分支所对应的CI构建流程，其运行一次所需要的时间需要控制在30分钟之内，其目的是为了检测每次提交都是正常的。<code>release</code>分支所对应的CI构建流程，其运行一次所需要的时间也需要控制在30分钟之内并归档编译出来的结果，除此之外还需为该分支搭建CD服务。CD服务能够将编译出来的结果自动部署到其它环境（比如stage和prod）</li>
+<li>为团队的每一个研发人员预留时间学习和掌握之前提到的技巧，使得团队成员达成共识</li>
+<li>每次发布只能通过<code>release</code>分支，修复bug和性能优化的改动应该提交到<code>trunk</code>分支，最终通过cherry-pick的方式将这些提交merge到<code>release</code>分支。当有新功能对外发布时，需要删除原来的<code>release</code>分支，并从<code>trunk</code>分支拉取新的<code>release</code>分支</li>
+</ul>
+<h2 id="使用github来实施trunk-based-development的基本思路">使用github来实施Trunk-Based Development的基本思路</h2>
+<p>github是一个非常有影响力的程序员社交平台。这个平台不仅向全世界的开发者提供了线上交流的平台，而且提供了方便开发者研发软件所需的功能。其中，有2个功能非常流行，一个是代码托管和Actions服务，而且这2个服务是免费的！这2个服务使得任何研发团队都可以快速搭建现代化的CI/CD流程。</p>
+<p>github提供了大多数功能给开发者使用，这些功能有：账号管理、源码托管、Action服务（也就是CI/CD）、文件存储和协作沟通的线上通道。接下来我将介绍在github上实践Trunk-Based Development的基本思路。在掌握这些思路之后，读者需要进一步参考这篇文章<a href="https://2cloudlab.com/blog/how-to-setup-ci-service-base-on-github/">&lt;如何0成本在github上构建CI&gt;</a>来实践Trunk-Based Development。</p>
+<ol>
+<li>在github上创建一个repository，这个repository用于放置产品的源码</li>
+<li>为<code>master</code>和<code>release</code>分支创建对应的CI服务，也就是在<code>.github/workflows</code>目录中创建2个文件：<code>master.yml</code>和<code>release.yml</code>。每个文件定义了一个workflow，每个workflow定义了触发条件和一些执行步骤。<code>master.yml</code>针对<code>master</code>分支定义了build，test步骤，每次提交到该分支都会执行build和test步骤；<code>release.yml</code>针对<code>release</code>分支定义了build，test，archive，每次在<code>release</code>分支上打tag（比如<code>v0.0.1</code>）都会在该分支上执行build，test和archive步骤。将创建的<code>master.yml</code>和<code>release.yml</code>文件推送到该repository上</li>
+<li>将每一个参与研发的人员加入到这个repository中，并授予他们可读写的权限</li>
+<li>研发人员可以直接在<code>master</code>分支上提交，也可以拉出<code>feature</code>分支进行修改，最终合并到<code>master</code>分支，但是这个<code>feature</code>分支的生命周期不能超过1天。当研发人员在<code>master</code>分支上提交代码后，会自动触发<code>master.yml</code>所定义的workflow。该workflow将执行build和test步骤来确保<code>master</code>分支是正常的</li>
+<li>如果使用<code>feature</code>分支，则会用到github的pull request功能。这个功能可以帮助团队成员进行Code Review。当某一名成员发起pull request时，同样也会触发<code>master.yml</code>所定义的workflow。团队的其他成员则可以在pull request的操作面板上提交意见，查看此次发起提交的运行结果</li>
+<li>当需要对外发布的时候，那么可以拉取另外一个分支<code>release</code>，然后对该分支打上tag（比如<code>v0.0.1</code>），此时<code>release.yml</code>所定义的workflow会启动，该workflow除了执行步骤build和test，最终还要执行archive步骤。执行archive的时候会把生成的结果发布到github的release存储。release存储是对外开放的，任何人都可以到release存储获取并使用你发布的产品</li>
+<li>当发布的产品有bug的时（比如功能缺陷，性能差劲等），可以通过cherry-pick从<code>master</code>分支选取对应的commit合并到<code>release</code>分支。当已知的bug都修复了，那么在<code>release</code>分支上打上一个tag（比如<code>v0.0.2</code>），此时会触发<code>release.yml</code>所定义的workflow</li>
+<li>当进入下一次迭代并准备好发布新功能的时候，那么需要把之前的<code>release</code>分支删除，并且再从分支<code>master</code>拉出新的<code>release</code>分支，此时产品的版本号应该变成<code>v0.1.x</code></li>
+</ol>
+<p>通过以上思路便可以在github上创建一个高效的基于Trunk-Based Development的CI流程（如下图所示），而且它是<strong>免费</strong>且适用于<strong>全世界的开发者</strong>的。</p>
+<p>
+<img class="lazy" data-src="https://2cloudlab.com/images/blog/trunk-based-ci-service.png" alt=""  />
+</p>
+<p>当以上CI流程搭建完毕之后，研发人员只需要向<code>master</code>分支提交代码，此时Actions服务就会自动执行build和test步骤来验证此次提交是正确的（通过<code>master.yml</code>所定义的workflow来保证）。</p>
+<p>当研发人员在<code>release</code>分支打上tag的时候（比如<code>v0.0.1</code>或者<code>v0.0.2</code>），此时Actions服务会自动执行build、test和archive步骤（通过<code>release.yml</code>所定义的workflow来保证），其中archive步骤会把生成的结果发布到github的release存储中。</p>
+<p>为了能够更好地理解以上过程，我将在这篇文章<a href="https://2cloudlab.com/blog/how-to-setup-ci-service-base-on-github/">&lt;如何0成本在github上构建CI&gt;</a>中，通过一个具体的例子来说明如何基于github搭建CI流程。</p>
+<h2 id="结论和参考">结论和参考</h2>
+<p>Trunk-based Development已经被各大公司成功实践了十几年，这些公司有Google、Facebook、LinkedIn等。企业在研发<strong>产品</strong>时，想要在研发部门中顺利地实施Trunk-based Development，还需要掌握一些技巧和搭建自动化基础设施。这些技巧需要所有研发人员达成共识，并养成习惯。</p>
+<p>当习惯形成之后，则需要借助一些自动化基础设施来加速研发流程，这个研发流程就是CI/CD。目前有许多成熟的工具提供CI的支持，比如我们可以免费使用github提供的服务来快速搭建CI流程（读者可以参考这篇文章<a href="https://2cloudlab.com/blog/how-to-setup-ci-service-base-on-github/">&lt;如何0成本在github上构建CI&gt;</a>）。</p>
+<p>当研发流程搭建起来之后，则需要应用一些发布策略。一切就绪之后，整个研发团队的研发效率将会达到一个质的飞跃。在研发团队中实施Trunk-based Development以及为其搭建CI服务只是构建企业级软件研发流程的第一步。当新功能完成研发，并准备好发布的时候，也需要一套基础设施将研发好的功能及时高效地发布到用户现场，这就是Continuous Delivery(CD)。企业要想搭建完整的CI/CD流程，除了实施本文提到CI部分，还需要参考这篇文章<a href="https://2cloudlab.com/blog/why-organization-should-practice-cicd/">&lt;如何提高企业的研发效率&ndash;CI/CD&gt;</a>来实施CD部分。</p>
+<p>本文的内容参考了大量国外的资料，这些资料可以进一步加深读者对Trunk-based development的理解，读者可以根据自身的实际情况进一步学习国外最新的技术，并将其应用到自己的项目当中。</p>
+<ol>
+<li><a href="https://trunkbaseddevelopment.com/">Trunk-Based Development</a></li>
+<li><a href="https://martinfowler.com/bliki/FeatureToggle.html">Feature Toggles</a></li>
+<li><a href="https://martinfowler.com/bliki/BranchByAbstraction.html">Branch By Abstraction</a></li>
+<li><a href="https://medium.com/@mattia.battiston/why-i-love-trunk-based-development-641fcf0b94a0">Why I love Trunk Based Development</a></li>
+<li><a href="https://www.thoughtworks.com/insights/blog/enabling-trunk-based-development-deployment-pipelines">Enabling Trunk Based Development with Deployment Pipelines</a></li>
+<li><a href="https://cloud.google.com/solutions/devops/devops-tech-trunk-based-development">Google DevOps tech</a></li>
+<li><a href="https://medium.com/@grazibonizi/the-best-branching-model-to-work-with-git-4008a8098e6a">The best branching model to work with Git</a></li>
+<li><a href="https://paulhammant.com/2013/04/05/what-is-trunk-based-development/">What is Trunk-Based Development?</a></li>
+</ol>
+<p><em><a href="https://2cloudlab.com/">2cloudlab.com</a>为企业准备产品的运行环境，只需要1天！</em></p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://utteranc.es/client.js" repo="2cloudlab/comments" issue-term="pathname" theme="github-light"
+        crossorigin="anonymous" async>
+</script>
+
+
+<!-- Call To Action Section Start -->
+<section id="call-to-action">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="block">
+                    <h2 class="title wow fadeInDown" data-wow-delay=".3s" data-wow-duration="500ms">听起来还不错 ？</h1>
+                    <p class="wow fadeInDown" data-wow-delay=".5s" data-wow-duration="500ms">如果你所在的企业遇到了以下问题：<br> 研发流程混乱不堪或者效率低下、经历了持续上升的运维成本、无法及时向用户发布新的服务或产品以及想使用云计算技术但缺乏经验！<br>那么，请毫不犹疑地</p>
+                    <a href="/contact" class="btn btn-default btn-contact wow fadeInDown" data-wow-delay=".7s" data-wow-duration="500ms">联系我们</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-- Call To Action Section End -->
+
+
+<!-- Footer Section Start -->
+<footer id="footer">
+    <div class="container">
+        <div class="row content-justify-between">
+            <div class="col-md-8 col-12 text-center text-lg-left text-md-left">
+                <p class="copyright">版权所有©:
+                    <span>
+                        <script>document.write(new Date().getFullYear())</script>
+                    </span> 上海漫步云端科技有限公司
+                    <a href="https://2cloudlab.com/" target="_blank">2cloudlab.com</a>.
+                    <br> 地址：上海市浦东区浦东南路 999 号新梅联合广场 1 期 32 层
+                    <br>
+                    邮箱：<a href="mailto:support@2cloudlab.com">support@2cloudlab.com</a>
+                </p>
+            </div>
+            <div class="col-md-4 col-12">
+                <!-- Social Media -->
+                <ul class="social text-center text-md-right text-lg-right">
+                    
+                    <li><a href="https://github.com/2cloudlab"><i class="ion-social-github"></i></a></li>
+                    
+                    <li><a href="https://www.linkedin.com/company/2cloudlab-com"><i class="ion-social-linkedin"></i></a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- footer section end -->
+
+<!-- jquery -->
+<script src="https://2cloudlab.com/plugins/jQurey/jquery.min.js"></script>
+<!-- Form Validation -->
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.form.js"></script>
+<script src="https://2cloudlab.com/plugins/form-validation/jquery.validate.min.js"></script>
+<!-- slick slider -->
+<script src="https://2cloudlab.com/plugins/slick/slick.min.js"></script>
+<!-- bootstrap js -->
+<script src="https://2cloudlab.com/plugins/bootstrap/bootstrap.min.js"></script>
+<!-- wow js -->
+<script src="https://2cloudlab.com/plugins/wow-js/wow.min.js"></script>
+<!-- slider js -->
+<script src="https://2cloudlab.com/plugins/slider/slider.js"></script>
+<!-- Fancybox -->
+<script src="https://2cloudlab.com/plugins/facncybox/jquery.fancybox.js"></script>
+<!-- template main js -->
+
+<script src="https://2cloudlab.com/js/script.min.js"></script>
+<!-- google analitycs -->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-171018621-1', 'auto');
+    ga('send', 'pageview');
+</script></body>
+</html>
