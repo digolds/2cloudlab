@@ -12,7 +12,7 @@ submitDate: November 20, 2017
 location: 2cloudlab.com
 ---
 
-# 如何在一天之内上线一款WSGI兼容的Python Web App
+# [如何在一天之内上线一款WSGI兼容的Python Web App](https://2cloudlab.com/portfolio/how-to-craft-a-wsgi-python-web-app-in-one-day-supervisor-ec2-gunicorn-nginx-cloud-computing/)
 
 这篇指南将通过以下4步来帮助你**在一天之内上线一款WSGI兼容的Python Web App**：
 
@@ -256,5 +256,5 @@ alb_dns_name = alb-1-712872544.us-west-1.elb.amazonaws.com
 
 1. 它目前只支持80端口
 2. 在创建成功之后，你需要等待大约几分钟的时间，才能上线Web App
-3. 如果你需要更新Web App
+3. 如果你需要更新Web App，那么你需要重新执行以上步骤，这也就意味着，你需要暂停之前的Web App
 4. 由于这套方案创建了ALB，一族EC2实例，因此这些资源如果闲置的时候依然会计费
