@@ -15,7 +15,7 @@ hugo -D -d ../p2cloudlab/
 
 #small images
 cp -a ../p2cloudlab/images/. ../p2cloudlab/small_images/
-optimize-images ../p2cloudlab/small_images/generator_of_python.png
+optimize-images ../p2cloudlab/small_images/Useful-built-in-python-functions.png
 
 #push static web site to git
 echo "push static web site to git"
